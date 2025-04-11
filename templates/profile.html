@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Profile - RESUME WAR</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='logo.png') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='modern.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='navbar.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
+  </head>
+  <body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" aria-label="Toggle dark/light mode">
+      <!-- Icon will be inserted by JavaScript -->
+    </button>
+    
+    <!-- Floating Navigation Bar -->
+    <nav class="floating-nav">
+      <a href="{{ url_for('home') }}" class="nav-logo">
+        <!-- <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" /> -->
+        <h1>Career / Conquer</h1>
+      </a>
+      <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint == 'dashboard' }}">Dashboard</a>
+        <span class="nav-separator">|</span>
+        <a href="{{ url_for('profile') }}" class="{{ 'active' if request.endpoint == 'profile' }}">Profile</a>
+        <span class="nav-separator">|</span>
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    </nav>
+    
+    <div class="dashboard-container">
+      <div class="content">
+        <!-- Profile content will go here -->
+      </div>
+    </div>
+  </body>
+</html>

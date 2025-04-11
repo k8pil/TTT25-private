@@ -1,23 +1,28 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>RESUME WAR</title>
+    <title>Sign Up - RESUME WAR</title>
     <link
       rel="icon"
       type="image/png"
       href="{{ url_for('static', filename='logo.png') }}"
     />
-
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='signup.css') }}"
+      href="{{ url_for('static', filename='modern.css') }}"
     />
     <link
-      href="https://fonts.googleapis.com/css2?family=Teko:wght@500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
   </head>
   <body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" aria-label="Toggle dark/light mode">
+      <!-- Icon will be inserted by JavaScript -->
+    </button>
+    
     <main>
       <div class="left-panel">
         <div class="form-box">
