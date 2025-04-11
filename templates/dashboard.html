@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dashboard - RESUME WAR</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='logo.png') }}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <nav class="navbar">
+        <div class="nav-left">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" />
+          <h1>RESUME WAR</h1>
+        </div>
+        <div class="nav-right">
+          <a href="{{ url_for('dashboard') }}">Dashboard</a>
+          <span class="nav-separator">|</span>
+          <a href="{{ url_for('profile') }}">Profile</a>
+          <span class="nav-separator">|</span>
+          <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+      </nav>
+      <div class="content">
+        <!-- FILLER -->
+      </div>
+    </div>
+  </body>
+</html>
