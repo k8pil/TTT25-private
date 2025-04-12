@@ -1,0 +1,2534 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-powered interview preparation with real-time feedback">
+    <title>Career / Conquer - AI Interview Preparation</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='logo.png') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='modern.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- GSAP Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='animations.js') }}"></script>
+    <!-- Three.js animation -->
+    <script type="module" src="{{ url_for('static', filename='threejs-animation.js') }}"></script>
+    <style>
+      /* Comprehensive color palette update and backdrop-filter fix */
+      :root {
+        --primary-color: #6B6054; /* Walnut brown */
+        --secondary-color: #A1B0AB; /* Ash gray */
+        --accent-color: #C3DAC3; /* Tea green */
+        --light-color: #D5ECD4; /* Nyanza */
+        --dark-color: #333333;
+        --text-color: #444444;
+        --box-shadow-color: rgba(107, 96, 84, 0.2);
+        --border-color: rgba(107, 96, 84, 0.3);
+        --hover-color: rgba(107, 96, 84, 0.1);
+        --card-bg: rgba(213, 236, 212, 0.7);
+      }
+      
+      /* Base styles */
+      body {
+        background-color: var(--light-color);
+        color: var(--text-color);
+      }
+      
+      /* Cross-browser backdrop filter compatibility */
+      .navbar, footer, .feature-card, .step-card, .testimonial-card, .secondary-cta, .hero-section {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      
+      /* Navbar */
+      .navbar {
+        background-color: rgba(213, 236, 212, 0.7);
+        border-bottom: 1px solid var(--border-color);
+      }
+      
+      .navbar-link {
+        color: var(--primary-color);
+      }
+      
+      .navbar-link:hover {
+        color: var(--accent-color);
+        background-color: var(--hover-color);
+      }
+      
+      /* Hero section */
+      .hero-section {
+        background-color: rgba(161, 176, 171, 0.4);
+        border: 1px solid var(--border-color);
+        box-shadow: 0 10px 40px var(--box-shadow-color);
+      }
+      
+      .hero-title {
+        background: var(--primary-color);
+        color: transparent;
+        -webkit-background-clip: text;
+        background-clip: text;
+        text-shadow: 0 0 20px rgba(107, 96, 84, 0.7),
+                    2px 2px 4px rgba(90, 62, 54, 0.6);
+        -webkit-text-stroke: 1px rgba(107, 96, 84, 0.3);
+      }
+      
+      .hero-subtitle {
+        color: var(--primary-color);
+      }
+      
+      /* Buttons */
+      .primary-cta {
+        background-color: var(--primary-color);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 5px 15px var(--box-shadow-color);
+      }
+      
+      .primary-cta:hover {
+        background: linear-gradient(135deg, var(--primary-color), #7d7266);
+        box-shadow: 0 10px 25px rgba(107, 96, 84, 0.5);
+      }
+      
+      .secondary-cta {
+        background-color: var(--accent-color);
+        color: var(--primary-color);
+        border: 1px solid var(--border-color);
+        box-shadow: 0 4px 12px var(--box-shadow-color);
+      }
+      
+      .secondary-cta:hover {
+        background-color: var(--light-color);
+        border: 1px solid var(--primary-color);
+        box-shadow: 0 8px 20px var(--box-shadow-color);
+      }
+      
+      /* Section backgrounds */
+      .features-section {
+        background-color: var(--light-color);
+      }
+      
+      .steps-section {
+        background-color: var(--secondary-color);
+      }
+      
+      .testimonials-section {
+        background-color: var(--accent-color);
+      }
+      
+      /* Cards */
+      .feature-card, .step-card, .testimonial-card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        box-shadow: 0 8px 24px var(--box-shadow-color);
+      }
+      
+      .feature-card:hover, .step-card:hover, .testimonial-card:hover {
+        border-color: var(--primary-color);
+        background-color: rgba(213, 236, 212, 0.9);
+        box-shadow: 0 15px 35px rgba(107, 96, 84, 0.3);
+      }
+      
+      /* Card decorations */
+      .card-decoration {
+        background: linear-gradient(135deg, 
+          rgba(255, 255, 255, 0.6),
+          rgba(107, 96, 84, 0.4)
+        );
+        box-shadow: -3px 0 10px var(--box-shadow-color);
+      }
+      
+      @keyframes glowEdge {
+        0% {
+          opacity: 0.7;
+          box-shadow: -3px 0 10px var(--box-shadow-color);
+        }
+        100% {
+          opacity: 1;
+          box-shadow: -3px 0 15px rgba(107, 96, 84, 0.5);
+        }
+      }
+      
+      /* Footer */
+      footer {
+        background-color: var(--secondary-color);
+        color: var(--primary-color);
+        border-top: 1px solid var(--border-color);
+      }
+      
+      /* Section titles */
+      .section-title {
+        color: var(--primary-color);
+      }
+      
+      /* Step numbers */
+      .step-number {
+        background-color: var(--primary-color);
+        color: white;
+      }
+      
+      /* Additional styles for baby pink tones theme */
+      body {
+        background: radial-gradient(circle at top right, rgba(205, 94, 119, 0.15), transparent 40%),
+                    radial-gradient(circle at bottom left, rgba(225, 127, 147, 0.2), transparent 30%);
+      }
+      
+      /* Hero section styling */
+      .hero-title {
+        background: #FF8181; /* Solid color instead of gradient */
+        -webkit-text-stroke: 0;
+        color: #FF8181;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        animation: none; /* Remove glow animation */
+      }
+      
+      /* Enhanced step number styling */
+      .step-number {
+        background: linear-gradient(135deg, #FF8181, #FF8B86);
+        color: white;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      }
+      
+      .step-number::after {
+        box-shadow: 0 0 15px rgba(255, 129, 129, 0.5);
+      }
+      
+      /* Card hover effects */
+      .feature-card:hover, 
+      .step-card:hover, 
+      .testimonial-card:hover,
+      .cta-button:hover {
+        background-color: rgba(255, 246, 237, 0.15);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 
+          0 10px 30px rgba(255, 129, 129, 0.2),
+          0 0 20px rgba(255, 255, 255, 0.2),
+          inset 0 0 6px rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 129, 129, 0.4);
+        transform: translateY(-5px);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+      }
+      
+      .feature-card:hover::after,
+      .step-card:hover::after,
+      .testimonial-card:hover::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 25px;
+        height: 60px;
+        background: linear-gradient(135deg, 
+          rgba(255, 255, 255, 0.4),
+          rgba(255, 129, 129, 0.3)
+        );
+        border-radius: 0 5px 5px 0;
+        transform: translateX(8px) translateY(15px);
+        clip-path: polygon(0 0, 100% 15%, 100% 85%, 0% 100%);
+        box-shadow: -3px 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+      }
+      
+      /* Specific hover adjustments for cards */
+      .feature-card:hover {
+        transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+      }
+      
+      .testimonial-card:hover {
+        transform: translateY(-5px) scale(1.02);
+      }
+      
+      /* Pulse animation for step numbers */
+      @keyframes pulse {
+        0% {
+          opacity: 0.3;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.5;
+          transform: scale(1.1);
+        }
+        100% {
+          opacity: 0.3;
+          transform: scale(1);
+        }
+      }
+      
+      .step-number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        font-size: 1.4rem;
+        font-weight: bold;
+        margin: 0 auto 25px;
+        position: relative;
+      }
+      
+      .step-number::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 50%;
+        animation: pulse 2s ease-in-out infinite;
+      }
+      
+      /* Feature icon animation */
+      .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        animation: subtle-float 3s ease-in-out infinite;
+      }
+      
+      /* Primary button styling */
+      .primary-cta {
+        background: linear-gradient(135deg, #FF8181, #FF8B86);
+        box-shadow: 0 4px 15px rgba(255, 129, 129, 0.3);
+      }
+      
+      .primary-cta:hover {
+        background: linear-gradient(135deg, #FF8B86, #FF8181);
+        box-shadow: 0 8px 25px rgba(255, 129, 129, 0.4);
+      }
+      
+      /* CTA section special background for coral theme */
+      .cta-section {
+        background: linear-gradient(135deg, 
+          rgba(255, 129, 129, 0.15),
+          rgba(240, 183, 180, 0.15));
+      }
+      
+      /* Canvas styling with reduced opacity for better text visibility */
+      #threeCanvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.75; /* Reduced opacity for better text visibility */
+      }
+      
+      /* Ensure content appears above canvas */
+      body {
+        position: relative;
+        font-family: 'Inter', sans-serif;
+        background-color: transparent;
+        color: var(--text-primary);
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        overflow-x: hidden;
+        z-index: 1;
+      }
+      
+      /* Make all sections appear with completely transparent backgrounds */
+      section, footer, .theme-toggle {
+        position: relative;
+        z-index: 1;
+        background-color: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        margin-bottom: 40px;
+        border-radius: 24px;
+        max-width: 1100px;
+        margin-left: auto;
+        margin-right: auto;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+      }
+      
+      /* Hero section with completely transparent background */
+      .hero-section {
+        position: relative;
+        min-height: 50vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: transparent;
+        padding: 0 20px;
+        overflow: hidden;
+        z-index: 1;
+        background-color: rgba(241, 218, 187, 0.2);
+      }
+      
+      .hero-content {
+        text-align: center;
+        z-index: 2;
+        max-width: 800px;
+        padding: 2rem;
+        border-radius: 20px;
+        background-color: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        /* box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); */
+      }
+      
+      .hero-title {
+        font-size: 10rem;
+        font-weight: 1000;
+        margin-bottom: 2rem;
+        color: #FF8181;
+        background: linear-gradient(45deg, #FF8181, #FF8B86);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      
+      .hero-subtitle {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        color: #333;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        font-weight: 400;
+      }
+      
+      /* Features, How it works, and Testimonials sections */
+      .features-section,
+      .how-it-works,
+      .testimonials {
+        padding: 40px 30px;
+        background-color: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+      
+      /* CTA section with transparent background */
+      .cta-section {
+        margin-top: 20px;
+        padding: 60px 30px;
+        border-radius: 24px;
+        background-color: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+      }
+      
+      /* Card styling - Completely transparent with subtle borders */
+      .feature-card, .step-card, .testimonial-card {
+        background-color: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+      }
+      
+      .feature-card {
+        transform-style: preserve-3d;
+        perspective: 1000px;
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      
+      .feature-card:hover {
+        transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+        box-shadow: 0 15px 35px rgba(31, 38, 135, 0.2);
+        border-color: rgba(255, 255, 255, 0.25);
+      }
+      
+      .feature-title {
+        color: var(--text-primary);
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        letter-spacing: 0.5px;
+      }
+      
+      .feature-description {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        font-size: 0.95rem;
+      }
+      
+      /* Step cards */
+      .step-card {
+        transform-style: preserve-3d;
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+        padding: 30px;
+        max-width: 240px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .step-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(255, 129, 129, 0.2);
+        border-color: rgba(255, 129, 129, 0.3);
+      }
+      
+      .step-title {
+        font-size: 1.25rem;
+        margin-bottom: 15px;
+        color: var(--text-primary);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+      
+      /* Testimonial cards */
+      .testimonial-card {
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+        padding: 35px;
+        margin-bottom: 20px;
+      }
+      
+      .testimonial-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 15px 30px rgba(255, 129, 129, 0.2);
+        border-color: rgba(255, 129, 129, 0.3);
+      }
+      
+      .testimonial-card::before {
+        content: "";
+        position: absolute;
+        top: 10px;
+        left: 20px;
+        font-size: 6rem;
+        line-height: 1;
+        font-family: Georgia, serif;
+        color: rgba(255, 129, 129, 0.2);
+        z-index: 0;
+      }
+      
+      .testimonial-text {
+        position: relative;
+        font-size: 1.1rem;
+        line-height: 1.7;
+        color: var(--text-primary);
+        font-style: italic;
+        margin-bottom: 25px;
+        z-index: 1;
+      }
+      
+      .testimonial-author {
+        display: flex;
+        align-items: center;
+        border-top: 1px solid rgba(255, 129, 129, 0.1);
+        padding-top: 15px;
+        margin-top: 5px;
+      }
+      
+      /* Section styling */
+      .section-title {
+        text-align: center;
+        font-size: 2.2rem;
+        margin-bottom: 40px;
+        color: var(--text-primary);
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        text-shadow: 0 2px 10px rgba(255, 129, 129, 0.3);
+        position: relative;
+        display: inline-block;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      
+      .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+        border-radius: 3px;
+      }
+      
+      /* Grid adjustments */
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px; /* Reduced gap */
+        margin-top: 30px;
+      }
+      
+      /* Media queries */
+      @media (max-width: 768px) {
+        section, footer, .feature-card, .step-card, .testimonial-card {
+          backdrop-filter: blur(5px);
+          -webkit-backdrop-filter: blur(5px);
+        }
+        
+        .feature-card:hover,
+        .step-card:hover,
+        .testimonial-card:hover {
+          transform: translateY(-5px);
+        }
+        
+        .hero-title {
+          font-size: 5rem;
+        }
+        
+        .hero-subtitle {
+          font-size: 4rem;
+        }
+        
+        #threeCanvas {
+          opacity: 0.7; /* Reduced opacity on mobile for better text readability */
+        }
+        
+        .hero-content {
+          padding: 100px 15px 50px;
+        }
+      }
+      
+      @media (max-width: 1024px) {
+        .features-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      
+      @media (max-width: 768px) {
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      
+      .testimonial-container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      
+      @keyframes subtle-float {
+        0% {
+          transform: translateY(0px);
+        }
+        50% {
+        transform: translateY(-5px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
+      }
+      
+      /* Buttons with transparent secondary button */
+      .cta-button {
+        padding: 14px 32px;
+        font-size: 1rem;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .secondary-cta {
+        background-color: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        color: var(--text-primary);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      
+      .secondary-cta:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        transform: translateY(-3px) scale(1.05);
+        border-color: rgba(255, 255, 255, 0.4);
+        box-shadow: 
+          0 5px 15px rgba(255, 129, 129, 0.15),
+          inset 0 0 4px rgba(255, 255, 255, 0.3);
+      }
+      
+      .cta-button::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: left 0.7s ease;
+      }
+      
+      .cta-button:hover::after {
+        left: 100%;
+      }
+      
+      /* CTA Section with glassmorphism */
+      .cta-content {
+        max-width: 700px;
+        margin: 0 auto;
+        position: relative;
+      }
+      
+      .cta-title {
+        font-size: 2.4rem;
+        margin-bottom: 20px;
+        font-weight: 700;
+        color: var(--text-primary);
+        text-shadow: 0 2px 10px rgba(255, 129, 129, 0.3);
+        background: linear-gradient(135deg, var(--text-primary), var(--accent-color));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      
+      .cta-description {
+        font-size: 1.2rem;
+        margin-bottom: 25px;
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+      
+      .cta-features {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 30px;
+        font-size: 1.05rem;
+        color: var(--accent-color);
+      }
+      
+      /* Footer with transparent background */
+      footer {
+        background-color: var(--secondary-color);
+        color: var(--primary-color);
+        padding: 30px;
+        margin-bottom: 0;
+        border-radius: 24px 24px 0 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      /* Improved text visibility with text shadows and backgrounds */
+      .hero-title, .section-title, .feature-title, .step-title, 
+      .testimonial-text, .cta-title, .author-name {
+        text-shadow: 2px 2px 4px rgba(90, 62, 54, 0.6), 
+                     0 0 10px rgba(255, 129, 129, 0.5);
+        position: relative;
+        z-index: 5;
+      }
+      
+      /* Enhanced text for better visibility */
+      .feature-description, .step-description, .testimonial-text,
+      .cta-description, .footer-copyright, .footer-links a,
+      .hero-subtitle, p {
+        color: rgba(90, 62, 54, 0.95); /* Darker text color for better contrast */
+        text-shadow: 1px 1px 3px rgba(241, 218, 187, 0.8),
+                     0 0 5px rgba(255, 255, 255, 0.5);
+        font-weight: 500; /* Slightly bolder */
+        position: relative;
+        z-index: 5;
+      }
+      
+      /* Add subtle background to sections for better text readability */
+      section, footer {
+        background-color: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 129, 129, 0.3);
+        box-shadow: 0 8px 32px rgba(255, 129, 129, 0.15);
+        transition: all 0.4s ease;
+      }
+      
+      /* Enhanced hero section with backdrop filter */
+      .hero-section {
+        background-color: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        transition: none;
+        animation: none;
+      }
+      
+      /* Enhanced hero title glow effect */
+      .hero-title {
+        background: var(--primary-color);
+        color: transparent;
+        -webkit-background-clip: text;
+        background-clip: text;
+        text-shadow: 0 0 20px rgba(107, 96, 84, 0.7),
+                    2px 2px 4px rgba(90, 62, 54, 0.6);
+        -webkit-text-stroke: 1px rgba(107, 96, 84, 0.3);
+        animation: none; /* Remove glow animation */
+      }
+      
+      /* Enhanced card styling with better hover effects */
+      .feature-card, .step-card, .testimonial-card {
+        background-color: rgba(255, 255, 255, 0.7);
+        border: 1px solid var(--accent-color);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        box-shadow: 0 8px 24px rgba(255, 129, 129, 0.1);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      
+      /* Enhanced card hover effects */
+      .feature-card:hover, 
+      .step-card:hover, 
+      .testimonial-card:hover {
+        background-color: rgba(255, 255, 255, 0.35);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--primary-color);
+        box-shadow: 
+          0 15px 35px rgba(205, 94, 119, 0.25),
+          0 0 15px rgba(205, 94, 119, 0.15),
+          inset 0 0 8px rgba(255, 255, 255, 0.4);
+        transform: translateY(-8px) scale(1.03);
+      }
+      
+      .feature-card:hover::after,
+      .step-card:hover::after,
+      .testimonial-card:hover::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 30px;
+        height: 70px;
+        background: linear-gradient(135deg, 
+          rgba(255, 255, 255, 0.6),
+          rgba(205, 94, 119, 0.4)
+        );
+        border-radius: 0 5px 5px 0;
+        transform: translateX(8px) translateY(15px);
+        clip-path: polygon(0 0, 100% 15%, 100% 85%, 0% 100%);
+        box-shadow: -3px 0 10px rgba(205, 94, 119, 0.2);
+        z-index: 10;
+        animation: glowEdge 2s infinite alternate;
+      }
+      
+      @keyframes glowEdge {
+        0% {
+          opacity: 0.7;
+          box-shadow: -3px 0 10px rgba(205, 94, 119, 0.2);
+        }
+        100% {
+          opacity: 1;
+          box-shadow: -3px 0 15px rgba(205, 94, 119, 0.5);
+        }
+      }
+      
+      /* Enhanced step number styling */
+      .step-number {
+        background: linear-gradient(135deg, #FF8181, #FF8B86);
+        color: white;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        box-shadow: 
+          0 5px 15px rgba(255, 129, 129, 0.3),
+          inset 0 0 8px rgba(255, 255, 255, 0.4);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+      }
+      
+      .step-number::after {
+        box-shadow: 0 0 20px rgba(255, 129, 129, 0.6);
+        animation: pulse 2s ease-in-out infinite;
+      }
+      
+      /* Enhanced feature icon */
+      .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        background: linear-gradient(135deg, #FF8181, #FF8B86);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        filter: drop-shadow(0 0 10px rgba(255, 129, 129, 0.5));
+        animation: subtle-float 3s ease-in-out infinite;
+        opacity: 0.9;
+      }
+      
+      /* Primary button enhanced styling */
+      .primary-cta {
+        background-color: var(--primary-color);
+        color: white;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        box-shadow: 
+          0 5px 15px rgba(205, 94, 119, 0.4),
+          inset 0 0 5px rgba(255, 255, 255, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .primary-cta:hover {
+        background: linear-gradient(135deg, #E17F93, #CD5E77);
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 
+          0 10px 25px rgba(205, 94, 119, 0.5),
+          inset 0 0 8px rgba(255, 255, 255, 0.6);
+      }
+      
+      .primary-cta::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.3) 0%,
+          rgba(255, 255, 255, 0) 70%
+        );
+        opacity: 0;
+        transform: scale(0.5);
+        transition: all 0.5s ease-out;
+      }
+      
+      .primary-cta:hover::before {
+        opacity: 1;
+        transform: scale(1);
+        animation: pulseLight 2s infinite;
+      }
+      
+      @keyframes pulseLight {
+        0% {
+          opacity: 0.3;
+        }
+        50% {
+          opacity: 0.5;
+        }
+        100% {
+          opacity: 0.3;
+        }
+      }
+      
+      /* Secondary button enhanced styling */
+      .secondary-cta {
+        background-color: var(--accent-color);
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+        text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 12px rgba(255, 129, 129, 0.15);
+      }
+      
+      .secondary-cta:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+        color: rgba(90, 62, 54, 1);
+        border: 1px solid rgba(205, 94, 119, 0.5);
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 
+          0 8px 20px rgba(255, 129, 129, 0.25),
+          inset 0 0 8px rgba(255, 255, 255, 0.5);
+      }
+      
+      /* Enhanced section titles with glow effects */
+      .section-title {
+        text-align: center;
+        font-size: 2.4rem;
+        margin-bottom: 50px;
+        color: var(--text-primary);
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        position: relative;
+        display: inline-block;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 0 20px;
+      }
+      
+      .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 70px;
+        height: 3px;
+        background: linear-gradient(90deg, 
+          rgba(255, 129, 129, 0.1),
+          rgba(255, 129, 129, 0.8), 
+          rgba(255, 129, 129, 0.1)
+        );
+        border-radius: 3px;
+        box-shadow: 0 0 10px rgba(255, 129, 129, 0.4);
+        animation: borderPulse 2s infinite alternate;
+      }
+      
+      @keyframes borderPulse {
+        0% {
+          width: 70px;
+          opacity: 0.7;
+          box-shadow: 0 0 10px rgba(255, 129, 129, 0.4);
+        }
+        100% {
+          width: 100px;
+          opacity: 1;
+          box-shadow: 0 0 15px rgba(255, 129, 129, 0.7);
+        }
+      }
+      
+      /* Testimonial card styling */
+      .testimonial-card {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        padding: 35px;
+        margin-bottom: 30px;
+      }
+      
+      .testimonial-card::before {
+        content: "\201C";
+        position: absolute;
+        top: 15px;
+        left: 25px;
+        font-size: 8rem;
+        line-height: 1;
+        font-family: Georgia, serif;
+        color: rgba(255, 129, 129, 0.15);
+        z-index: 0;
+        text-shadow: 0 0 10px rgba(255, 129, 129, 0.1);
+      }
+      
+      .testimonial-text {
+        position: relative;
+        font-size: 1.2rem;
+        line-height: 1.7;
+        color: rgba(90, 62, 54, 0.95);
+        font-style: italic;
+        margin-bottom: 25px;
+        z-index: 1;
+        text-shadow: 1px 1px 3px rgba(241, 218, 187, 0.8);
+      }
+      
+      .testimonial-author {
+        display: flex;
+        align-items: center;
+        border-top: 1px solid rgba(255, 129, 129, 0.2);
+        padding-top: 20px;
+        margin-top: 10px;
+      }
+      
+      /* Ensure content appears above canvas */
+      body {
+        position: relative;
+        font-family: 'Inter', sans-serif;
+        background-color: transparent;
+        color: var(--text-primary);
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        overflow-x: hidden;
+        z-index: 1;
+      }
+      
+      /* Hero content styling */
+      .hero-content {
+        position: relative;
+        z-index: 2;
+        padding: 100px 20px 50px;
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto;
+        animation: none;
+        transition: none;
+      }
+      
+      .hero-subtitle {
+        text-shadow: 0 0 10px rgba(255, 129, 129, 0.5);
+        font-size: 1.3rem;
+        margin-bottom: 2rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      /* Make the steps container display as a grid for better layout */
+      .steps-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      
+      /* Media queries */
+      @media (max-width: 1024px) {
+        .steps-container {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .features-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      
+      @media (max-width: 768px) {
+        .steps-container {
+          grid-template-columns: 1fr;
+        }
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+        .hero-title {
+          font-size: 2.2rem;
+        }
+        .hero-subtitle {
+          font-size: 1.1rem;
+        }
+        #threeCanvas {
+          opacity: 0.7;
+        }
+        .hero-content {
+          padding: 100px 15px 50px;
+        }
+      }
+
+      /* Add styling for navbar that's visible in dark mode */
+      .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 129, 129, 0.2);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      .logo-container {
+        display: flex;
+        align-items: center;
+      }
+
+      .logo {
+        height: 35px;
+        margin-right: 10px;
+      }
+
+      .logo-text {
+        font-weight: 700;
+        font-size: 1.4rem;
+        background: linear-gradient(45deg, #FF8181, #FF8B86);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 30px;
+      }
+
+      .nav-link {
+        color: var(--text-primary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        position: relative;
+        padding-bottom: 5px;
+      }
+
+      .nav-link:hover, .nav-link.active {
+        color: var(--accent-color);
+      }
+
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 0;
+        background: linear-gradient(90deg, #FF8181, #FF8B86);
+        transition: width 0.3s ease;
+      }
+
+      .nav-link:hover::after, .nav-link.active::after {
+        width: 100%;
+      }
+
+      /* Theme toggle in navbar */
+      .navbar-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      /* Make colors calmer */
+      .COLORS {
+        background: 0xEFD8C0;  /* Lighter beige */
+        primary: #6B6054;     /* Softer pink */
+        secondary: #A1B0AB; /* Ash gray */
+        accent:#D5ECD4; /* Nyanza */
+        highlight: 0xF0A89E;   /* Muted coral */
+      }
+
+      /* Update color variables for a more calm feel */
+      :root {
+        --accent-color: #F0A393;
+        --accent-hover: #E8B4A2;
+      }
+
+      /* Fix empty space at the end */
+      body {
+        min-height: 100vh;
+        padding-bottom: 0;
+        margin-bottom: 0;
+      }
+
+      footer {
+        margin-bottom: 0;
+        padding-bottom: 30px;
+        border-radius: 24px 24px 0 0;
+      }
+
+      /* Fix testimonial card style */
+      .testimonial-card::before {
+        content: "\201C";
+        position: absolute;
+        top: 15px;
+        left: 25px;
+        font-size: 8rem;
+        line-height: 1;
+        font-family: Georgia, serif;
+        color: rgba(255, 129, 129, 0.15);
+        z-index: 0;
+        text-shadow: 0 0 10px rgba(255, 129, 129, 0.1);
+      }
+
+      /* Fix missing author info styles */
+      .author-info {
+        margin-left: 15px;
+      }
+
+      .author-name {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 1.05rem;
+      }
+
+      .author-position {
+        color: var(--accent-color);
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+
+      /* Content wrapper for proper structure */
+      .content-wrapper {
+        position: relative;
+        z-index: 1;
+        padding-top: 70px; /* Space for fixed navbar */
+        max-width: 1200px;
+        margin: 0 auto;
+        min-height: calc(100vh - 100px); /* Prevent empty space at bottom */
+      }
+
+      /* Fix footer margin */
+      footer {
+        margin-bottom: 0;
+        padding-bottom: 30px;
+        border-radius: 24px 24px 0 0;
+      }
+
+      /* Improve the theme toggle button appearance */
+      .theme-toggle {
+        background: transparent;
+        border: none;
+        color: var(--text-primary);
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .theme-toggle:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: scale(1.1);
+      }
+
+      /* Add a special style for the CTA nav link */
+      .cta-nav {
+        background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+        padding: 8px 16px;
+        border-radius: 8px;
+        color: white !important;
+        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+      }
+
+      .cta-nav:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(240, 163, 147, 0.4);
+      }
+
+      /* Add this to your style section */
+      .form-box {
+        width: 100%;
+        max-width: 400px;
+        padding: 40px;
+        border-radius: 20px;
+        background-color: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        box-shadow: 
+          0 15px 35px rgba(0, 0, 0, 0.1),
+          0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        transition: all 0.3s ease;
+      }
+
+      [data-theme="dark"] .form-box {
+        background-color: rgba(40, 35, 35, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 
+          0 15px 35px rgba(0, 0, 0, 0.2),
+          0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .form-box h2 {
+        margin-bottom: 30px;
+        text-align: center;
+        color: #F0A393;
+        font-size: 2.2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #F0A393, #E8B4A2);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 2px 10px rgba(240, 163, 147, 0.3);
+      }
+
+      .form-box input {
+        width: 100%;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        border: 1px solid rgba(240, 163, 147, 0.3);
+        background-color: rgba(255, 255, 255, 0.8);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .form-box button {
+        width: 100%;
+        padding: 15px;
+        margin-top: 15px;
+        background: linear-gradient(135deg, #F0A393, #E8B4A2);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(240, 163, 147, 0.3);
+      }
+
+      .form-box button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(240, 163, 147, 0.4);
+      }
+
+      /* Add this to your index.html styles to fix the footer */
+      footer {
+        padding: 20px 30px !important;
+        margin-bottom: 0 !important;
+        border-radius: 20px 20px 0 0;
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        backdrop-filter: blur(10px);
+        max-height: 100px;
+        overflow: hidden;
+      }
+
+      footer * {
+        margin: 0;
+        padding: 0;
+      }
+
+      .footer-copyright {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        margin-top: 10px !important;
+        text-align: center;
+      }
+
+      .footer-links {
+        max-height: 30px;
+        overflow: hidden;
+      }
+
+      .footer-links a {
+        font-size: 0.85rem;
+        margin: 0 10px;
+        white-space: nowrap;
+      }
+
+      /* Fix extra space at bottom */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+
+      .content-wrapper {
+        min-height: calc(100% - 100px);
+        padding-bottom: 0;
+        margin-bottom: 0;
+      }
+
+      .robot-animation-container {
+        bottom: 0;
+        height: auto;
+        position: fixed;
+      }
+
+      /* Fix for backdrop-filter compatibility with Safari */
+      footer, .navbar, .feature-card:hover, .step-card:hover, .testimonial-card:hover {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+      /* Fix dark mode styles */
+      [data-theme="dark"] body {
+        background: radial-gradient(circle at top right, rgba(255, 129, 129, 0.15), transparent 40%),
+                    radial-gradient(circle at bottom left, rgba(240, 180, 157, 0.2), transparent 30%);
+        color: rgba(241, 218, 187, 0.95);
+      }
+
+      [data-theme="dark"] .hero-subtitle,
+      [data-theme="dark"] .feature-description,
+      [data-theme="dark"] .step-description {
+        color: rgba(241, 218, 187, 0.95);
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+      }
+
+      [data-theme="dark"] .section-title {
+        color: rgba(241, 218, 187, 1);
+      }
+
+      /* Fix button styles */
+      .cta-button {
+        cursor: pointer !important;
+        position: relative;
+        z-index: 10;
+        display: inline-block;
+      }
+
+      .primary-cta, .secondary-cta {
+        text-decoration: none;
+        pointer-events: auto;
+      }
+
+      .primary-cta:hover, .secondary-cta:hover {
+        transform: translateY(-5px);
+        transition: all 0.3s ease;
+      }
+
+      /* Fix footer size */
+      footer {
+        padding: 15px 20px !important;
+        max-height: 80px !important;
+        margin-bottom: 0 !important;
+        overflow: hidden;
+      }
+
+      .footer-copyright {
+        font-size: 0.8rem !important;
+        margin-top: 5px !important;
+      }
+
+      .footer-links {
+        max-height: 25px;
+      }
+
+      .footer-links a {
+        font-size: 0.8rem;
+        margin: 0 8px;
+      }
+
+      /* Fix extra space at bottom */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+
+      .content-wrapper {
+        min-height: calc(100vh - 80px);
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+
+      /* Add Safari compatibility for backdrop-filter */
+      section, footer, .feature-card:hover, .step-card:hover, .testimonial-card:hover, .navbar {
+          -webkit-backdrop-filter: blur(10px);
+      }
+
+      /* Reduce size of hero title and ensure it's centered */
+      .hero-title {
+        font-size: 2rem; /* Reduced from 2.8rem */
+        font-weight: 800;
+        margin-bottom: 1.2rem;
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 600px; /* Control the width */
+      }
+
+      /* Center the hero content */
+      .hero-content {
+        position: relative;
+        z-index: 2;
+        padding: 100px 20px 50px; /* Slightly reduced padding */
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      /* Fix blurry text by reducing shadows and improving contrast */
+      .feature-description, .step-description, .testimonial-text,
+      .cta-description, .footer-copyright, .footer-links a,
+      .hero-subtitle, p {
+        color: rgba(50, 35, 30, 1); /* Darker, fully opaque text color for better contrast */
+        text-shadow: none; /* Remove text shadow that causes blur */
+        font-weight: 500;
+        position: relative;
+        z-index: 5;
+      }
+
+      /* Fix section titles to be clearer */
+      .section-title {
+        text-shadow: none;
+        color: rgba(40, 25, 20, 1);
+        font-weight: 800;
+      }
+
+      /* Fix feature titles and other headings */
+      .feature-title, .step-title, .testimonial-text, 
+      .cta-title, .author-name {
+        text-shadow: none;
+        color: rgba(40, 25, 20, 1);
+      }
+
+      /* Add better backgrounds behind text for improved contrast */
+      .feature-card, .step-card, .testimonial-card {
+        background-color: rgba(255, 255, 255, 0.85); /* More opaque background */
+      }
+
+      /* Make hero text clearer */
+      .hero-title {
+        -webkit-text-stroke: 0; /* Remove stroke that can cause blur */
+        color: #FF8181; /* Use solid color instead of transparent with gradient */
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow only */
+      }
+
+      .hero-subtitle {
+        color: rgba(40, 25, 20, 1);
+        text-shadow: none;
+        font-weight: 600;
+      }
+
+      /* Fix blurry text in navigation */
+      .nav-link {
+        text-shadow: none;
+      }
+
+      /* Style the background animation container and canvas */
+      .background-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+      }
+
+      #threeCanvas, #fallbackCanvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.8; /* Increased from 0.75 for better visibility */
+      }
+
+      /* Hide fallback canvas initially - it will show if Three.js fails */
+      #fallbackCanvas {
+        display: none;
+      }
+
+      /* Add modern dashboard-style navbar */
+      .modern-navbar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 15px 20px;
+        background-color: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 50px;
+        max-width: 600px;
+        margin: 20px auto;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        position: relative;
+        z-index: 1000;
+      }
+
+      .nav-links-centered {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        width: 100%;
+      }
+
+      .nav-link-modern {
+        color: #333;
+        text-decoration: none;
+        font-weight: 600;
+        position: relative;
+        padding: 5px 15px;
+        transition: all 0.3s ease;
+      }
+
+      .nav-link-modern.active {
+        color: #FF8181;
+      }
+
+      .nav-link-modern:after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 50%;
+        background-color: #FF8181;
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+      }
+
+      .nav-link-modern:hover:after {
+        width: 80%;
+      }
+
+      .nav-link-modern:hover {
+        color: #FF8181;
+      }
+
+      .brand-logo {
+        margin-right: auto;
+        font-weight: 700;
+        color: #333;
+      }
+
+      /* Enhanced 3D background styles */
+      #threeCanvas {
+        opacity: 1 !important; /* Make sure animation is fully visible */
+      }
+
+      /* Improve floating elements to be more 3D-like */
+      .floating-element {
+        box-shadow: 0 10px 30px rgba(255, 129, 129, 0.3);
+        border-radius: 10px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 129, 129, 0.05));
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        transform-style: preserve-3d;
+        perspective: 1000px;
+        animation: float 10s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0px) translateX(0px) rotateX(0deg) rotateY(0deg);
+        }
+        25% {
+          transform: translateY(-15px) translateX(10px) rotateX(10deg) rotateY(5deg);
+        }
+        50% {
+          transform: translateY(0px) translateX(0px) rotateX(0deg) rotateY(0deg);
+        }
+        75% {
+          transform: translateY(15px) translateX(-10px) rotateX(-10deg) rotateY(-5deg);
+        }
+        100% {
+          transform: translateY(0px) translateX(0px) rotateX(0deg) rotateY(0deg);
+        }
+      }
+
+      /* Fix backdrop-filter compatibility */
+      .modern-navbar, .floating-element {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+      /* Dashboard-style navbar like the image */
+      .dashboard-navbar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 0;
+        position: relative;
+        z-index: 1000;
+      }
+
+      .navbar-container {
+        background-color: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 30px;
+        padding: 12px 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        width: 100%;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .navbar-brand {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: #333;
+        font-size: 1.2rem;
+        padding-right: 20px;
+        border-right: 1px solid rgba(0, 0, 0, 0.1);
+        margin-right: 20px;
+        white-space: nowrap;
+        z-index: 10;
+      }
+
+      .navbar-links {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        flex: 1;
+        margin-right: 20px;
+      }
+
+      .navbar-link {
+        color: #555;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 8px 15px;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .navbar-link.active {
+        color: #FF8181;
+      }
+
+      .navbar-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 3px;
+        background-color: #FF8181;
+        border-radius: 3px;
+      }
+
+      .navbar-link:hover {
+        color: #FF8181;
+      }
+
+      /* Custom cursor styles */
+      .custom-cursor {
+        position: fixed;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: rgba(255, 129, 129, 0.3);
+        border: 2px solid rgba(255, 129, 129, 0.6);
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 9999;
+        transition: width 0.2s, height 0.2s, opacity 0.3s;
+        mix-blend-mode: exclusion;
+      }
+      
+      .cursor-trail {
+        position: fixed;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: rgba(255, 129, 129, 0.2);
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 9998;
+        transition: opacity 0.3s;
+        mix-blend-mode: exclusion;
+      }
+      
+      /* Hide default cursor on interactive elements */
+      a, button, input[type="button"], input[type="submit"] {
+        cursor: none;
+      }
+      
+      /* Hide default cursor on entire page */
+      body {
+        cursor: none;
+      }
+
+      /* Add styling for CTA link in navbar */
+      .navbar-link.cta-link {
+        background: linear-gradient(135deg, #FF8181, #F0B49D);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(255, 129, 129, 0.3);
+        margin-left: 15px;
+        font-weight: 600;
+      }
+
+      .navbar-link.cta-link:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(255, 129, 129, 0.4);
+      }
+
+      .navbar-link.cta-link::after {
+        display: none;
+      }
+
+      /* Fix cross-browser backdrop filter compatibility */
+      .navbar-container {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+      /* Remove custom cursor styles */
+      .custom-cursor, .cursor-trail {
+        display: none;
+      }
+
+      /* Fix navbar positioning */
+      .dashboard-navbar {
+        position: fixed;
+        top: 20px;
+        left: 0;
+        right: 0;
+        width: calc(100% - 14px); /* Leave just 7px on each side */
+        max-width: 1400px;
+        z-index: 1000;
+        margin: 0 auto;
+        padding: 0 7px;
+      }
+
+      /* Improve navbar container styling */
+      .navbar-container {
+        background-color: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 30px;
+        padding: 12px 25px;
+        display: flex;
+        align-items:stretch;
+        justify-content: space-between; /* Better spacing distribution */
+        width: 100%;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Center brand content better */
+      .navbar-brand {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: #333;
+        font-size: 1.2rem;
+        padding-right: 20px;
+        border-right: 1px solid rgba(0, 0, 0, 0.1);
+        margin-right: 20px;
+        z-index: 10;
+      }
+
+      /* Center links section */
+      .navbar-links {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 30px;
+        flex: 1;
+      }
+
+      /* Fix backdrop filters for all relevant elements */
+      footer, .navbar-container, section, .feature-card:hover, .step-card:hover, .testimonial-card:hover, .navbar {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+      /* Restore cursor functionality */
+      body, a, button, input[type="button"], input[type="submit"] {
+        cursor: auto;
+      }
+
+      /* Fix content padding for fixed navbar */
+      .content-wrapper {
+        padding-top: 100px;
+      }
+
+      .hero-section {
+        margin-top: 20px;
+      }
+
+      /* Expand navbar further with just 4px space on sides */
+      .dashboard-navbar {
+        position: fixed;
+        top: 20px;
+        left: 0;
+        right: 0;
+        width: calc(100% - 8px); /* Leave just 4px on each side */
+        max-width: 1600px;
+        z-index: 1000;
+        margin: 0 auto;
+        padding: 0 4px;
+      }
+
+      /* Move Get Started to end of navbar */
+      .navbar-link.cta-link {
+        background: linear-gradient(135deg, #FF8181, #F0B49D);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(255, 129, 129, 0.3);
+        margin-left: auto; /* Push to the end */
+        font-weight: 600;
+      }
+
+      /* Fix navbar links spacing */
+      .navbar-links {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start; /* Align links to start */
+        gap: 30px;
+        flex: 1;
+      }
+
+      /* Fix Safari/Chrome backdrop filter compatibility in one rule */
+      .navbar-container, section, footer, .feature-card:hover, .step-card:hover, .testimonial-card:hover, .navbar {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+      /* Fix navbar brand image */
+      .navbar-brand img {
+        height: 24px;
+        margin-right: 10px;
+      }
+
+      /* Additional styles to ensure no animations */
+      .primary-cta, .secondary-cta {
+        transition: none;
+      }
+
+      .primary-cta:hover, .secondary-cta:hover {
+        transform: none;
+        box-shadow: 0 4px 15px rgba(255, 129, 129, 0.3);
+      }
+
+      /* Enhanced hero title with text shadow but no animation */
+      .hero-title {
+        background: var(--primary-color);
+        color: transparent;
+        -webkit-background-clip: text;
+        background-clip: text;
+        text-shadow: 0 0 20px rgba(107, 96, 84, 0.7),
+                    2px 2px 4px rgba(90, 62, 54, 0.6);
+        -webkit-text-stroke: 1px rgba(107, 96, 84, 0.3);
+      }
+
+      /* Fix backdrop-filter compatibility for all browsers */
+      .navbar, section, footer, .feature-card, .step-card, .testimonial-card {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+      .feature-card:hover, .step-card:hover, .testimonial-card:hover {
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Update Three.js canvas to have backup -->
+    <div class="background-animation">
+      <canvas id="threeCanvas"></canvas>
+      <canvas id="fallbackCanvas"></canvas>
+    </div>
+    
+    <!-- Remove old navbar and go directly to content-wrapper -->
+    <div class="content-wrapper">
+      <!-- New dashboard-style navbar -->
+      <div class="dashboard-navbar">
+        <div class="navbar-container">
+          <a href="#" class="navbar-brand">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+            Career / Conquer
+          </a>
+          <div class="navbar-links">
+            <a href="#features" class="navbar-link" style="display:flex;">Features</a>
+            <a href="#how-it-works" class="navbar-link" style="display:flex;">How It Works</a>
+            <a href="#testimonials" class="navbar-link" style="display:flex;">Testimonials</a>
+            <a href="#contact" class="navbar-link" style="display:flex;">Contact</a>
+          </div>
+          <a href="{{ url_for('signup') }}" class="navbar-link cta-link">Get Started</a>
+        </div>
+      </div>
+      
+      <!-- Hero section -->
+      <section class="hero-section">
+        <!-- Remove floating-element divs -->
+        <div class="hero-content">
+          <h1 class="hero-title">Career / Conquer</h1>
+          <p class="hero-subtitle">AI-powered interview preparation that analyzes your performance in real-time with personalized feedback</p>
+          <div class="cta-buttons">
+            <a href="{{ url_for('signup') }}" class="cta-button primary-cta">Get Started</a>
+            <a href="{{ url_for('login') }}" class="cta-button secondary-cta">Login</a>
+          </div>
+        </div>
+      </section>
+
+<!-- Features Section -->
+<section class="features-section" id="features">
+  <h2 class="section-title">WHY CHOOSE CAREER / CONQUER?</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3 class="feature-title">Resume-Based Questions</h3>
+      <p class="feature-description">Our AI analyzes your resume to generate tailored interview questions specific to your experience and industry.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎯</div>
+      <h3 class="feature-title">Real-Time Feedback</h3>
+      <p class="feature-description">Get in-session tips and immediate feedback during your mock interview, unlike other platforms that only provide post-interview analysis.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">😊</div>
+      <h3 class="feature-title">Emotional Intelligence</h3>
+      <p class="feature-description">Advanced sentiment analysis evaluates your confidence, tone, and body language to help you project the right presence.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔊</div>
+      <h3 class="feature-title">Hybrid Interview Options</h3>
+      <p class="feature-description">Choose between AI-powered practice or connect with real mentors for live feedback in our unique hybrid approach.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📈</div>
+      <h3 class="feature-title">Progress Tracking</h3>
+      <p class="feature-description">Track your improvement with detailed analytics and gamified achievements that keep you motivated throughout your interview preparation journey.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">👨‍💼</div>
+      <h3 class="feature-title">Industry Mentors</h3>
+      <p class="feature-description">Access AI mentors trained on real industry expert data, providing domain-specific guidance for your target role and sector.</p>
+    </div>
+  </div>
+</section>
+    
+    <!--
+    <section class="competitor-section">
+      <h2 class="section-title">HOW WE COMPARE</h2>
+      <div class="competitor-grid">
+        <div class="competitor-card">
+          <h3 class="competitor-name">Interviewer.ai</h3>
+          <p>Resume-based question generation and AI-powered video interviews with automated performance insights.</p>
+          <div class="our-advantage">
+            <p class="advantage-title">Our Advantage</p>
+            <p>We offer more customizable industry-specific questions and provide in-session feedback tips that Interviewer.ai lacks.</p>
+          </div>
+        </div>
+        <div class="competitor-card">
+          <h3 class="competitor-name">HireVue</h3>
+          <p>Enterprise-level AI video interviews with facial analysis and sentiment detection.</p>
+          <div class="our-advantage">
+            <p class="advantage-title">Our Advantage</p>
+            <p>We reframe emotional analytics for learning, not screening, and provide a personalized learning dashboard that HireVue doesn't offer.</p>
+          </div>
+        </div>
+        <div class="competitor-card">
+          <h3 class="competitor-name">Interviewing.io</h3>
+          <p>Real-time anonymous technical interviews with peer-to-peer mock interviews.</p>
+          <div class="our-advantage">
+            <p class="advantage-title">Our Advantage</p>
+            <p>We combine AI-powered sessions with optional live interviews in a unique hybrid approach that spans all industries.</p>
+          </div>
+        </div>
+      </div>
+    </section> -->
+    
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+      <h2 class="section-title">HOW IT WORKS</h2>
+      <div class="steps-container">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h3 class="step-title">Create an Account</h3>
+          <p class="step-description">Sign up and select your industry to personalize your experience.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h3 class="step-title">Upload Your Resume</h3>
+          <p class="step-description">Our NLP technology analyzes your resume to generate tailored questions.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h3 class="step-title">Choose Your Mode</h3>
+          <p class="step-description">Select AI-powered practice or schedule a live session with a mentor.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">4</div>
+          <h3 class="step-title">Get Comprehensive Feedback</h3>
+          <p class="step-description">Receive real-time tips and detailed post-interview analysis with a personalized improvement plan.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">5</div>
+          <h3 class="step-title">Review & Practice</h3>
+          <p class="step-description">Study your strengths and weaknesses, then practice with targeted follow-up sessions to address specific areas for improvement.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">6</div>
+          <h3 class="step-title">Ace Your Interview</h3>
+          <p class="step-description">Track your progress over time with comprehensive analytics and gain the confidence to excel in your actual interview.</p>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+      <h2 class="section-title">SUCCESS STORIES</h2>
+      <div class="testimonial-container">
+        <div class="testimonial-card">
+          <p class="testimonial-text">"After practicing with CAREER / CONQUER for just two weeks, I felt so much more confident in my actual interview. The real-time feedback and resume-based questions were exactly what I needed. I got the job at my dream tech company!"</p>
+          <div class="testimonial-author">
+            <div class="author-info">
+              <p class="author-name">Sarah Johnson</p>
+              <p class="author-position">Software Engineer at Tech Corp</p>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <p class="testimonial-text">"The emotional intelligence assessment was a game-changer for me. Unlike other platforms that just analyze answers, CAREER / CONQUER helped me understand how I was coming across and provided specific tips to improve my presence."</p>
+          <div class="testimonial-author">
+            <div class="author-info">
+              <p class="author-name">Michael Chen</p>
+              <p class="author-position">Marketing Manager at Brand Solutions</p>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <p class="testimonial-text">"I tried several interview platforms before finding CAREER / CONQUER. The hybrid approach of AI practice combined with mentor feedback gave me the best of both worlds. The personalized improvement plan helped me land interviews at three top companies!"</p>
+          <div class="testimonial-author">
+            <div class="author-info">
+              <p class="author-name">Priya Sharma</p>
+              <p class="author-position">Data Scientist at Analytics Inc</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Call to Action Section -->
+    <section class="cta-section" id="cta">
+      <div class="cta-content">
+        <h2 class="cta-title">READY TO ACE YOUR NEXT INTERVIEW?</h2>
+        <p class="cta-description">Join thousands of job seekers who have improved their interview skills with our industry-leading platform</p>
+        <p class="cta-features">✓ Resume-based questions ✓ Real-time feedback ✓ Emotional intelligence analysis ✓ Hybrid interview options</p>
+        <div class="cta-buttons">
+          <a href="{{ url_for('signup') }}" class="cta-button primary-cta">Get Started Now</a>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-logo">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="CAREER CONQUER Logo">
+          <h3>CAREER / CONQUER</h3>
+        </div>
+        <div class="footer-links">
+          <a href="#">About Us</a>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact</a>
+        </div>
+      </div>
+      <p class="footer-copyright">© 2025 CAREER CONQUER. All rights reserved.</p>
+    </footer>
+
+    </div> <!-- End of content-wrapper -->
+
+    <!-- Add robot animations for scrolling effect -->
+    <div class="robot-animation-container">
+      <div class="floating-robot robot-1">
+        <div class="robot-head">
+          <div class="robot-eye left"></div>
+          <div class="robot-eye right"></div>
+          <div class="robot-antenna">
+            <div class="antenna-tip"></div>
+          </div>
+        </div>
+        <div class="robot-body">
+          <div class="robot-core"></div>
+        </div>
+      </div>
+      
+      <div class="floating-robot robot-2">
+        <div class="robot-head">
+          <div class="robot-eye left"></div>
+          <div class="robot-eye right"></div>
+          <div class="robot-antenna">
+            <div class="antenna-tip"></div>
+          </div>
+        </div>
+        <div class="robot-body">
+          <div class="robot-core"></div>
+          <div class="robot-arm left"></div>
+          <div class="robot-arm right"></div>
+        </div>
+      </div>
+      
+      <div class="circuit-lines">
+        <div class="circuit-line line-1"></div>
+        <div class="circuit-line line-2"></div>
+        <div class="circuit-line line-3"></div>
+        <div class="circuit-node node-1"></div>
+        <div class="circuit-node node-2"></div>
+        <div class="circuit-node node-3"></div>
+      </div>
+      
+      <div class="energy-pulse"></div>
+    </div>
+
+    <script>
+      // Enhanced script - removed theme toggle functionality
+      document.addEventListener('DOMContentLoaded', function() {
+        // Set to light mode permanently
+        document.documentElement.setAttribute('data-theme', 'light');
+        
+        // Fix navigation links
+        document.querySelectorAll('.nav-link').forEach(link => {
+          const href = link.getAttribute('href');
+          if (href && href.startsWith('#')) {
+            link.addEventListener('click', function(e) {
+              e.preventDefault();
+              const targetId = this.getAttribute('href');
+              const targetElement = document.querySelector(targetId);
+              if (targetElement) {
+                window.scrollTo({
+                  top: targetElement.offsetTop - 80,
+                  behavior: 'smooth'
+                });
+              }
+            });
+          }
+        });
+        
+        // Ensure "Get Started" and other CTA buttons work
+        document.querySelectorAll('.primary-cta, .secondary-cta').forEach(button => {
+          button.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            if (href && !href.startsWith('#')) {
+              window.location.href = href;
+            }
+          });
+        });
+        
+        // Robot animation code remains the same
+        // ... existing robot animation code ...
+      });
+    </script>
+
+    <!-- Replace the backgroundCanvas script with a more visible animation -->
+    <script>
+    // Enhanced background animation that works reliably
+    document.addEventListener('DOMContentLoaded', function() {
+      // Try to initialize Three.js first, if it fails, use the fallback
+      setTimeout(function() {
+        const threeCanvas = document.getElementById('threeCanvas');
+        // If Three.js canvas is empty, show the fallback
+        if (!threeCanvas || threeCanvas.width === 0) {
+          initFallbackAnimation();
+        }
+      }, 1000);
+      
+      function initFallbackAnimation() {
+        const canvas = document.getElementById('fallbackCanvas');
+        if (!canvas) return;
+        
+        canvas.style.display = 'block';
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size
+        function resizeCanvas() {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        }
+        
+        resizeCanvas();
+        
+        // Create particles and floating shapes
+        const particles = [];
+        const shapes = [];
+        const particleCount = 100;
+        const shapeCount = 15;
+        
+        // Coral theme colors
+        const colors = ['#FF8181', '#F0B49D', '#F1DABB', '#F0B7B4', '#FF8B86'];
+        
+        // Create particles
+        for (let i = 0; i < particleCount; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: Math.random() * 4 + 1,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            speed: Math.random() * 0.8 + 0.2,
+            angle: Math.random() * Math.PI * 2,
+            opacity: Math.random() * 0.5 + 0.3
+          });
+        }
+        
+        // Create floating shapes
+        for (let i = 0; i < shapeCount; i++) {
+          const size = Math.random() * 80 + 40;
+          shapes.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            width: size,
+            height: size,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            speed: Math.random() * 0.3 + 0.1,
+            angle: Math.random() * Math.PI * 2,
+            rotation: 0,
+            rotationSpeed: (Math.random() - 0.5) * 0.01,
+            opacity: Math.random() * 0.2 + 0.05
+          });
+        }
+        
+        // Animation loop
+        function animate() {
+          // Clear canvas with a very light background
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // Draw and update floating shapes
+          shapes.forEach(shape => {
+            ctx.save();
+            ctx.translate(shape.x, shape.y);
+            ctx.rotate(shape.rotation);
+            ctx.globalAlpha = shape.opacity;
+            ctx.fillStyle = shape.color;
+            ctx.fillRect(-shape.width/2, -shape.height/2, shape.width, shape.height);
+            ctx.restore();
+            
+            // Move shape
+            shape.x += Math.cos(shape.angle) * shape.speed;
+            shape.y += Math.sin(shape.angle) * shape.speed;
+            shape.rotation += shape.rotationSpeed;
+            
+            // Bounce off edges with new angle
+            if (shape.x < -shape.width || shape.x > canvas.width + shape.width) {
+              shape.angle = Math.PI - shape.angle;
+            }
+            if (shape.y < -shape.height || shape.y > canvas.height + shape.height) {
+              shape.angle = -shape.angle;
+            }
+          });
+          
+          // Draw and update particles
+          particles.forEach(p => {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.opacity;
+            ctx.fill();
+            
+            // Move particle
+            p.x += Math.cos(p.angle) * p.speed;
+            p.y += Math.sin(p.angle) * p.speed;
+            
+            // Wrap around screen
+            if (p.x < -p.radius) p.x = canvas.width + p.radius;
+            if (p.x > canvas.width + p.radius) p.x = -p.radius;
+            if (p.y < -p.radius) p.y = canvas.height + p.radius;
+            if (p.y > canvas.height + p.radius) p.y = -p.radius;
+          });
+          
+          // Draw subtle connecting lines between nearby particles
+          ctx.strokeStyle = '#FF8181';
+          ctx.lineWidth = 0.5;
+          for(let i = 0; i < particles.length; i++) {
+            for(let j = i + 1; j < particles.length; j++) {
+              const dx = particles[i].x - particles[j].x;
+              const dy = particles[i].y - particles[j].y;
+              const distance = Math.sqrt(dx * dx + dy * dy);
+              
+              if(distance < 150) {
+                ctx.globalAlpha = 0.15 * (1 - distance/150);
+                ctx.beginPath();
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.stroke();
+              }
+            }
+          }
+          
+          // Reset alpha
+          ctx.globalAlpha = 1;
+          
+          requestAnimationFrame(animate);
+        }
+        
+        // Start animation
+        animate();
+        
+        // Handle resize
+        window.addEventListener('resize', resizeCanvas);
+      }
+    });
+    </script>
+
+    <script>
+      // Robot animation code
+      const robots = document.querySelectorAll('.floating-robot');
+      const energyPulse = document.querySelector('.energy-pulse');
+      let lastScrollY = window.scrollY;
+      let scrollDirection = 'down';
+      let scrollSpeed = 0;
+      let lastScrollTime = Date.now();
+      let isScrolling = false;
+      
+      // Check if robots should be visible based on scroll position
+      function checkRobotVisibility() {
+        if (!robots.length) return;
+        
+        robots.forEach((robot, index) => {
+          // Make robots visible after scrolling down a bit
+          if (window.scrollY > window.innerHeight * 0.2) {
+            robot.classList.add('visible');
+          } else {
+            robot.classList.remove('visible');
+          }
+          
+          // Position adjustment based on scroll progress
+          const scrollProgress = Math.min(window.scrollY / (document.body.scrollHeight - window.innerHeight), 1);
+          const xPosition = index === 0 
+            ? -80 + scrollProgress * 300 // First robot moves right
+            : -100 - scrollProgress * 300; // Second robot moves left
+          
+          robot.style.transform = `translateX(${xPosition}px)`;
+        });
+      }
+      
+      // Create energy pulse effect on fast scrolls
+      function createEnergyPulse() {
+        if (!energyPulse) return;
+        
+        const now = Date.now();
+        const timeDelta = now - lastScrollTime;
+        
+        // Calculate scroll speed
+        if (timeDelta > 0) {
+          const scrollDelta = Math.abs(window.scrollY - lastScrollY);
+          scrollSpeed = scrollDelta / timeDelta * 100;
+          
+          // Trigger pulse on fast scrolls
+          if (scrollSpeed > 15 && !isScrolling) {
+            isScrolling = true;
+            energyPulse.classList.add('active');
+            
+            // Remove active class when animation completes
+            setTimeout(() => {
+              energyPulse.classList.remove('active');
+            }, 2000);
+            
+            // Set timeout to prevent too many pulses
+            setTimeout(() => {
+              isScrolling = false;
+            }, 1000);
+          }
+        }
+        
+        // Determine scroll direction
+        scrollDirection = window.scrollY > lastScrollY ? 'down' : 'up';
+        lastScrollY = window.scrollY;
+        lastScrollTime = now;
+      }
+      
+      // Handle scroll event
+      window.addEventListener('scroll', () => {
+        checkRobotVisibility();
+        createEnergyPulse();
+        
+        // Update robot arm movements based on scroll direction
+        if (robots.length) {
+          robots.forEach(robot => {
+            const arms = robot.querySelectorAll('.robot-arm');
+            if (arms.length) {
+              const rotationDeg = scrollDirection === 'down' ? 45 : -45;
+              arms[0].style.transform = `rotate(${rotationDeg}deg)`;
+              arms[1].style.transform = `rotate(${-rotationDeg}deg)`;
+            }
+          });
+        }
+      });
+      
+      // Initial check
+      checkRobotVisibility();
+    </script>
+
+    <!-- Remove the cursor interaction helper script completely -->
+    <script>
+      // Simplified script without cursor code
+      document.addEventListener('DOMContentLoaded', function() {
+        // Empty function - cursor code removed
+      });
+    </script>
+  </body>
+</html>

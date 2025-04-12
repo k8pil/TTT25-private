@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - RESUME WAR</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='logo.png') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='modern.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Three.js for background animation -->
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.150.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.150.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
+    <style>
+      /* Canvas for background animation */
+      #backgroundCanvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.7;
+      }
+
+      /* Main layout styling */
+      main {
+        display: flex;
+        height: 100vh;
+      }
+
+      .left-panel {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .right-panel {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(240, 163, 147, 0.05);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+      }
+
+      /* Form styling */
+      .form-box {
+        width: 100%;
+        max-width: 400px;
+        padding: 30px;
+        border-radius: 16px;
+        background-color: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+      }
+
+      [data-theme="dark"] .form-box {
+        background-color: rgba(50, 40, 38, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .form-box h2 {
+        margin-bottom: 20px;
+        text-align: center;
+        color: var(--accent-color);
+        font-size: 2rem;
+      }
+
+      .form-box input {
+        width: 100%;
+        padding: 12px 15px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        border: 1px solid rgba(240, 163, 147, 0.3);
+        background-color: rgba(255, 255, 255, 0.8);
+        transition: all 0.3s ease;
+      }
+
+      [data-theme="dark"] .form-box input {
+        background-color: rgba(65, 50, 44, 0.3);
+        border: 1px solid rgba(240, 163, 147, 0.2);
+        color: rgba(241, 218, 187, 0.95);
+      }
+
+      .form-box input:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 10px rgba(240, 163, 147, 0.2);
+      }
+
+      .form-box button {
+        width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+        background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .form-box button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(240, 163, 147, 0.3);
+      }
+
+      .form-box p {
+        margin-top: 20px;
+        text-align: center;
+        color: var(--text-secondary);
+      }
+
+      .form-box a {
+        color: var(--accent-color);
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .form-box a:hover {
+        text-decoration: underline;
+      }
+
+      /* Alert styling */
+      .alert {
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+      }
+
+      .alert.success {
+        background-color: rgba(72, 187, 120, 0.2);
+        color: #2f855a;
+        border: 1px solid rgba(72, 187, 120, 0.3);
+      }
+
+      .alert.error {
+        background-color: rgba(245, 101, 101, 0.2);
+        color: #c53030;
+        border: 1px solid rgba(245, 101, 101, 0.3);
+      }
+
+      /* Navbar navigation */
+      .nav-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        z-index: 100;
+        border-bottom: 1px solid rgba(240, 163, 147, 0.2);
+      }
+
+      [data-theme="dark"] .nav-header {
+        background: rgba(50, 40, 38, 0.8);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+      }
+
+      .brand img {
+        height: 30px;
+        margin-right: 10px;
+      }
+
+      .brand-text {
+        font-weight: 700;
+        font-size: 1.2rem;
+        background: linear-gradient(45deg, var(--accent-color), var(--accent-hover));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        main {
+          flex-direction: column;
+        }
+        
+        .left-panel, .right-panel {
+          flex: none;
+          width: 100%;
+        }
+        
+        .right-panel {
+          display: none;
+        }
+        
+        .form-box {
+          max-width: 100%;
+          box-shadow: none;
+          border-radius: 0;
+          border: none;
+        }
+      }
+
+      /* Fix body spacing */
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow-x: hidden;
+        padding-bottom: 0 !important;
+      }
+
+      /* Adjust content wrapper */
+      .content-wrapper {
+        flex: 1;
+        padding-bottom: 0;
+        margin-bottom: 0;
+      }
+
+      /* Fix footer positioning */
+      footer {
+        margin-bottom: 0;
+        padding-bottom: 20px;
+        border-radius: 24px 24px 0 0;
+      }
+
+      /* Ensure robot animations don't add extra space */
+      .robot-animation-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        pointer-events: none;
+        z-index: 50;
+      }
+
+      /* Remove any margin from last section */
+      .cta-section {
+        margin-bottom: 0;
+      }
+
+      /* Remove margin from footer's last child */
+      footer *:last-child {
+        margin-bottom: 0;
+      }
+
+      /* Add CSS variables for the earth-tone color palette */
+      :root {
+        --primary-color: #6B6054; /* Walnut brown */
+        --secondary-color: #A1B0AB; /* Ash gray */
+        --accent-color: #C3DAC3; /* Tea green */
+        --light-color: #D5ECD4; /* Nyanza */
+        --dark-color: #333333;
+        --text-color: #444444;
+        --border-color: rgba(107, 96, 84, 0.3);
+        --shadow-color: rgba(107, 96, 84, 0.2);
+      }
+
+      body {
+        background-color: var(--light-color);
+        color: var(--text-color);
+      }
+
+      .signup-container {
+        background-color: white;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 10px 25px var(--shadow-color);
+      }
+
+      .signup-header {
+        color: var(--primary-color);
+      }
+
+      .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+      }
+      
+      .btn-primary:hover {
+        background-color: #7d7266; /* Darker walnut */
+        border-color: #7d7266;
+      }
+
+      .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(107, 96, 84, 0.25);
+      }
+
+      a {
+        color: var(--primary-color);
+      }
+
+      a:hover {
+        color: #7d7266; /* Darker walnut */
+      }
+
+      .signup-footer {
+        color: var(--text-color);
+      }
+      
+      .form-hint {
+        color: var(--text-color);
+      }
+      
+      .password-requirements {
+        color: var(--text-color);
+        border-left: 3px solid var(--accent-color);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <header class="nav-header">
+      <a href="{{ url_for('login') }}" class="brand">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+        <span class="brand-text">Resume War</span>
+      </a>
+      <button class="theme-toggle" aria-label="Toggle dark/light mode">
+        <!-- Icon will be inserted by JavaScript -->
+      </button>
+    </header>
+    
+    <!-- Background Canvas -->
+    <canvas id="backgroundCanvas"></canvas>
+    
+    <main>
+      <div class="left-panel">
+        <div class="form-box">
+          <h2>Sign Up</h2>
+          <form
+            method="POST"
+            action="{{ url_for('signup') }}"
+            enctype="multipart/form-data"
+          >
+            <input type="email" name="email" placeholder="Email" required />
+            <input
+              type="text"
+              name="username"
+              placeholder="Username"
+              required
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              required
+            />
+            <button type="submit">Sign Up</button>
+          </form>
+          <p>
+            Already have an account?
+            <a href="{{ url_for('login') }}">Login</a>
+          </p>
+        </div>
+      </div>
+      <div class="right-panel">
+        <!-- FILLER -->
+      </div>
+    </main>
+
+    <script type="module">
+      import * as THREE from 'three';
+
+      // Setup
+      const canvas = document.getElementById('backgroundCanvas');
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      
+      // Background color based on theme
+      function updateBackgroundColor() {
+        const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+        scene.background = new THREE.Color(isDarkMode ? 0x2D2522 : 0xEFD8C0);
+        scene.fog = new THREE.FogExp2(isDarkMode ? 0x2D2522 : 0xEFD8C0, 0.001);
+      }
+      
+      updateBackgroundColor();
+      
+      // Watch for theme changes
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.attributeName === 'data-theme') {
+            updateBackgroundColor();
+          }
+        });
+      });
+      
+      observer.observe(document.documentElement, { attributes: true });
+      
+      // Colors
+      const COLORS = {
+        primary: 0xF0A393,    // Softer pink
+        secondary: 0xE8B4A2,  // Muted coral
+        accent: 0xE8BFB9,     // Softer rose gold
+        highlight: 0xF0A89E,  // Muted coral
+      };
+      
+      // Create particles
+      const particlesCount = 200;
+      const particles = new THREE.Group();
+      
+      for (let i = 0; i < particlesCount; i++) {
+        const geometry = new THREE.SphereGeometry(Math.random() * 0.5 + 0.1, 12, 12);
+        const material = new THREE.MeshBasicMaterial({
+          color: [COLORS.primary, COLORS.secondary, COLORS.accent, COLORS.highlight][Math.floor(Math.random() * 4)],
+          transparent: true,
+          opacity: Math.random() * 0.5 + 0.3
+        });
+        
+        const particle = new THREE.Mesh(geometry, material);
+        
+        particle.position.x = Math.random() * 100 - 50;
+        particle.position.y = Math.random() * 100 - 50;
+        particle.position.z = Math.random() * 100 - 50;
+        
+        particle.rotation.x = Math.random() * Math.PI;
+        particle.rotation.y = Math.random() * Math.PI;
+        
+        // Animation data
+        particle.userData = {
+          speed: Math.random() * 0.01 + 0.003,
+          rotationSpeed: Math.random() * 0.01 + 0.002,
+          direction: new THREE.Vector3(
+            Math.random() * 2 - 1,
+            Math.random() * 2 - 1,
+            Math.random() * 2 - 1
+          ).normalize()
+        };
+        
+        particles.add(particle);
+      }
+      
+      scene.add(particles);
+      
+      // Create connecting lines
+      const linesCount = 40;
+      const lines = new THREE.Group();
+      
+      for (let i = 0; i < linesCount; i++) {
+        const startIdx = Math.floor(Math.random() * particlesCount);
+        const endIdx = Math.floor(Math.random() * particlesCount);
+        
+        if (startIdx !== endIdx) {
+          const start = particles.children[startIdx].position;
+          const end = particles.children[endIdx].position;
+          
+          const points = [];
+          points.push(new THREE.Vector3(start.x, start.y, start.z));
+          points.push(new THREE.Vector3(end.x, end.y, end.z));
+          
+          const geometry = new THREE.BufferGeometry().setFromPoints(points);
+          const material = new THREE.LineBasicMaterial({ 
+            color: COLORS.highlight,
+            transparent: true,
+            opacity: 0.2
+          });
+          
+          const line = new THREE.Line(geometry, material);
+          lines.add(line);
+        }
+      }
+      
+      scene.add(lines);
+      
+      // Camera position
+      camera.position.z = 50;
+      
+      // Mouse movement effect
+      let mouseX = 0;
+      let mouseY = 0;
+      let targetX = 0;
+      let targetY = 0;
+      
+      document.addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX - window.innerWidth / 2) * 0.005;
+        mouseY = (e.clientY - window.innerHeight / 2) * 0.005;
+      });
+      
+      // Handle window resize
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+      
+      // Animation loop
+      function animate() {
+        requestAnimationFrame(animate);
+        
+        // Smooth camera movement
+        targetX = mouseX * 0.5;
+        targetY = mouseY * 0.5;
+        
+        camera.position.x += (targetX - camera.position.x) * 0.1;
+        camera.position.y += (targetY - camera.position.y) * 0.1;
+        camera.lookAt(scene.position);
+        
+        // Rotate particles
+        particles.children.forEach(particle => {
+          particle.rotation.x += particle.userData.rotationSpeed;
+          particle.rotation.y += particle.userData.rotationSpeed / 2;
+          
+          // Move particles
+          const dir = particle.userData.direction;
+          particle.position.x += dir.x * particle.userData.speed;
+          particle.position.y += dir.y * particle.userData.speed;
+          particle.position.z += dir.z * particle.userData.speed;
+          
+          // Check boundaries
+          if (Math.abs(particle.position.x) > 60) {
+            particle.userData.direction.x *= -1;
+          }
+          if (Math.abs(particle.position.y) > 60) {
+            particle.userData.direction.y *= -1;
+          }
+          if (Math.abs(particle.position.z) > 60) {
+            particle.userData.direction.z *= -1;
+          }
+        });
+        
+        // Update lines
+        lines.children.forEach((line, idx) => {
+          const startIdx = idx % particles.children.length;
+          const endIdx = (startIdx + 5) % particles.children.length;
+          
+          const start = particles.children[startIdx].position;
+          const end = particles.children[endIdx].position;
+          
+          const positions = line.geometry.attributes.position.array;
+          
+          positions[0] = start.x;
+          positions[1] = start.y;
+          positions[2] = start.z;
+          positions[3] = end.x;
+          positions[4] = end.y;
+          positions[5] = end.z;
+          
+          line.geometry.attributes.position.needsUpdate = true;
+        });
+        
+        renderer.render(scene, camera);
+      }
+      
+      animate();
+    </script>
+  </body>
+</html>
