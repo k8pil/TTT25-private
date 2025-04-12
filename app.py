@@ -55,7 +55,8 @@ def dashboard():
     if 'user_id' not in session:
         flash('Please log in.', 'error')
         return redirect(url_for('home'))
-    return render_template('dashboard.html')
+    user = User.query.get(session['user_id'])
+    return render_template('dashboard.html', user=user)
 
 
 @app.route('/profile')

@@ -19,7 +19,139 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link 
+      rel="stylesheet" 
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
     <script src="{{ url_for('static', filename='theme.js') }}"></script>
+    <style>
+      .card {
+        background-color: var(--bg-accent);
+        border-radius: 12px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        padding: 25px;
+        margin: 15px;
+        transition: all 0.3s ease;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+      }
+      
+      .card-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: var(--primary-color);
+      }
+      
+      .card-description {
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        max-width: 90%;
+      }
+      
+      .card-btn {
+        background-color: rgb(20, 241, 149);
+        color: #1a1a1a;
+        border: none;
+        border-radius: 30px;
+        padding: 12px 30px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 6px 15px rgba(20, 241, 149, 0.3);
+        margin-top: 20px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .card-btn:hover {
+        background-color: rgb(16, 218, 134);
+        box-shadow: 0 8px 20px rgba(20, 241, 149, 0.5);
+        transform: translateY(-3px);
+      }
+      
+      .card-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 10px rgba(20, 241, 149, 0.3);
+      }
+      
+      .card-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: 0.5s;
+      }
+      
+      .card-btn:hover::before {
+        left: 100%;
+      }
+      
+      .wrapper {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+      }
+      
+      @media (max-width: 768px) {
+        .wrapper {
+          flex-direction: column;
+        }
+      }
+      
+      .left, .right {
+        flex: 1;
+      }
+      
+      .card-icon {
+        font-size: 48px;
+        color: rgb(20, 241, 149);
+        margin-bottom: 20px;
+        background-color: rgba(20, 241, 149, 0.1);
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(20, 241, 149, 0.2);
+      }
+      
+      .card:hover .card-icon {
+        transform: scale(1.1);
+        background-color: rgba(20, 241, 149, 0.2);
+        box-shadow: 0 8px 25px rgba(20, 241, 149, 0.3);
+      }
+      
+      .welcome {
+        text-align: left;
+        margin-bottom: 30px;
+        margin-left: 15px;
+      }
+    </style>
   </head>
   <body>
     <!-- Theme Toggle Button -->
@@ -44,7 +176,39 @@
     
     <div class="dashboard-container">
       <div class="content">
-        <!-- FILLER -->
+        <div class="welcome">
+          <h2>Welcome, {{ user.username }}!</h2>
+        </div>
+        <div class="wrapper">
+          <div class="left">
+            <div class="card">
+              <div class="card-icon">
+                <i class="fas fa-road"></i>
+              </div>
+              <div class="card-title">Career Path Guidance</div>
+              <div class="card-description" style="margin-bottom: 0px;">
+                Upload your resume and get comprehensive career path recommendations, skill assessments, resume tips, and networking opportunities tailored to your profile.
+              </div>
+              <button class="card-btn">
+                <i class="fas fa-upload me-2" style="margin-right: 8px;"></i>Upload Resume
+              </button>
+            </div>
+          </div>
+          <div class="right">
+            <div class="card">
+              <div class="card-icon">
+                <i class="fas fa-user-tie"></i>
+              </div>
+              <div class="card-title">Interview Preparation</div>
+              <div class="card-description" style="margin-bottom: 0px;">
+                Practice with a simulated interview tailored to your resume. Get personalized questions, feedback on your responses, and recommendations for improvement.
+              </div>
+              <button class="card-btn">
+                <i class="fas fa-play-circle me-2" style="margin-right: 8px;"></i>Start Interview
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </body>
