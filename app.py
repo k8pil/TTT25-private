@@ -5,6 +5,9 @@ from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from datetime import datetime, UTC
 import os
+import functions
+import sys
+
 
 
 load_dotenv()
@@ -131,6 +134,70 @@ def start_guidance():
     if not resume_path:
         flash('Please upload a resume first.', 'error')
         return redirect(url_for('dashboard'))
+    
+    default_resume_path = resume_path
+    resume_text = ""
+    analysis = {}
+    career_paths = [
+            {
+                "title": "Data Scientist",
+                "description": "Use data to solve complex problems and provide insights.",
+                "skills_needed": ["Python", "R", "Statistics", "Machine Learning", "Data Visualization"],
+                "growth_potential": "High",
+                "salary_range": "$90,000 - $150,000"
+            },
+            {
+                "title": "Software Engineer",
+                "description": "Design and build applications and systems.",
+                "skills_needed": ["Programming", "Algorithms", "System Design", "Testing", "Debugging"],
+                "growth_potential": "High",
+                "salary_range": "$80,000 - $140,000"
+            },
+            {
+                "title": "UX/UI Designer",
+                "description": "Create intuitive and appealing user interfaces.",
+                "skills_needed": ["UI Design", "User Research", "Prototyping", "Visual Design", "HTML/CSS"],
+                "growth_potential": "Medium",
+                "salary_range": "$70,000 - $120,000"
+            },
+            {
+                "title": "Product Manager",
+                "description": "Lead product development from conception to launch.",
+                "skills_needed": ["Product Strategy", "User Stories", "Market Analysis", "Communication", "Leadership"],
+                "growth_potential": "High",
+                "salary_range": "$90,000 - $160,000"
+            },
+            {
+                "title": "DevOps Engineer",
+                "description": "Build and maintain infrastructure and deployment pipelines.",
+                "skills_needed": ["Linux", "Cloud Platforms", "CI/CD", "Automation", "Docker/Kubernetes"],
+                "growth_potential": "Very High",
+                "salary_range": "$85,000 - $145,000"
+            }
+        ]
+    skill_keywords = [
+            "python", "java", "javascript", "c++", "c#", "php", "ruby", "swift", "kotlin", "golang",
+            "html", "css", "sql", "nosql", "mongodb", "mysql", "postgresql", "react", "angular", "vue",
+            "node.js", "express", "django", "flask", "spring", "machine learning", "ai", "data science",
+            "data analysis", "tensorflow", "pytorch", "scikit-learn", "pandas", "numpy", "tableau",
+            "power bi", "aws", "azure", "gcp", "docker", "kubernetes", "jenkins", "git", "jira",
+            "agile", "scrum", "project management", "product management", "ux", "ui", "figma",
+            "sketch", "adobe xd", "photoshop", "illustrator", "leadership", "communication",
+            "problem solving", "critical thinking", "teamwork", "customer service", "marketing",
+            "sales", "finance", "accounting", "human resources", "operations", "devops", "cloud"
+        ]
+
+    functions.initialize(default_resume_path, resume_text, analysis, career_paths, skill_keywords)
+    functions.run()
+
+    print("Vars:")
+    print(default_resume_path)
+    print(resume_text)
+    print(analysis)
+    print(career_paths)
+    print(skill_keywords)
+
+
     
     return render_template('guidance.html', user_resume=user_resume)
 
