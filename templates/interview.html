@@ -200,7 +200,7 @@
         justify-content: space-between;
         width: 100%;
         gap: 20px;
-        margin: 20px 0;
+        margin: 20px 0 0 0;
       }
       
       /* Chat interface */
@@ -331,7 +331,6 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        margin-top: 20px;
       }
       
       .button-group {
@@ -438,7 +437,6 @@
         }
         
         .control-buttons {
-          display: none !important;
           flex-direction: column;
         }
       }
@@ -518,18 +516,9 @@
               <video id="webcam" autoplay playsinline style="display: none;"></video>
               <img id="video-output" src="" alt="Webcam feed with analysis">
             </div>
-            <div class="prediction-container">
-              <div>Class: <span id="prediction" class="prediction">-</span></div>
-              <div>Probability: <span id="probability" class="probability">-</span></div>
-          </div>
+            
+
           
-          <div class="status">Status: <span id="status">Initializing...</span></div>
-          <div id="loading" class="loading">Processing...</div>
-          
-          <div class="controls">
-              <button id="start-btn">Start Webcam</button>
-              <button id="stop-btn" disabled>Stop</button>
-          </div>
             
             <div class="chat-container">
               <div class="messages-container" id="messages">
@@ -544,21 +533,16 @@
                 </button>
               </div>
             </div>
+            
           </div>
-          
-          <!-- <div class="control-buttons">
+          <div class="control-buttons">
             <div class="button-group">
-              <button class="card-btn" id="startBtn">
+              <button class="card-btn" id="start-btn">
                 <i class="fas fa-play" style="margin-right: 10px;"></i>
                 Start Interview
               </button>
               
-              <button class="card-btn" id="pauseBtn" disabled>
-                <i class="fas fa-pause" style="margin-right: 10px;"></i>
-                Pause
-              </button>
-              
-              <button class="card-btn red" id="stopBtn" disabled>
+              <button class="card-btn red" id="stop-btn" disabled>
                 <i class="fas fa-stop" style="margin-right: 10px;"></i>
                 End Interview
               </button>
@@ -573,8 +557,17 @@
                 <i class="fas fa-camera"></i>
               </button>
             </div>
-          </div> -->
+          </div>
+          
+          
         </div>
+        <div class="prediction-container">
+          <div>Class: <span id="prediction" class="prediction">-</span></div>
+          <div>Probability: <span id="probability" class="probability">-</span></div>
+      </div>
+      
+      <div class="status">Status: <span id="status">Initializing...</span></div>
+      <div id="loading" class="loading">Processing...</div>
       </div>
     </div>
 
