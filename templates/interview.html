@@ -661,15 +661,18 @@
           
           
         </div>
-        <div class="prediction-container">
-          <div>Class: <span id="prediction" class="prediction">-</span></div>
-          <div>Probability: <span id="probability" class="probability">-</span></div>
-      </div>
-      
-      <div class="status" style="display: flex; flex-direction: row; justify-content: flex-start;">
-        <div>Status: <span id="status">Initializing...</span></div>
-        <div id="loading" class="loading">Processing...</div>
-      </div>
+        <div class="prediction-container" style="display: flex; justify-content: space-between; align-items: flex-start; padding: 15px;">
+          <div style="flex: 1;">
+            <div>Class: <span id="prediction" class="prediction">-</span></div>
+            <div>Probability: <span id="probability" class="probability">-</span></div>
+          </div>
+          <div id="metrics-container" style="color: white; font-family: Arial, sans-serif; text-align: left; background-color: rgba(0, 0, 0, 0.5); padding: 12px; border-radius: 5px; width: 300px;"></div>
+        </div>
+        
+        <div class="status" style="display: flex; flex-direction: row; justify-content: flex-start;">
+          <div>Status: <span id="status">Initializing...</span></div>
+          <div id="loading" class="loading">Processing...</div>
+        </div>
 
       </div>
     </div>
@@ -707,13 +710,56 @@
       let stream = null;
       let frameCounter = 0;
       
-      // Setup canvas for frame capture
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = 640;
-      canvas.height = 480;
+      // Video analysis metrics
+      let videoMetrics = {
+        handDetectionDuration: 0,
+        lossEyeContactCount: 0,
+        lookingAwayDuration: 0,
+        badPostureCount: 0,
+        badPostureDuration: 0
+      };
       
-      // Start webcam
+      // Function to update metrics display
+      function updateMetricsDisplay() {
+        const metricsContainer = document.getElementById('metrics-container');
+        metricsContainer.innerHTML = `
+          <div style="font-weight: bold; margin-bottom: 8px; color: rgb(20, 241, 149);">Interview Metrics:</div>
+          <div style="margin: 5px 0;"><span style="font-weight: bold;">Hand Duration:</span> ${videoMetrics.handDetectionDuration.toFixed(1)}s</div>
+          <div style="margin: 5px 0;"><span style="font-weight: bold;">Eye Contact Loss:</span> ${videoMetrics.lossEyeContactCount}</div>
+          <div style="margin: 5px 0;"><span style="font-weight: bold;">Looking Away:</span> ${videoMetrics.lookingAwayDuration.toFixed(1)}s</div>
+          <div style="margin: 5px 0;"><span style="font-weight: bold;">Bad Posture Count:</span> ${videoMetrics.badPostureCount}</div>
+          <div style="margin: 5px 0;"><span style="font-weight: bold;">Bad Posture Duration:</span> ${videoMetrics.badPostureDuration.toFixed(1)}s</div>
+        `;
+      }
+      
+      // Function to fetch current metrics
+      async function fetchVideoMetrics() {
+        if (!isRunning) return;
+        
+        try {
+          const response = await fetch('/video_metrics');
+          const data = await response.json();
+          
+          if (data.success) {
+            videoMetrics = {
+              handDetectionDuration: data.metrics.handDetectionDuration || 0,
+              lossEyeContactCount: data.metrics.lossEyeContactCount || 0,
+              lookingAwayDuration: data.metrics.lookingAwayDuration || 0,
+              badPostureCount: data.metrics.badPostureCount || 0,
+              badPostureDuration: data.metrics.badPostureDuration || 0
+            };
+            
+            updateMetricsDisplay();
+          }
+        } catch (error) {
+          console.error('Error fetching video metrics:', error);
+        }
+      }
+      
+      // Start metrics polling
+      let metricsInterval = null;
+      
+      // Extend startWebcam function to include metrics polling
       async function startWebcam() {
           try {
               stream = await navigator.mediaDevices.getUserMedia({
@@ -741,13 +787,19 @@
               
               // Get initial stats
               getEmotionStats();
+              
+              // Start video analysis in background
+              fetch('/start_video_analysis');
+              
+              // Start polling for metrics every 0.5 seconds
+              metricsInterval = setInterval(fetchVideoMetrics, 500);
           } catch (error) {
               console.error('Error accessing webcam:', error);
               alert('Could not access webcam. Please check permissions.');
           }
       }
       
-      // Stop webcam
+      // Extend stopWebcam function to stop metrics polling
       function stopWebcam() {
           if (stream) {
               stream.getTracks().forEach(track => track.stop());
@@ -762,7 +814,22 @@
           currentEmotionEl.textContent = '-';
           confidenceEl.textContent = '-';
           videoOutput.src = '';
+          
+          // Stop metrics polling
+          if (metricsInterval) {
+              clearInterval(metricsInterval);
+              metricsInterval = null;
+          }
+          
+          // End video analysis
+          fetch('/end_video_analysis');
       }
+      
+      // Setup canvas for frame capture
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = 640;
+      canvas.height = 480;
       
       // Process a single frame and send to server
       async function processFrame() {

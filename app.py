@@ -13,6 +13,7 @@ from tensorflow.keras.models import load_model
 import numpy as np
 import cv2
 import base64
+from video_analysis import InterviewMetricsTracker
 #from body_language_decoder import BodyLanguageDecoder
 
 load_dotenv()
@@ -187,42 +188,147 @@ def start_guidance():
     resume_text = ""
     analysis = {}
     career_paths = [
-            {
-                "title": "Data Scientist",
-                "description": "Use data to solve complex problems and provide insights.",
-                "skills_needed": ["Python", "R", "Statistics", "Machine Learning", "Data Visualization"],
-                "growth_potential": "High",
-                "salary_range": "$90,000 - $150,000"
-            },
-            {
-                "title": "Software Engineer",
-                "description": "Design and build applications and systems.",
-                "skills_needed": ["Programming", "Algorithms", "System Design", "Testing", "Debugging"],
-                "growth_potential": "High",
-                "salary_range": "$80,000 - $140,000"
-            },
-            {
-                "title": "UX/UI Designer",
-                "description": "Create intuitive and appealing user interfaces.",
-                "skills_needed": ["UI Design", "User Research", "Prototyping", "Visual Design", "HTML/CSS"],
-                "growth_potential": "Medium",
-                "salary_range": "$70,000 - $120,000"
-            },
-            {
-                "title": "Product Manager",
-                "description": "Lead product development from conception to launch.",
-                "skills_needed": ["Product Strategy", "User Stories", "Market Analysis", "Communication", "Leadership"],
-                "growth_potential": "High",
-                "salary_range": "$90,000 - $160,000"
-            },
-            {
-                "title": "DevOps Engineer",
-                "description": "Build and maintain infrastructure and deployment pipelines.",
-                "skills_needed": ["Linux", "Cloud Platforms", "CI/CD", "Automation", "Docker/Kubernetes"],
-                "growth_potential": "Very High",
-                "salary_range": "$85,000 - $145,000"
-            }
-        ]
+                {
+                    "title": "Data Scientist",
+                    "description": "Use data to solve complex problems and provide actionable insights using statistical, machine learning, and data visualization techniques.",
+                    "skills_needed": ["Python", "R", "Statistics", "Machine Learning", "Data Visualization", "SQL", "Big Data Tools"],
+                    "growth_potential": "High",
+                    "salary_range": "$90,000 - $150,000"
+                },
+                {
+                    "title": "Software Engineer",
+                    "description": "Design, develop, test, and maintain software systems and applications for various platforms.",
+                    "skills_needed": ["Programming", "Algorithms", "System Design", "Testing", "Debugging", "Version Control", "APIs"],
+                    "growth_potential": "High",
+                    "salary_range": "$80,000 - $140,000"
+                },
+                {
+                    "title": "UX/UI Designer",
+                    "description": "Create intuitive and visually appealing digital experiences by focusing on usability and user interaction design.",
+                    "skills_needed": ["UI Design", "UX Research", "Prototyping", "Visual Design", "HTML/CSS", "Figma", "Adobe XD"],
+                    "growth_potential": "Medium",
+                    "salary_range": "$70,000 - $120,000"
+                },
+                {
+                    "title": "Product Manager",
+                    "description": "Lead product development cycles, define product vision, manage teams, and drive product strategy to meet user needs and business goals.",
+                    "skills_needed": ["Product Strategy", "User Stories", "Agile/Scrum", "Market Analysis", "Communication", "Leadership"],
+                    "growth_potential": "High",
+                    "salary_range": "$90,000 - $160,000"
+                },
+                {
+                    "title": "DevOps Engineer",
+                    "description": "Develop, maintain, and optimize cloud-based infrastructure and deployment pipelines for efficient software delivery.",
+                    "skills_needed": ["Linux", "Cloud Platforms", "CI/CD", "Automation", "Docker", "Kubernetes", "Monitoring Tools"],
+                    "growth_potential": "Very High",
+                    "salary_range": "$85,000 - $145,000"
+                },
+                {
+                    "title": "Cybersecurity Analyst",
+                    "description": "Protect digital systems, networks, and data from cyber threats by monitoring systems and implementing security measures.",
+                    "skills_needed": ["Network Security", "Firewalls", "Incident Response", "Penetration Testing", "SIEM", "Python"],
+                    "growth_potential": "High",
+                    "salary_range": "$85,000 - $140,000"
+                },
+                {
+                    "title": "AI/ML Engineer",
+                    "description": "Design and implement machine learning algorithms and artificial intelligence solutions for real-world applications.",
+                    "skills_needed": ["Deep Learning", "NLP", "TensorFlow", "PyTorch", "Python", "Data Engineering", "Model Deployment"],
+                    "growth_potential": "Very High",
+                    "salary_range": "$100,000 - $170,000"
+                },
+                {
+                    "title": "Digital Marketing Manager",
+                    "description": "Plan and execute digital marketing strategies to promote products and services and optimize online presence.",
+                    "skills_needed": ["SEO", "SEM", "Google Analytics", "Email Marketing", "Content Strategy", "Social Media"],
+                    "growth_potential": "High",
+                    "salary_range": "$65,000 - $120,000"
+                },
+                {
+                    "title": "Graphic Designer",
+                    "description": "Create visual concepts and designs for print and digital media to communicate ideas that inspire and inform.",
+                    "skills_needed": ["Adobe Photoshop", "Illustrator", "Typography", "Branding", "Layout Design", "Color Theory"],
+                    "growth_potential": "Medium",
+                    "salary_range": "$50,000 - $90,000"
+                },
+                {
+                    "title": "Biomedical Engineer",
+                    "description": "Combine engineering principles with medical sciences to develop equipment, devices, and software used in healthcare.",
+                    "skills_needed": ["Biology", "Electrical Engineering", "Medical Devices", "Matlab", "3D Modeling", "Regulatory Standards"],
+                    "growth_potential": "High",
+                    "salary_range": "$75,000 - $130,000"
+                },
+                {
+                    "title": "Mechanical Engineer",
+                    "description": "Design and develop mechanical systems and devices, applying physics and materials science.",
+                    "skills_needed": ["CAD", "SolidWorks", "Thermodynamics", "Mechanics", "MATLAB", "Manufacturing Processes"],
+                    "growth_potential": "Medium",
+                    "salary_range": "$70,000 - $120,000"
+                },
+                {
+                    "title": "Civil Engineer",
+                    "description": "Design, construct, and maintain infrastructure projects such as roads, bridges, and buildings.",
+                    "skills_needed": ["AutoCAD", "Structural Analysis", "Project Management", "Construction Materials", "Site Planning"],
+                    "growth_potential": "Medium",
+                    "salary_range": "$65,000 - $110,000"
+                },
+                {
+                    "title": "Psychologist",
+                    "description": "Study cognitive, emotional, and social behaviors and help clients improve their mental health through therapy.",
+                    "skills_needed": ["Counseling", "Behavioral Analysis", "Clinical Psychology", "Ethics", "Communication"],
+                    "growth_potential": "Medium",
+                    "salary_range": "$60,000 - $110,000"
+                },
+                {
+                    "title": "Teacher / Educator",
+                    "description": "Educate and inspire students by delivering curriculum and supporting learning across various subjects.",
+                    "skills_needed": ["Curriculum Development", "Classroom Management", "Assessment", "Subject Expertise", "Empathy"],
+                    "growth_potential": "Medium",
+                    "salary_range": "$40,000 - $85,000"
+                },
+                {
+                    "title": "Environmental Scientist",
+                    "description": "Study the environment and develop strategies to reduce environmental problems and promote sustainability.",
+                    "skills_needed": ["Ecology", "GIS", "Data Analysis", "Field Research", "Environmental Policy", "Lab Skills"],
+                    "growth_potential": "High",
+                    "salary_range": "$60,000 - $100,000"
+                },
+                {
+                    "title": "Financial Analyst",
+                    "description": "Analyze financial data to guide investment and business decisions.",
+                    "skills_needed": ["Excel", "Financial Modeling", "Accounting", "Data Interpretation", "SQL", "Economics"],
+                    "growth_potential": "High",
+                    "salary_range": "$70,000 - $120,000"
+                },
+                {
+                    "title": "Blockchain Developer",
+                    "description": "Build decentralized applications and smart contracts using blockchain technology.",
+                    "skills_needed": ["Solidity", "Ethereum", "Smart Contracts", "Cryptography", "Node.js", "Distributed Systems"],
+                    "growth_potential": "Very High",
+                    "salary_range": "$100,000 - $180,000"
+                },
+                {
+                    "title": "Cloud Solutions Architect",
+                    "description": "Design scalable and secure cloud architectures tailored to business needs.",
+                    "skills_needed": ["AWS/Azure/GCP", "System Design", "Networking", "Security", "DevOps", "Cloud Automation"],
+                    "growth_potential": "Very High",
+                    "salary_range": "$120,000 - $200,000"
+                },
+                {
+                    "title": "Entrepreneur / Startup Founder",
+                    "description": "Identify problems, build businesses, and create value through innovative solutions.",
+                    "skills_needed": ["Leadership", "Business Strategy", "Fundraising", "Marketing", "Product Development", "Resilience"],
+                    "growth_potential": "Unlimited",
+                    "salary_range": "Variable (Startup Equity or $0 - $1M+)"
+                },
+                {
+                    "title": "Content Creator / Influencer",
+                    "description": "Create digital content (videos, blogs, social posts) to engage audiences and build a personal brand.",
+                    "skills_needed": ["Content Strategy", "Video Editing", "SEO", "Social Media", "Creativity", "Branding"],
+                    "growth_potential": "High",
+                    "salary_range": "$30,000 - $250,000+"
+                }
+                ]
     skill_keywords = [
             "python", "java", "javascript", "c++", "c#", "php", "ruby", "swift", "kotlin", "golang",
             "html", "css", "sql", "nosql", "mongodb", "mysql", "postgresql", "react", "angular", "vue",
@@ -407,6 +513,61 @@ def emotion_stats():
         'emotion_percentages': emotion_percentages,
         'total_detections': total
     })
+
+# Initialize the metrics tracker
+metrics_tracker = None
+# Route to start video analysis
+@app.route('/start_video_analysis', methods=['GET'])
+def start_video_analysis():
+    global metrics_tracker
+    
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'error': 'User not logged in'})
+    
+    # Initialize the metrics tracker if it doesn't exist
+    if metrics_tracker is None:
+        metrics_tracker = InterviewMetricsTracker()
+        metrics_tracker.start3()  # Start in background thread with simulation
+    
+    return jsonify({'success': True, 'message': 'Video analysis started'})
+
+# Route to end video analysis
+@app.route('/end_video_analysis', methods=['GET'])
+def end_video_analysis():
+    global metrics_tracker
+    
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'error': 'User not logged in'})
+    
+    # Clean up and save metrics if the tracker exists
+    if metrics_tracker is not None:
+        metrics_tracker.close()  # Stop thread and save metrics
+        metrics_tracker = None
+    
+    return jsonify({'success': True, 'message': 'Video analysis ended and metrics saved'})
+
+# Route to get current metrics
+@app.route('/video_metrics', methods=['GET'])
+def get_video_metrics():
+    global metrics_tracker
+    
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'error': 'User not logged in'})
+    
+    # Return current metrics if the tracker exists
+    if metrics_tracker is not None:
+        # Auto save metrics to database for persistence
+        metrics_tracker.auto_save_metrics()
+        
+        return jsonify({
+            'success': True,
+            'metrics': metrics_tracker.metrics
+        })
+    else:
+        return jsonify({
+            'success': False,
+            'error': 'Video analysis not started'
+        })
 
 if __name__ == '__main__':
     app.run(debug=True)
