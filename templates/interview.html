@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Interview Preparation - Career / Conquer</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='logo.png') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='modern.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='navbar.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link 
+      rel="stylesheet" 
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
+    <style>
+      .dashboard-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: calc(100vh - 80px);
+        padding-top: 40px;
+      }
+      
+      .content {
+        width: 100%;
+        max-width: 1200px;
+        padding: 0 20px;
+      }
+      
+      .card {
+        background-color: var(--bg-accent);
+        border-radius: 12px;
+        padding: 25px;
+        margin: 15px 0;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: box-shadow 0.8s ease;
+      }
+      
+      .card-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: var(--primary-color);
+        text-align: center;
+      }
+      
+      .card-description {
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        max-width: 90%;
+        text-align: center;
+      }
+      
+      .page-title {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      
+      .page-title h1 {
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+      }
+      
+      .page-title p {
+        font-size: 18px;
+        color: var(--text-secondary);
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      
+      .card-btn {
+        background-color: rgb(20, 241, 149);
+        color: #1a1a1a;
+        border: none;
+        border-radius: 30px;
+        padding: 12px 30px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 6px 15px rgba(20, 241, 149, 0.3);
+        margin: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .card-btn:hover {
+        background-color: rgb(16, 218, 134);
+        box-shadow: 0 8px 20px rgba(20, 241, 149, 0.5);
+        transform: translateY(-3px);
+      }
+      
+      .card-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 10px rgba(20, 241, 149, 0.3);
+      }
+      
+      .card-btn.red {
+        background-color: #ff5252;
+        box-shadow: 0 6px 15px rgba(255, 82, 82, 0.3);
+      }
+      
+      .card-btn.red:hover {
+        background-color: #ff3838;
+        box-shadow: 0 8px 20px rgba(255, 82, 82, 0.5);
+      }
+      
+      .card-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: 0.5s;
+      }
+      
+      .card-btn:hover::before {
+        left: 100%;
+      }
+      
+      .card-icon {
+        font-size: 48px;
+        color: rgb(20, 241, 149);
+        margin-bottom: 20px;
+        background-color: rgba(20, 241, 149, 0.1);
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(20, 241, 149, 0.2);
+      }
+      
+      .card:hover .card-icon {
+        transform: scale(1.1);
+        background-color: rgba(20, 241, 149, 0.2);
+        box-shadow: 0 8px 25px rgba(20, 241, 149, 0.3);
+      }
+      
+      /* Interview specific styles */
+      .video-container {
+        width: 100%;
+        max-width: 800px;
+        height: 450px;
+        background-color: var(--bg-secondary);
+        border-radius: 10px;
+        margin: 20px 0;
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--border-color);
+      }
+      
+      .video-placeholder {
+        text-align: center;
+        color: var(--text-secondary);
+      }
+      
+      .video-placeholder i {
+        font-size: 64px;
+        margin-bottom: 15px;
+        opacity: 0.6;
+      }
+      
+      .video-placeholder p {
+        font-size: 18px;
+      }
+      
+      #userVideo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+      }
+      
+      .control-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 20px;
+      }
+      
+      .button-group {
+        display: flex;
+        margin: 10px 0;
+      }
+      
+      .icon-btn {
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 20px;
+      }
+      
+      .icon-btn:hover {
+        background-color: var(--primary-color);
+        color: white;
+      }
+      
+      .icon-btn.muted {
+        background-color: #ff5252;
+        color: white;
+      }
+      
+      /* Footer Styles */
+      footer {
+        background-color: var(--bg-accent);
+        padding: 40px 0 20px;
+        margin-top: 60px;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      }
+      
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 0 20px;
+      }
+      
+      .footer-logo {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      
+      .footer-logo img {
+        height: 40px;
+        margin-right: 10px;
+      }
+      
+      .footer-logo h3 {
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 0;
+      }
+      
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      
+      .footer-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+      
+      .footer-links a:hover {
+        color: var(--primary-color);
+      }
+      
+      .footer-copyright {
+        text-align: center;
+        color: var(--text-secondary);
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color);
+        font-size: 14px;
+      }
+      
+      @media (max-width: 768px) {
+        .footer-content {
+          flex-direction: column;
+        }
+        
+        .footer-links {
+          margin-top: 20px;
+        }
+        
+        .video-container {
+          height: 300px;
+        }
+        
+        .control-buttons {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" aria-label="Toggle dark/light mode">
+      <!-- Icon will be inserted by JavaScript -->
+    </button>
+    
+    <!-- Floating Navigation Bar -->
+    <nav class="floating-nav">
+      <a href="{{ url_for('home') }}" class="nav-logo">
+        <!-- <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" /> -->
+        <h1>Career / Conquer</h1>
+      </a>
+      <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint == 'dashboard' }}">Dashboard</a>
+        <span class="nav-separator">|</span>
+        <a href="{{ url_for('profile') }}" class="{{ 'active' if request.endpoint == 'profile' }}">Profile</a>
+        <span class="nav-separator">|</span>
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    </nav>
+    
+    <div class="dashboard-container">
+      <div class="content">
+        <div class="page-title">
+          <h1>Interview Preparation</h1>
+          <p>Practice your interview skills with our AI-powered interview simulator. Get real-time feedback and improve your performance for your next job interview.</p>
+        </div>
+        
+        <div class="card">
+          <div class="card-icon">
+            <i class="fas fa-video"></i>
+          </div>
+          <div class="card-title">AI Interview Simulator</div>
+          <div class="card-description">
+            This interactive session will simulate a real job interview based on your target position. Speak clearly into your microphone and maintain good eye contact with the camera. The AI will analyze your responses and provide feedback.
+          </div>
+          
+          <div class="video-container">
+            <video id="userVideo" autoplay muted></video>
+            <div class="video-placeholder">
+              <i class="fas fa-user-circle"></i>
+              <p>Your video will appear here when you start the interview</p>
+            </div>
+          </div>
+          
+          <div class="control-buttons">
+            <div class="button-group">
+              <button class="card-btn" id="startBtn">
+                <i class="fas fa-play" style="margin-right: 10px;"></i>
+                Start Interview
+              </button>
+              
+              <button class="card-btn" id="pauseBtn" disabled>
+                <i class="fas fa-pause" style="margin-right: 10px;"></i>
+                Pause
+              </button>
+              
+              <button class="card-btn red" id="stopBtn" disabled>
+                <i class="fas fa-stop" style="margin-right: 10px;"></i>
+                End Interview
+              </button>
+            </div>
+            
+            <div class="button-group">
+              <button class="icon-btn" id="micBtn" title="Toggle Microphone">
+                <i class="fas fa-microphone"></i>
+              </button>
+              
+              <button class="icon-btn" id="cameraBtn" title="Toggle Camera">
+                <i class="fas fa-camera"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-logo">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="CAREER CONQUER Logo">
+          <h3>CAREER / CONQUER</h3>
+        </div>
+        <div class="footer-links">
+          <a href="#">About Us</a>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact</a>
+        </div>
+      </div>
+      <p class="footer-copyright">© 2023 CAREER CONQUER. All rights reserved.</p>
+    </footer>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const micBtn = document.getElementById('micBtn');
+        const cameraBtn = document.getElementById('cameraBtn');
+        const userVideo = document.getElementById('userVideo');
+        const videoPlaceholder = document.querySelector('.video-placeholder');
+        
+        let stream = null;
+        let isMuted = false;
+        let isCameraOff = false;
+        
+        startBtn.addEventListener('click', async function() {
+          try {
+            stream = await navigator.mediaDevices.getUserMedia({ 
+              video: true, 
+              audio: true 
+            });
+            
+            userVideo.srcObject = stream;
+            userVideo.style.display = 'block';
+            videoPlaceholder.style.display = 'none';
+            
+            startBtn.disabled = true;
+            pauseBtn.disabled = false;
+            stopBtn.disabled = false;
+            
+            // Simulate AI asking questions
+            setTimeout(() => {
+              alert("AI: Please introduce yourself and tell me about your background.");
+            }, 1000);
+            
+          } catch (err) {
+            console.error("Error accessing camera and microphone:", err);
+            alert("Unable to access your camera and microphone. Please check your permissions and try again.");
+          }
+        });
+        
+        pauseBtn.addEventListener('click', function() {
+          if (pauseBtn.innerHTML.includes('Pause')) {
+            pauseBtn.innerHTML = '<i class="fas fa-play" style="margin-right: 10px;"></i> Resume';
+            stream.getTracks().forEach(track => track.enabled = false);
+          } else {
+            pauseBtn.innerHTML = '<i class="fas fa-pause" style="margin-right: 10px;"></i> Pause';
+            stream.getTracks().forEach(track => track.enabled = true);
+          }
+        });
+        
+        stopBtn.addEventListener('click', function() {
+          if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            userVideo.srcObject = null;
+            userVideo.style.display = 'none';
+            videoPlaceholder.style.display = 'flex';
+            
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+            stopBtn.disabled = true;
+            pauseBtn.innerHTML = '<i class="fas fa-pause" style="margin-right: 10px;"></i> Pause';
+          }
+        });
+        
+        micBtn.addEventListener('click', function() {
+          if (!stream) return;
+          
+          isMuted = !isMuted;
+          stream.getAudioTracks().forEach(track => track.enabled = !isMuted);
+          
+          if (isMuted) {
+            micBtn.classList.add('muted');
+            micBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+          } else {
+            micBtn.classList.remove('muted');
+            micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+          }
+        });
+        
+        cameraBtn.addEventListener('click', function() {
+          if (!stream) return;
+          
+          isCameraOff = !isCameraOff;
+          stream.getVideoTracks().forEach(track => track.enabled = !isCameraOff);
+          
+          if (isCameraOff) {
+            cameraBtn.classList.add('muted');
+            cameraBtn.innerHTML = '<i class="fas fa-video-slash"></i>';
+          } else {
+            cameraBtn.classList.remove('muted');
+            cameraBtn.innerHTML = '<i class="fas fa-camera"></i>';
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

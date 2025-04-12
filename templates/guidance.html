@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Dashboard - RESUME WAR</title>
+    <title>Career Guidance - Career / Conquer</title>
     <link
       rel="icon"
       type="image/png"
@@ -66,6 +66,25 @@
         max-width: 90%;
       }
       
+      .page-title {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      
+      .page-title h1 {
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+      }
+      
+      .page-title p {
+        font-size: 18px;
+        color: var(--text-secondary);
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      
       .card-btn {
         background-color: rgb(20, 241, 149);
         color: #1a1a1a;
@@ -118,33 +137,6 @@
         left: 100%;
       }
       
-      .cards-container {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-      }
-      
-      .resume-upload-card {
-        width: 100%;
-      }
-      
-      .service-cards {
-        display: flex;
-        flex-direction: row;
-        gap: 30px;
-        width: 100%;
-      }
-      
-      @media (max-width: 768px) {
-        .service-cards {
-          flex-direction: column;
-        }
-      }
-      
-      .left, .right {
-        flex: 1;
-      }
-      
       .card-icon {
         font-size: 48px;
         color: rgb(20, 241, 149);
@@ -166,93 +158,39 @@
         box-shadow: 0 8px 25px rgba(20, 241, 149, 0.3);
       }
       
-      .welcome {
-        text-align: left;
-        margin-bottom: 30px;
-      }
-      
-      .file-upload-container {
+      /* Guidance-specific styles */
+      .guidance-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 25px;
         width: 100%;
-        max-width: 450px;
-        margin: 15px auto;
-        position: relative;
+        margin-top: 30px;
       }
       
-      .file-upload-input {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        cursor: pointer;
-        z-index: 10;
-      }
-      
-      .file-upload-label {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+      .guidance-item {
+        background-color: var(--bg-secondary);
+        border-radius: 10px;
         padding: 20px;
-        border: 2px dashed rgba(20, 241, 149, 0.5);
-        border-radius: 12px;
-        background-color: rgba(20, 241, 149, 0.05);
+        text-align: left;
         transition: all 0.3s ease;
+        border-left: 4px solid rgb(20, 241, 149);
       }
       
-      .file-upload-input:hover + .file-upload-label,
-      .file-upload-input:focus + .file-upload-label {
-        border-color: rgb(20, 241, 149);
-        background-color: rgba(20, 241, 149, 0.1);
+      .guidance-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
       }
       
-      .upload-icon {
-        font-size: 40px;
-        color: rgb(20, 241, 149);
-        margin-bottom: 15px;
+      .guidance-item h3 {
+        color: var(--primary-color);
+        font-size: 18px;
+        margin-bottom: 10px;
       }
       
-      .upload-text {
-        font-weight: 600;
-        margin-bottom: 5px;
-      }
-      
-      .upload-subtext {
-        font-size: 14px;
-        color: var(--text-secondary);
-      }
-      
-      .upload-progress {
-        width: 100%;
-        height: 6px;
-        background-color: rgba(20, 241, 149, 0.1);
-        border-radius: 3px;
-        margin-top: 15px;
-        overflow: hidden;
-        display: none;
-      }
-      
-      .upload-progress-bar {
-        height: 100%;
-        background-color: rgb(20, 241, 149);
-        width: 0;
-        transition: width 0.3s ease;
-      }
-      
-      .upload-spinner {
-        display: none;
-        width: 24px;
-        height: 24px;
-        border: 3px solid rgba(20, 241, 149, 0.3);
-        border-radius: 50%;
-        border-top-color: rgb(20, 241, 149);
-        animation: spin 1s linear infinite;
-        margin: 10px auto 0;
-      }
-      
-      @keyframes spin {
-        to { transform: rotate(360deg); }
+      .guidance-item p {
+        color: var(--text-primary);
+        font-size: 15px;
+        line-height: 1.5;
       }
       
       /* Footer Styles */
@@ -322,6 +260,10 @@
         .footer-links {
           margin-top: 20px;
         }
+        
+        .guidance-items {
+          grid-template-columns: 1fr;
+        }
       }
     </style>
   </head>
@@ -348,77 +290,57 @@
     
     <div class="dashboard-container">
       <div class="content">
-        <div class="welcome">
-          <h2>Welcome, {{ user.username }}!</h2>
+        <div class="page-title">
+          <h1>Career Guidance</h1>
+          <p>Receive personalized career advice based on your resume, skills, and career goals. Our AI-powered system provides tailored recommendations to help you advance in your professional journey.</p>
         </div>
-        <div class="cards-container">
-          <!-- Resume Upload Card -->
-          <div class="resume-upload-card">
-            <div class="card">
-              <div class="card-icon">
-                <i class="fas fa-file-upload"></i>
-              </div>
-              <div class="card-title">Upload Your Resume</div>
-              <div class="card-description">
-                Start by uploading your resume to unlock personalized career guidance and tailored interview questions.
-              </div>
-              <div class="file-upload-container">
-                <form id="resumeForm" action="{{ url_for('upload_resume') }}" method="POST" enctype="multipart/form-data">
-                  <input 
-                    type="file" 
-                    class="file-upload-input" 
-                    id="resumeUpload" 
-                    name="resume" 
-                    accept=".pdf,.doc,.docx" 
-                    onchange="document.getElementById('resumeForm').submit();"
-                    style="display: none;"
-                  >
-                
-                  <label for="resumeUpload" class="file-upload-label">
-                    <p class="upload-text">Drag & drop or click to upload</p>
-                    <p class="upload-subtext">Supported formats: PDF, DOC, DOCX (Max 5MB)</p>
-                    <div class="upload-spinner" id="uploadSpinner"></div>
-                    <div class="upload-progress" id="uploadProgress">
-                      <div class="upload-progress-bar" id="uploadProgressBar"></div>
-                    </div>
-                  </label>
-                </form>
-                
-              </div>
+        
+        <!-- Content for the guidance page will go here -->
+        <div class="card">
+          <div class="card-icon">
+            <i class="fas fa-compass"></i>
+          </div>
+          <div class="card-title">Your Career Roadmap</div>
+          <div class="card-description">
+            Based on your resume and profile information, we've generated personalized guidance to help you achieve your career goals. Explore the recommendations below and check back regularly for updates.
+          </div>
+          
+          <div class="guidance-items">
+            <div class="guidance-item">
+              <h3>Resume Optimization</h3>
+              <p>Consider adding more quantifiable achievements to highlight your impact. Focus on results rather than responsibilities to stand out to potential employers.</p>
+            </div>
+            
+            <div class="guidance-item">
+              <h3>Skills Development</h3>
+              <p>Based on current industry trends, developing expertise in data analysis tools would complement your existing skillset and make you more competitive in your field.</p>
+            </div>
+            
+            <div class="guidance-item">
+              <h3>Interview Preparation</h3>
+              <p>Practice answering behavioral questions related to leadership and problem-solving, as these are commonly asked in your target role interviews.</p>
+            </div>
+            
+            <div class="guidance-item">
+              <h3>Networking Opportunities</h3>
+              <p>Consider joining professional associations in your industry to expand your network and gain access to hidden job opportunities.</p>
+            </div>
+            
+            <div class="guidance-item">
+              <h3>Industry Insights</h3>
+              <p>The demand for professionals with your background is growing in the healthcare technology sector. Consider exploring opportunities in this area.</p>
+            </div>
+            
+            <div class="guidance-item">
+              <h3>Professional Development</h3>
+              <p>A certification in project management would complement your experience and potentially open doors to senior positions.</p>
             </div>
           </div>
           
-          <!-- Service Cards -->
-          <div class="service-cards">
-            <div class="left">
-              <div class="card">
-                <div class="card-icon">
-                  <i class="fas fa-road"></i>
-                </div>
-                <div class="card-title">Career Path Guidance</div>
-                <div class="card-description" style="margin-bottom: 0px;">
-                  Upload your resume and get comprehensive career path recommendations, skill assessments, resume tips, and networking opportunities tailored to your profile.
-                </div>
-                <a href="{{ url_for('start_guidance') }}" class="card-btn">
-                  <i class="fas fa-play-circle me-2" style="margin-right: 8px;"></i>Start Guidance
-                </a>
-              </div>
-            </div>
-            <div class="right">
-              <div class="card">
-                <div class="card-icon">
-                  <i class="fas fa-user-tie"></i>
-                </div>
-                <div class="card-title">Interview Preparation</div>
-                <div class="card-description" style="margin-bottom: 0px;">
-                  Practice with a simulated interview tailored to your resume. Get personalized questions, feedback on your responses, and recommendations for improvement.
-                </div>
-                <a href="{{ url_for('start_interview') }}" class="card-btn">
-                  <i class="fas fa-play-circle me-2" style="margin-right: 8px;"></i>Start Interview
-                </a>
-              </div>
-            </div>
-          </div>
+          <button class="card-btn">
+            <i class="fas fa-sync-alt mr-2" style="margin-right: 10px;"></i>
+            Refresh Guidance
+          </button>
         </div>
       </div>
     </div>
@@ -439,13 +361,5 @@
       </div>
       <p class="footer-copyright">© 2023 CAREER CONQUER. All rights reserved.</p>
     </footer>
-
-    <script>
-      document.getElementById("resumeUpload").addEventListener("change", function () {
-        document.getElementById("uploadSpinner").style.display = "block";
-        document.getElementById("resumeForm").submit();
-      });
-    </script>
-    
   </body>
 </html>

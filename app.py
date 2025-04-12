@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from models import db, User
+from models import db, User, Resume
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from datetime import datetime, UTC
 import os
@@ -14,7 +15,7 @@ app.secret_key = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project_db.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 UPLOAD_FOLDER = 'static/uploads'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -86,6 +87,65 @@ def logout():
     session.pop('user_id', None)
     flash('You have been logged out.', 'success')
     return redirect(url_for('home'))
+
+@app.route('/upload_resume', methods=['POST'])
+def upload_resume():
+    if 'user_id' not in session:
+        flash('Please log in.', 'error')
+        return redirect(url_for('login'))
+
+    file = request.files.get('resume')
+    if file and file.filename:
+        filename = secure_filename(file.filename)
+        user_id = session['user_id']
+
+        # Optional: prepend user_id or timestamp to avoid collisions
+        filename = f"user_{user_id}_" + filename
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(file_path)
+
+        relative_path = os.path.join('static/uploads', filename)
+
+        # Check if the user already has a resume
+        existing_resume = Resume.query.filter_by(user_id=user_id).first()
+        if existing_resume:
+            existing_resume.resume_path = relative_path
+        else:
+            new_resume = Resume(user_id=user_id, resume_path=relative_path)
+            db.session.add(new_resume)
+
+        db.session.commit()
+        flash('Resume uploaded successfully.', 'success')
+        return redirect(url_for('dashboard'))
+
+    flash('No file selected or invalid file.', 'error')
+    return redirect(url_for('dashboard'))
+    
+@app.route('/start-guidance')
+def start_guidance():
+    if 'user_id' not in session:
+        flash('Please log in.', 'error')
+        return redirect(url_for('login'))
+    user_resume = Resume.query.filter_by(user_id=session['user_id']).first()
+    resume_path = user_resume.resume_path
+    if not resume_path:
+        flash('Please upload a resume first.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    return render_template('guidance.html', user_resume=user_resume)
+
+@app.route('/start-interview')
+def start_interview():
+    if 'user_id' not in session:
+        flash('Please log in.', 'error')
+        return redirect(url_for('login'))
+    user_resume = Resume.query.filter_by(user_id=session['user_id']).first()
+    resume_path = user_resume.resume_path
+    if not resume_path:
+        flash('Please upload a resume first.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    return render_template('interview.html', user_resume=user_resume)
 
 
 if __name__ == '__main__':

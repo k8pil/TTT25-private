@@ -20,6 +20,76 @@
       rel="stylesheet"
     />
     <script src="{{ url_for('static', filename='theme.js') }}"></script>
+    <style>
+      /* Footer Styles */
+      footer {
+        background-color: var(--bg-accent);
+        padding: 40px 0 20px;
+        margin-top: 60px;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      }
+      
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 0 20px;
+      }
+      
+      .footer-logo {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      
+      .footer-logo img {
+        height: 40px;
+        margin-right: 10px;
+      }
+      
+      .footer-logo h3 {
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 0;
+      }
+      
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      
+      .footer-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+      
+      .footer-links a:hover {
+        color: var(--primary-color);
+      }
+      
+      .footer-copyright {
+        text-align: center;
+        color: var(--text-secondary);
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color);
+        font-size: 14px;
+      }
+      
+      @media (max-width: 768px) {
+        .footer-content {
+          flex-direction: column;
+        }
+        
+        .footer-links {
+          margin-top: 20px;
+        }
+      }
+    </style>
   </head>
   <body>
     <!-- Theme Toggle Button -->
@@ -47,5 +117,22 @@
         <!-- Profile content will go here -->
       </div>
     </div>
+    
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-logo">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="CAREER CONQUER Logo">
+          <h3>CAREER / CONQUER</h3>
+        </div>
+        <div class="footer-links">
+          <a href="#">About Us</a>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact</a>
+        </div>
+      </div>
+      <p class="footer-copyright">© 2023 CAREER CONQUER. All rights reserved.</p>
+    </footer>
   </body>
 </html>

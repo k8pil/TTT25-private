@@ -47,6 +47,10 @@ body {
   min-height: 100vh;
 }
 
+a {
+  text-decoration: none;
+}
+
 /* Theme toggle */
 .theme-toggle {
   position: fixed;
