@@ -90,7 +90,6 @@
         background-color: rgb(20, 241, 149);
         color: #1a1a1a;
         border: none;
-        border-radius: 30px;
         padding: 12px 30px;
         font-weight: 600;
         font-size: 16px;
@@ -152,10 +151,10 @@
         font-size: 48px;
         color: rgb(20, 241, 149);
         margin-bottom: 20px;
+        border-radius: 50%;
         background-color: rgba(20, 241, 149, 0.1);
         width: 90px;
         height: 90px;
-        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -243,6 +242,21 @@
         display: flex;
         flex-direction: column;
         gap: 15px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+      }
+      
+      .messages-container::-webkit-scrollbar {
+        width: 5px;
+      }
+      
+      .messages-container::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      
+      .messages-container::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
       }
       
       .message {
@@ -251,6 +265,8 @@
         max-width: 80%;
         font-size: 14px;
         line-height: 1.5;
+        position: relative;
+        word-wrap: break-word;
       }
       
       .message.ai {
@@ -258,6 +274,18 @@
         color: var(--text-primary);
         align-self: flex-start;
         border-bottom-left-radius: 4px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+      
+      .message.ai::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: -5px;
+        width: 10px;
+        height: 10px;
+        background-color: var(--bg-accent);
+        clip-path: polygon(100% 0, 100% 100%, 0 100%);
       }
       
       .message.user {
@@ -265,13 +293,40 @@
         color: #1a1a1a;
         align-self: flex-end;
         border-bottom-right-radius: 4px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        text-align: right;
+      }
+      
+      .message.user::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: -5px;
+        width: 10px;
+        height: 10px;
+        background-color: rgb(20, 241, 149);
+        clip-path: polygon(0 0, 100% 100%, 0 100%);
       }
       
       .chat-input-container {
         padding: 15px;
         border-top: 1px solid var(--border-color);
         display: flex;
+        flex-direction: column;
         gap: 10px;
+      }
+
+      .clear-btn {
+        background-color: red;
+        border: none;
+        color: white; 
+        width: 48px;
+        height: 48px;
+      }
+
+      .submit-btn {
+        width: 48px;
+        height: 48px;
       }
       
       .chat-input {
@@ -296,10 +351,11 @@
       }
       
       .send-btn {
+        display: none !important;
         width: 48px;
         height: 48px;
-        border-radius: 50%;
         border: none;
+        border-radius: 50%;
         background-color: rgb(20, 241, 149);
         color: #1a1a1a;
         font-size: 16px;
@@ -342,7 +398,6 @@
         background-color: var(--bg-secondary);
         color: var(--text-primary);
         border: none;
-        border-radius: 50%;
         width: 50px;
         height: 50px;
         display: flex;
@@ -443,33 +498,59 @@
 
       .prediction-container {
             margin-top: 20px;
-            padding: 15px;
-            background-color: #f5f5f5;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            background-color: var(--bg-secondary);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid rgb(20, 241, 149);
+            text-align: center;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
+        
         .prediction {
             font-size: 28px;
             font-weight: bold;
-            color: #333;
+            color: var(--primary-color);
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 5px;
+            background-color: rgba(20, 241, 149, 0.1);
+            margin-bottom: 10px;
         }
+        
         .probability {
             font-size: 20px;
-            color: #666;
+            color: var(--text-primary);
             margin-top: 10px;
+            font-weight: 500;
         }
+        
         .status {
             margin-top: 20px;
-            color: #666;
+            color: var(--text-secondary);
             font-style: italic;
+            padding: 10px;
+            background-color: var(--bg-accent);
+            border-radius: 8px;
+            display: inline-block;
+            margin-left: auto;
+            margin-right: auto;
         }
+        
         .loading {
             display: none;
-            color: #f39c12;
+            color: rgb(20, 241, 149);
             margin-top: 10px;
+            font-weight: 600;
+            animation: pulse 1.5s infinite;
         }
-        .controls {
-            margin-top: 20px;
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
         }
     </style>
   </head>
@@ -513,8 +594,11 @@
           <div class="interview-container">
             <div class="video-container">
               <!--video-->
-              <video id="webcam" autoplay playsinline style="display: none;"></video>
-              <img id="video-output" src="" alt="Webcam feed with analysis">
+              <video id="webcam" autoplay playsinline></video>
+              <img id="video-output" src="" alt="Webcam feed with analysis" style="display: none;">
+              <div class="placeholder">
+                
+              </div>
             </div>
             
 
@@ -522,15 +606,41 @@
             
             <div class="chat-container">
               <div class="messages-container" id="messages">
+                <!--chat history-->
+                {% for message in chat_history %}
+                {% if message[0] == "AI" %}
                 <div class="message ai">
-                  Welcome to your interview session! I'll be asking you questions related to your field and experience. Press "Start Interview" when you're ready to begin.
+                  {{ message[1] }}
                 </div>
+                {% else %}
+                <div class="message user">
+                  {{ message[1] }}
+                </div>
+                {% endif %}
+                {% endfor %}
               </div>
               <div class="chat-input-container">
-                <input type="text" class="chat-input" id="chat-input" placeholder="Type your message..." disabled>
-                <button class="send-btn" id="send-message-btn" disabled>
-                  <i class="fa-regular fa-paper-plane"></i>
-                </button>
+                <form id="chat-form" method="POST" action="{{ url_for('start_interview') }}">
+                  <input type="text" class="chat-input" id="chat-input" name="message" placeholder="Type your message...">
+                  <button type="submit" class="send-btn" id="send-message-btn">
+                      <i class="fa-regular fa-paper-plane"></i>
+                  </button>
+                </form>
+                <div class="button-group" style="display: flex; flex-direction: row; justify-content: center;">
+                  <button class="icon-btn" id="micBtn" title="Toggle Microphone" style="background-color: rgba(255, 0, 0, 0.375)"">
+                    <i class="fas fa-microphone"></i>
+                  </button>
+                  
+                  <button class="icon-btn" id="cameraBtn" title="Toggle Camera" style="background-color: rgba(255, 0, 0, 0.375)"">
+                    <i class="fas fa-camera"></i>
+                  </button>
+
+                  <form method="POST" action="/clear-chat-history">
+                    <button class="clear-btn icon-btn" id="clear-chat-btn"  style="background-color: rgba(255, 0, 0, 0.375);">
+                      <i class="fa-regular fa-trash-can"></i>
+                    </button>
+                  </form>
+                </div>
               </div>
             </div>
             
@@ -547,16 +657,6 @@
                 End Interview
               </button>
             </div>
-            
-            <div class="button-group">
-              <button class="icon-btn" id="micBtn" title="Toggle Microphone">
-                <i class="fas fa-microphone"></i>
-              </button>
-              
-              <button class="icon-btn" id="cameraBtn" title="Toggle Camera">
-                <i class="fas fa-camera"></i>
-              </button>
-            </div>
           </div>
           
           
@@ -566,8 +666,11 @@
           <div>Probability: <span id="probability" class="probability">-</span></div>
       </div>
       
-      <div class="status">Status: <span id="status">Initializing...</span></div>
-      <div id="loading" class="loading">Processing...</div>
+      <div class="status" style="display: flex; flex-direction: row; justify-content: flex-start;">
+        <div>Status: <span id="status">Initializing...</span></div>
+        <div id="loading" class="loading">Processing...</div>
+      </div>
+
       </div>
     </div>
 
@@ -585,22 +688,24 @@
           <a href="#">Contact</a>
         </div>
       </div>
-      <p class="footer-copyright">© 2023 CAREER CONQUER. All rights reserved.</p>
+      <p class="footer-copyright">© 2025 CAREER CONQUER. All rights reserved.</p>
     </footer>
 
     <script>
       const videoOutput = document.getElementById('video-output');
       const webcamVideo = document.getElementById('webcam');
-      const predictionEl = document.getElementById('prediction');
-      const probabilityEl = document.getElementById('probability');
-      const statusEl = document.getElementById('status');
-      const loadingEl = document.getElementById('loading');
+      const currentEmotionEl = document.getElementById('prediction');
+      const confidenceEl = document.getElementById('probability');
       const startBtn = document.getElementById('start-btn');
       const stopBtn = document.getElementById('stop-btn');
+      const totalDetectionsEl = document.getElementById('total-detections');
+      const emotionBarsEl = document.getElementById('emotion-bars');
+      const refreshStatsBtn = document.getElementById('refresh-stats');
       
       let isRunning = false;
       let isProcessing = false;
       let stream = null;
+      let frameCounter = 0;
       
       // Setup canvas for frame capture
       const canvas = document.createElement('canvas');
@@ -627,13 +732,18 @@
               isRunning = true;
               startBtn.disabled = true;
               stopBtn.disabled = false;
-              statusEl.textContent = 'Webcam active, analyzing body language...';
+              
+              // Reset frame counter
+              frameCounter = 0;
               
               // Start processing frames
               processFrame();
+              
+              // Get initial stats
+              getEmotionStats();
           } catch (error) {
               console.error('Error accessing webcam:', error);
-              statusEl.textContent = 'Error: Could not access webcam. Please check permissions.';
+              alert('Could not access webcam. Please check permissions.');
           }
       }
       
@@ -649,9 +759,8 @@
           isRunning = false;
           startBtn.disabled = false;
           stopBtn.disabled = true;
-          statusEl.textContent = 'Stopped.';
-          predictionEl.textContent = '-';
-          probabilityEl.textContent = '-';
+          currentEmotionEl.textContent = '-';
+          confidenceEl.textContent = '-';
           videoOutput.src = '';
       }
       
@@ -666,7 +775,6 @@
           
           try {
               isProcessing = true;
-              loadingEl.style.display = 'block';
               
               // Draw the video frame to canvas
               ctx.drawImage(webcamVideo, 0, 0, canvas.width, canvas.height);
@@ -680,7 +788,11 @@
                   headers: {
                       'Content-Type': 'application/json'
                   },
-                  body: JSON.stringify({ image: imageData })
+                  body: JSON.stringify({ 
+                      image: imageData,
+                      // Send flag to save prediction only every 30 frames (approx 1 second)
+                      savePrediction: frameCounter % 30 === 0
+                  })
               });
               
               const result = await response.json();
@@ -691,40 +803,147 @@
                   
                   // Update prediction display
                   if (result.prediction) {
-                      predictionEl.textContent = result.prediction;
-                      probabilityEl.textContent = result.probability.toFixed(2);
+                      currentEmotionEl.textContent = result.prediction;
+                      confidenceEl.textContent = (result.probability * 100).toFixed(2);
+                      
+                      // If this was a frame where we saved the prediction, update stats
+                      if (frameCounter % 30 === 0) {
+                          getEmotionStats();
+                      }
                   } else {
-                      predictionEl.textContent = 'No prediction';
-                      probabilityEl.textContent = '-';
+                      currentEmotionEl.textContent = 'No face detected';
+                      confidenceEl.textContent = '-';
                   }
                   
-                  statusEl.textContent = 'Analyzing...';
+                  // Update frame counter
+                  frameCounter++;
+                  
+                  // Reset counter if it gets too large
+                  if (frameCounter > 10000) {
+                      frameCounter = 0;
+                  }
               } else {
-                  // If error, show original frame
-                  videoOutput.src = imageData;
-                  statusEl.textContent = 'Error: ' + (result.error || 'Failed to process image');
+                  console.error('Error:', result.error);
               }
           } catch (error) {
               console.error('Error processing frame:', error);
-              statusEl.textContent = 'Error: Failed to communicate with server';
           } finally {
               isProcessing = false;
-              loadingEl.style.display = 'none';
               
               // Process next frame if still running
               if (isRunning) {
-                  // Use setTimeout to add a small delay between frames to reduce server load
+                  // Use setTimeout to add a small delay between frames
                   setTimeout(() => requestAnimationFrame(processFrame), 100);
               }
+          }
+      }
+      
+      // Get emotion statistics from the server
+      async function getEmotionStats() {
+          try {
+              const response = await fetch('/emotion_stats');
+              const data = await response.json();
+              
+              if (data.success) {
+                  // Update total detections
+                  totalDetectionsEl.textContent = data.total_detections;
+                  
+                  // Update emotion bars
+                  updateEmotionBars(data.emotion_percentages);
+              }
+          } catch (error) {
+              console.error('Error fetching emotion stats:', error);
+          }
+      }
+      
+      // Update the emotion bars visualization
+      function updateEmotionBars(percentages) {
+          // Clear existing bars
+          emotionBarsEl.innerHTML = '';
+          
+          // Create bars for each emotion
+          const emotions = Object.keys(percentages);
+          emotions.sort((a, b) => percentages[b] - percentages[a]); // Sort by percentage (descending)
+          
+          for (const emotion of emotions) {
+              const percentage = percentages[emotion];
+              
+              const barContainer = document.createElement('div');
+              barContainer.className = 'emotion-bar';
+              
+              const label = document.createElement('div');
+              label.className = 'emotion-label';
+              label.textContent = emotion;
+              
+              const bar = document.createElement('div');
+              bar.className = 'bar';
+              bar.style.width = `${percentage * 5}px`; // Scale for better visualization
+              
+              const percentageText = document.createElement('div');
+              percentageText.className = 'percentage';
+              percentageText.textContent = `${percentage}%`;
+              
+              barContainer.appendChild(label);
+              barContainer.appendChild(bar);
+              barContainer.appendChild(percentageText);
+              
+              emotionBarsEl.appendChild(barContainer);
           }
       }
       
       // Event listeners
       startBtn.addEventListener('click', startWebcam);
       stopBtn.addEventListener('click', stopWebcam);
+      refreshStatsBtn.addEventListener('click', getEmotionStats);
       
       // Cleanup on page unload
       window.addEventListener('beforeunload', stopWebcam);
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const messagesContainer = document.getElementById('messages');
+
+    chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const message = chatInput.value.trim();
+        if (message) {
+            sendMessage(message);
+            chatInput.value = '';
+        }
+    });
+
+    function sendMessage(message) {
+        // Add user message to chat
+        addMessageToChat('user', message);
+
+        // Send message to server
+        fetch('{{ url_for("start_interview") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: 'message=' + encodeURIComponent(message)
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Add AI response to chat
+            addMessageToChat('ai', data.response);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function addMessageToChat(sender, message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}`;
+        messageDiv.textContent = message;
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+});
+
   </script>
   </body>
 </html>

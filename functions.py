@@ -4,6 +4,7 @@ import pytesseract
 from PIL import Image
 import fitz
 from roadmap_interactive import handle_roadmap_interactive
+import datetime
 
 HAS_ROADMAP_INTERACTIVE = True
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
@@ -555,3 +556,12 @@ def provide_resume_tips():
     ]
     
     return structure_tips, content_improvement_tips, tech_and_soft_skill_tips, experience_tips, achievement_tips, ats_tips, modern_tips, tailoring_tips
+
+""" def save_emotion(cursor, conn, emotion, confidence=1.0):
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    cursor.execute(
+        "INSERT INTO emotions (timestamp, emotion, confidence) VALUES (?, ?, ?)",
+        (timestamp, emotion, confidence)
+    )
+    conn.commit() """
+
