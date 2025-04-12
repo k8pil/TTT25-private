@@ -188,7 +188,8 @@ def start_guidance():
         ]
 
     functions.initialize(default_resume_path, resume_text, analysis, career_paths, skill_keywords)
-    functions.run()
+    career_paths_list = functions.run()
+    print(career_paths_list)
 
     print("Vars:")
     print(default_resume_path)
@@ -197,9 +198,16 @@ def start_guidance():
     print(career_paths)
     print(skill_keywords)
 
+    structure_tips, content_improvement_tips, tech_and_soft_skill_tips, experience_tips, achievement_tips, ats_tips, modern_tips, tailoring_tips = [], [], [], [], [], [], [], []
+    structure_tips, content_improvement_tips, tech_and_soft_skill_tips, experience_tips, achievement_tips, ats_tips, modern_tips, tailoring_tips = functions.provide_resume_tips()
 
-    
-    return render_template('guidance.html', user_resume=user_resume)
+    roadmap_dict = {}
+    print("Roadmap Dict ke liye career_paths_list:")
+    print(career_paths_list)
+    for path in career_paths_list:
+        roadmap_dict[path[0]] = functions.generate_roadmap(path[0][:-13])
+
+    return render_template('guidance.html', user_resume=user_resume, career_paths_list=career_paths_list, structure_tips=structure_tips, content_improvement_tips=content_improvement_tips, tech_and_soft_skill_tips=tech_and_soft_skill_tips, experience_tips=experience_tips, achievement_tips=achievement_tips, ats_tips=ats_tips, modern_tips=modern_tips, tailoring_tips=tailoring_tips, roadmap_dict=roadmap_dict)
 
 @app.route('/start-interview')
 def start_interview():
