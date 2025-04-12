@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash , jsonify
 from models import db, User, Resume
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -7,6 +7,8 @@ from datetime import datetime, UTC
 import os
 import functions
 import sys
+from body_language_decoder import BodyLanguageDecoder
+
 
 
 
@@ -19,6 +21,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project_db.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
+
+decoder = BodyLanguageDecoder(model_path='Body_language.pkl')
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -222,6 +226,15 @@ def start_interview():
     
     return render_template('interview.html', user_resume=user_resume)
 
+@app.route('/process_image', methods=['POST'])
+def process_image():
+    if 'image' not in request.json:
+        return jsonify({'success': False, 'error': 'No image provided'})
+
+    base64_image = request.json['image'].split(',')[1] if ',' in request.json['image'] else request.json['image']
+    result = decoder.process_base64_image(base64_image)
+    
+    return jsonify(result)
 
 if __name__ == '__main__':
     app.run(debug=True)

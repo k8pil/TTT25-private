@@ -184,28 +184,15 @@
         justify-content: center;
         border: 2px solid var(--border-color);
       }
-      
-      .video-placeholder {
-        text-align: center;
-        color: var(--text-secondary);
-      }
-      
-      .video-placeholder i {
-        font-size: 64px;
-        margin-bottom: 15px;
-        opacity: 0.6;
-      }
-      
-      .video-placeholder p {
-        font-size: 18px;
-      }
-      
-      #userVideo {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: none;
-      }
+
+      #video-output {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
       
       /* Interview flex container */
       .interview-container {
@@ -455,6 +442,37 @@
           flex-direction: column;
         }
       }
+
+      .prediction-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .prediction {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+        }
+        .probability {
+            font-size: 20px;
+            color: #666;
+            margin-top: 10px;
+        }
+        .status {
+            margin-top: 20px;
+            color: #666;
+            font-style: italic;
+        }
+        .loading {
+            display: none;
+            color: #f39c12;
+            margin-top: 10px;
+        }
+        .controls {
+            margin-top: 20px;
+        }
     </style>
   </head>
   <body>
@@ -496,12 +514,22 @@
           
           <div class="interview-container">
             <div class="video-container">
-              <video id="userVideo" autoplay muted></video>
-              <div class="video-placeholder">
-                <i class="fas fa-user-circle"></i>
-                <p>Your video will appear here when you start the interview</p>
-              </div>
+              <!--video-->
+              <video id="webcam" autoplay playsinline style="display: none;"></video>
+              <img id="video-output" src="" alt="Webcam feed with analysis">
             </div>
+            <div class="prediction-container">
+              <div>Class: <span id="prediction" class="prediction">-</span></div>
+              <div>Probability: <span id="probability" class="probability">-</span></div>
+          </div>
+          
+          <div class="status">Status: <span id="status">Initializing...</span></div>
+          <div id="loading" class="loading">Processing...</div>
+          
+          <div class="controls">
+              <button id="start-btn">Start Webcam</button>
+              <button id="stop-btn" disabled>Stop</button>
+          </div>
             
             <div class="chat-container">
               <div class="messages-container" id="messages">
@@ -566,5 +594,144 @@
       </div>
       <p class="footer-copyright">© 2023 CAREER CONQUER. All rights reserved.</p>
     </footer>
+
+    <script>
+      const videoOutput = document.getElementById('video-output');
+      const webcamVideo = document.getElementById('webcam');
+      const predictionEl = document.getElementById('prediction');
+      const probabilityEl = document.getElementById('probability');
+      const statusEl = document.getElementById('status');
+      const loadingEl = document.getElementById('loading');
+      const startBtn = document.getElementById('start-btn');
+      const stopBtn = document.getElementById('stop-btn');
+      
+      let isRunning = false;
+      let isProcessing = false;
+      let stream = null;
+      
+      // Setup canvas for frame capture
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = 640;
+      canvas.height = 480;
+      
+      // Start webcam
+      async function startWebcam() {
+          try {
+              stream = await navigator.mediaDevices.getUserMedia({
+                  video: {
+                      width: 640,
+                      height: 480,
+                      facingMode: 'user'
+                  },
+                  audio: false
+              });
+              
+              webcamVideo.srcObject = stream;
+              await webcamVideo.play();
+              
+              // Update UI
+              isRunning = true;
+              startBtn.disabled = true;
+              stopBtn.disabled = false;
+              statusEl.textContent = 'Webcam active, analyzing body language...';
+              
+              // Start processing frames
+              processFrame();
+          } catch (error) {
+              console.error('Error accessing webcam:', error);
+              statusEl.textContent = 'Error: Could not access webcam. Please check permissions.';
+          }
+      }
+      
+      // Stop webcam
+      function stopWebcam() {
+          if (stream) {
+              stream.getTracks().forEach(track => track.stop());
+              webcamVideo.srcObject = null;
+              stream = null;
+          }
+          
+          // Update UI
+          isRunning = false;
+          startBtn.disabled = false;
+          stopBtn.disabled = true;
+          statusEl.textContent = 'Stopped.';
+          predictionEl.textContent = '-';
+          probabilityEl.textContent = '-';
+          videoOutput.src = '';
+      }
+      
+      // Process a single frame and send to server
+      async function processFrame() {
+          if (!isRunning) return;
+          if (isProcessing) {
+              // If still processing the previous frame, request another animation frame
+              requestAnimationFrame(processFrame);
+              return;
+          }
+          
+          try {
+              isProcessing = true;
+              loadingEl.style.display = 'block';
+              
+              // Draw the video frame to canvas
+              ctx.drawImage(webcamVideo, 0, 0, canvas.width, canvas.height);
+              
+              // Convert to base64
+              const imageData = canvas.toDataURL('image/jpeg', 0.8);
+              
+              // Send to server
+              const response = await fetch('/process_image', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ image: imageData })
+              });
+              
+              const result = await response.json();
+              
+              if (result.success) {
+                  // Display the processed image
+                  videoOutput.src = 'data:image/jpeg;base64,' + result.annotated_image_base64;
+                  
+                  // Update prediction display
+                  if (result.prediction) {
+                      predictionEl.textContent = result.prediction;
+                      probabilityEl.textContent = result.probability.toFixed(2);
+                  } else {
+                      predictionEl.textContent = 'No prediction';
+                      probabilityEl.textContent = '-';
+                  }
+                  
+                  statusEl.textContent = 'Analyzing...';
+              } else {
+                  // If error, show original frame
+                  videoOutput.src = imageData;
+                  statusEl.textContent = 'Error: ' + (result.error || 'Failed to process image');
+              }
+          } catch (error) {
+              console.error('Error processing frame:', error);
+              statusEl.textContent = 'Error: Failed to communicate with server';
+          } finally {
+              isProcessing = false;
+              loadingEl.style.display = 'none';
+              
+              // Process next frame if still running
+              if (isRunning) {
+                  // Use setTimeout to add a small delay between frames to reduce server load
+                  setTimeout(() => requestAnimationFrame(processFrame), 100);
+              }
+          }
+      }
+      
+      // Event listeners
+      startBtn.addEventListener('click', startWebcam);
+      stopBtn.addEventListener('click', stopWebcam);
+      
+      // Cleanup on page unload
+      window.addEventListener('beforeunload', stopWebcam);
+  </script>
   </body>
 </html>
