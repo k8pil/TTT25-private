@@ -610,11 +610,11 @@
                 {% for message in chat_history %}
                 {% if message[0] == "AI" %}
                 <div class="message ai">
-                  {{ message[1] }}
+                  {{ message[1]|safe }}
                 </div>
                 {% else %}
                 <div class="message user">
-                  {{ message[1] }}
+                  {{ message[1]|safe }}
                 </div>
                 {% endif %}
                 {% endfor %}
@@ -971,6 +971,11 @@
     const chatForm = document.getElementById('chat-form');
     const chatInput = document.getElementById('chat-input');
     const messagesContainer = document.getElementById('messages');
+    const micBtn = document.getElementById('micBtn');
+    
+    let isRecording = false;
+    let mediaRecorder;
+    let audioChunks = [];
 
     chatForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -980,6 +985,130 @@
             chatInput.value = '';
         }
     });
+
+    // Microphone button event listener
+    micBtn.addEventListener('click', function() {
+        if (isRecording) {
+            stopRecording();
+        } else {
+            startRecording();
+        }
+    });
+
+    // Start recording function
+    async function startRecording() {
+        try {
+            // Request microphone access
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            isRecording = true;
+            
+            // Update UI to show recording state
+            micBtn.style.backgroundColor = "rgba(255, 0, 0, 0.8)";
+            micBtn.title = "Stop Recording";
+            
+            // Create media recorder
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+            
+            // Add event listeners for data and stop
+            mediaRecorder.addEventListener('dataavailable', event => {
+                audioChunks.push(event.data);
+            });
+            
+            mediaRecorder.addEventListener('stop', () => {
+                // Create blob from audio chunks
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                
+                // Show processing message
+                addMessageToChat('user', 'Recording complete. Processing audio...');
+                
+                // Send audio to server
+                sendAudioToServer(audioBlob);
+            });
+            
+            // Start recording
+            mediaRecorder.start();
+            
+            // Add recording indicator message
+            addMessageToChat('system', 'Recording started... Speak clearly into your microphone.');
+            
+        } catch (error) {
+            console.error('Error accessing microphone:', error);
+            addMessageToChat('system', 'Error: Could not access microphone. Please check your permissions.');
+        }
+    }
+
+    // Stop recording function
+    function stopRecording() {
+        if (mediaRecorder && isRecording) {
+            mediaRecorder.stop();
+            isRecording = false;
+            
+            // Update UI to show not recording state
+            micBtn.style.backgroundColor = "rgba(255, 0, 0, 0.375)";
+            micBtn.title = "Start Recording";
+            
+            // Stop all audio tracks
+            mediaRecorder.stream.getTracks().forEach(track => track.stop());
+        }
+    }
+
+    // Send audio to server for processing
+    function sendAudioToServer(audioBlob) {
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'recording.wav');
+        
+        // Add a debug message
+        console.log('Sending audio to server...');
+        
+        fetch('/process_audio_recording', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            console.log('Server response received, status:', response.status);
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response data:', data);
+            if (data.success) {
+                // Show transcribed text
+                addMessageToChat('user', data.transcribed_text);
+                
+                // Check if we have an advisor response
+                if (data.advisor_response) {
+                    // Show the advisor response
+                    addMessageToChat('ai', data.advisor_response);
+                } else {
+                    // Instead of sending the message again, just fetch a response directly
+                    // from the interview advisor
+                    fetch('{{ url_for("start_interview") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: 'message=' + encodeURIComponent(data.transcribed_text)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Add AI response to chat
+                        addMessageToChat('ai', data.response);
+                    })
+                    .catch(error => console.error('Error:', error));
+                }
+            } else {
+                addMessageToChat('system', 'Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error sending audio to server:', error);
+            addMessageToChat('system', 'Error sending audio to server: ' + error.message);
+        });
+    }
 
     function sendMessage(message) {
         // Add user message to chat
@@ -1010,7 +1139,6 @@
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 });
-
   </script>
   </body>
 </html>

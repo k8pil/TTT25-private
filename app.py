@@ -16,12 +16,29 @@ import base64
 from video_analysis import InterviewMetricsTracker
 #from body_language_decoder import BodyLanguageDecoder
 import sqlite3
+from interview_advisor.integration import mainmenu, getresumesir
+import glob
+import requests
+import json
+import subprocess
+
+# Import TTS service for ElevenLabs integration
+try:
+    from interview_advisor.tts_service import TTSService
+    TTS_AVAILABLE = True
+    # Initialize TTS service
+    tts_service = TTSService(silent_mode=False)
+except Exception as e:
+    print(f"WARNING: TTS service could not be imported: {e}")
+    print("Text-to-speech functionality will be disabled.")
+    TTS_AVAILABLE = False
+    tts_service = None
 
 load_dotenv()
 
 app = Flask(__name__)
 
-app.secret_key = os.getenv('SECRET_KEY')
+app.secret_key = os.getenv('SECRET_KEY') or 'dev_secret_key_for_testing_only'
 
 # Ensure instance directory exists
 instance_path = os.path.join(os.getcwd(), 'instance')
@@ -654,7 +671,225 @@ def start_guidance():
 
     return render_template('guidance.html', user_resume=user_resume, career_paths_list=career_paths_list, structure_tips=structure_tips, content_improvement_tips=content_improvement_tips, tech_and_soft_skill_tips=tech_and_soft_skill_tips, experience_tips=experience_tips, achievement_tips=achievement_tips, ats_tips=ats_tips, modern_tips=modern_tips, tailoring_tips=tailoring_tips, roadmap_dict=roadmap_dict)
 
-from flask import jsonify
+# Function to get menu options as a formatted string for the interviewer's chat
+def get_formatted_menu():
+    menu_items = mainmenu()
+    menu_text = "Please select an option:<br><br>"
+    
+    for i, item in enumerate(menu_items, 1):
+        menu_text += f"{i}. {item}<br>"
+    
+    return menu_text
+
+# Function to get formatted resume analysis for the chat interface
+def get_resume_analysis_for_chat():
+    """
+    Retrieves the most recent resume analysis and formats it for display in the chat interface.
+    Returns a string with proper line breaks that will render in the chat.
+    """
+    try:
+        # Find the most recent analysis file in the cache directory
+        analysis_dir = "cache/resume_analysis"
+        if not os.path.exists(analysis_dir):
+            return "No resume analysis found. Please analyze your resume first."
+        
+        # Get the most recent analysis file
+        analysis_files = glob.glob(f"{analysis_dir}/analysis_*.txt")
+        if not analysis_files:
+            return "No resume analysis found. Please analyze your resume first."
+        
+        # Sort by modification time (most recent first)
+        most_recent_file = max(analysis_files, key=os.path.getmtime)
+        
+        # Read the file contents
+        with open(most_recent_file, 'r', encoding='utf-8') as f:
+            analysis_text = f.read()
+        
+        # Format the text with proper line breaks
+        formatted_text = "📋 RESUME ANALYSIS RESULTS\n\n" + analysis_text
+        
+        return formatted_text
+    
+    except Exception as e:
+        print(f"Error retrieving resume analysis: {e}")
+        return "There was an error retrieving your resume analysis."
+
+# Function to start a new interview and return the first question
+def start_new_interview():
+    """
+    Starts a new interview session and returns the initial interview question.
+    Uses ElevenLabs TTS if available.
+    """
+    try:
+        # Default introduction message
+        intro_message = "Hello! I'm your AI interviewer today. I'll be asking you some questions based on your resume. Let's get started with your introduction. Could you please tell me a bit about yourself and your background?"
+        
+        # Future integration - this would ideally connect to the interview_advisor module
+        # to get a more personalized introduction based on the resume
+        
+        # Convert to speech if TTS is available
+        if TTS_AVAILABLE and tts_service:
+            try:
+                # This would play the audio on the server, which isn't ideal for web
+                # In a real implementation, we would generate audio files and serve them to the client
+                tts_service.text_to_speech(intro_message)
+                print("TTS audio generated successfully")
+            except Exception as e:
+                print(f"TTS Error: {e}")
+        
+        # Format the intro message with line breaks instead of HTML
+        formatted_intro = intro_message
+        
+        # Store interview state in session
+        session['interview_active'] = True
+        session['interview_step'] = 1
+        
+        return formatted_intro
+    
+    except Exception as e:
+        print(f"Error starting interview: {e}")
+        return "There was an error starting the interview. Please try again."
+
+# Function to process an interview response and get the next question
+def process_interview_response(user_response):
+    """
+    Processes a user's interview response and returns the next appropriate question.
+    Uses ElevenLabs TTS if available.
+    """
+    try:
+        # Get current interview step
+        interview_step = session.get('interview_step', 0)
+        
+        # Define a list of interview questions
+        interview_questions = [
+            "Great! Now, could you tell me about your most challenging project and how you overcame obstacles?",
+            "Thank you for sharing that. What would you say are your top three technical skills, and how have you applied them in your work?",
+            "Interesting! Now, how do you stay updated with the latest trends and technologies in your field?",
+            "That's helpful to know. Could you describe a situation where you had to work with a difficult team member? How did you handle it?",
+            "Now, looking at your experience with [project mentioned in resume], what was your specific contribution to the team?",
+            "Where do you see yourself professionally in the next 3-5 years?",
+            "Thank you for all your responses. Is there anything else you'd like to add or any questions you have for me?"
+        ]
+        
+        # Increment the interview step
+        interview_step += 1
+        session['interview_step'] = interview_step
+        
+        # Check if we've reached the end of the interview
+        if interview_step >= len(interview_questions):
+            end_message = "Thank you for completing this interview! I hope you found it helpful. You can select another option from the menu or start a new interview if you'd like to practice more."
+            session['interview_active'] = False
+            session['interview_step'] = 0
+            
+            # Convert to speech if TTS is available
+            if TTS_AVAILABLE and tts_service:
+                try:
+                    tts_service.text_to_speech(end_message)
+                except Exception as e:
+                    print(f"TTS Error: {e}")
+            
+            return end_message
+        
+        # Get the next question
+        next_question = interview_questions[interview_step - 1]
+        
+        # Convert to speech if TTS is available
+        if TTS_AVAILABLE and tts_service:
+            try:
+                tts_service.text_to_speech(next_question)
+            except Exception as e:
+                print(f"TTS Error: {e}")
+        
+        # Return the question as plain text
+        return next_question
+    
+    except Exception as e:
+        print(f"Error processing interview response: {e}")
+        return "There was an error processing your response. Please try again."
+
+def generate_response(user_message):
+    menu_items = mainmenu()
+    response = ""
+    
+    # Check if we're in an active interview session
+    if session.get('interview_active', False):
+        # If we're in an active interview, process the user's response
+        return process_interview_response(user_message)
+    
+    # Loop through each menu item to check if the user selected one
+    for i, item in enumerate(menu_items, 1):
+        # Check if the message contains either the menu item name or its number
+        if item.lower() in user_message.lower() or str(i) == user_message.strip():
+            # Handle "Upload Resume" option specially
+            if i == 1 or "upload resume" in item.lower():
+                # Get the resume directory using getresumesir()
+                resume_dir = getresumesir()
+                
+                # Get user's resume from the database
+                if 'user_id' in session:
+                    user_resume = Resume.query.filter_by(user_id=session['user_id']).first()
+                    if user_resume:
+                        resume_path = user_resume.resume_path
+                        # Format the response with the resume path
+                        return f"Processing resume from: {resume_path}<br><br>Resume directory: {resume_dir}<br><br>Resume uploaded successfully! You can now proceed with the interview."
+                    else:
+                        return "No resume found. Please upload a resume on the dashboard first."
+                else:
+                    return "Please log in to access your resume."
+            
+            # Handle "Start Interview" option specially
+            if i == 2 or "start interview" in item.lower():
+                return start_new_interview()
+            
+            # Handle "Process Interview Answer" option
+            if i == 3 or "process interview answer" in item.lower():
+                if session.get('interview_active', False):
+                    return "Please type your answer to the current question in the chat."
+                else:
+                    return "No active interview. Please start an interview first by selecting option 2."
+            
+            # Handle "End Interview" option
+            if i == 4 or "end interview" in item.lower():
+                if session.get('interview_active', False):
+                    session['interview_active'] = False
+                    session['interview_step'] = 0
+                    return "Interview ended. Thank you for participating!"
+                else:
+                    return "No active interview to end. Please start an interview first by selecting option 2."
+            
+            # Handle "Resume Analysis" option specially
+            if i == 5 or "resume analysis" in item.lower():
+                # Return the formatted resume analysis for the chat
+                return get_resume_analysis_for_chat()
+            
+            # Handle "Change TTS Voice" option
+            if i == 6 or "change tts voice" in item.lower():
+                if TTS_AVAILABLE and tts_service:
+                    # This would ideally connect to the voice selection functionality
+                    return "Voice change functionality is available. In a full implementation, you would be able to select from different voices here."
+                else:
+                    return "TTS is not available in this environment."
+            
+            # Handle "Test Audio" option
+            if item.lower() == "test audio" or "test audio" in item.lower():
+                if TTS_AVAILABLE and tts_service:
+                    try:
+                        tts_service.test_audio()
+                        return "Audio test initiated. You should hear a test message if your audio is working correctly."
+                    except Exception as e:
+                        return f"Error testing audio: {e}"
+                else:
+                    return "TTS is not available in this environment."
+            
+            # Return standard response for other options
+            return f"You selected: {item}<br><br>Processing your request..."
+    
+    # If no valid option was selected, prompt the user again
+    response = "Please select a valid option from the menu:<br><br>"
+    for i, item in enumerate(menu_items, 1):
+        response += f"{i}. {item}<br>"
+    
+    return response
 
 @app.route('/start-interview', methods=['GET', 'POST'])
 def start_interview():
@@ -671,16 +906,37 @@ def start_interview():
     chat_history = session.get('chat_history', [])
 
     if not chat_history:
-        message = "Hello! I'm the AI interviewer. Are you ready DAIICT?"
-        chat_history = [("AI", message)]
+        # First, process the resume with the LLM
+        resume_dir = getresumesir()
+        
+        # This ensures the resume directory exists and is prepared
+        if not os.path.exists(resume_dir):
+            os.makedirs(resume_dir, exist_ok=True)
+        
+        # Process the resume with the LLM (this would ideally use the resume processor from interview_advisor)
+        processing_message = f"Processing your resume from: {resume_path}<br><br>Please wait..."
+        chat_history = [("AI", processing_message)]
+        
+        try:
+            # Here we would normally use the interview_advisor.resume_processor to process the resume
+            # But for now, we'll just simulate this step
+            
+            # After successful processing, display the main menu
+            interviewer_message = get_formatted_menu()
+            chat_history = [("AI", f"Your resume has been successfully processed!<br><br>{interviewer_message}")]
+        except Exception as e:
+            chat_history = [("AI", f"There was an error processing your resume: {str(e)}<br><br>Please try again later.")]
+            
+        # Save the chat history to the session
+        session['chat_history'] = chat_history
 
     if request.method == 'POST':
         user_message = request.form['message']
         chat_history.append(("User", user_message))
         
         ai_response = ""
-        #ai_response = functions.generate_response(user_message)
-        #chat_history.append(("AI", ai_response))
+        ai_response = generate_response(user_message)
+        chat_history.append(("AI", ai_response))
         
         session['chat_history'] = chat_history
         
@@ -1091,6 +1347,115 @@ def view_eye_metrics():
         'db_exists': db_exists,
         'data': formatted_data
     })
+
+# New route to process audio recordings
+@app.route('/process_audio_recording', methods=['POST'])
+def process_audio_recording():
+    print("=== Processing audio recording ===")
+    # Temporarily disabled user check for testing
+    # if 'user_id' not in session:
+    #     print("Error: User not logged in")
+    #     return jsonify({'success': False, 'error': 'User not logged in'})
+    
+    if 'audio' not in request.files:
+        print("Error: No audio file provided")
+        return jsonify({'success': False, 'error': 'No audio file provided'})
+    
+    try:
+        # Get the audio file from the request
+        audio_file = request.files['audio']
+        print(f"Received audio file: {audio_file.filename}, size: {audio_file.content_length} bytes")
+        
+        # Save the audio file temporarily
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        audio_filename = f"recording_{timestamp}.wav"
+        audio_path = os.path.join('temp_audio', audio_filename)
+        
+        # Ensure temp directory exists with proper permissions
+        os.makedirs('temp_audio', exist_ok=True)
+        print(f"Saving audio to: {os.path.abspath(audio_path)}")
+        
+        # Save the file
+        audio_file.save(audio_path)
+        print(f"Audio file saved successfully")
+        
+        # Transcribe audio to text using audio_to_text.py functionality
+        try:
+            # Import functionality from audio_to_text.py
+            from audio_to_text import transcribe_audio_file
+            
+            # Generate output filename
+            text_filename = f"transcript_{timestamp}.txt"
+            text_path = os.path.join('temp_audio', text_filename)
+            
+            print(f"Transcribing audio to {text_path}")
+            # Transcribe audio
+            output_file = transcribe_audio_file(audio_path, text_path)
+            
+            # Read transcribed text
+            if output_file and os.path.exists(output_file):
+                with open(output_file, 'r', encoding='utf-8') as file:
+                    transcribed_text = file.read().strip()
+                print(f"Transcription successful: '{transcribed_text}'")
+            else:
+                transcribed_text = "Sorry, I couldn't transcribe your audio. Please try again."
+                print("Transcription failed - no output file")
+            
+            # Return the transcribed text
+            print(f"Returning transcribed text: {transcribed_text}")
+            return jsonify({
+                'success': True,
+                'transcribed_text': transcribed_text
+            })
+            
+            # Cleanup temporary files
+            try:
+                os.remove(audio_path)
+                if output_file and os.path.exists(output_file):
+                    os.remove(output_file)
+            except Exception as e:
+                print(f"Error cleaning up temporary files: {e}")
+                
+        except Exception as e:
+            print(f"Error transcribing audio: {e}")
+            import traceback
+            traceback.print_exc()
+            return jsonify({
+                'success': False, 
+                'error': f'Error transcribing audio: {str(e)}'
+            })
+    
+    except Exception as e:
+        import traceback
+        print(f"Server error: {str(e)}")
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'error': f'Server error: {str(e)}'
+        })
+
+# Helper function to run run_interview_advisor.py as a subprocess
+def run_interview_advisor_process(text_input):
+    """
+    Run run_interview_advisor.py as a subprocess and pass the text input to it.
+    Returns the response from the advisor.
+    """
+    try:
+        # Construct the command
+        cmd = [sys.executable, 'run_interview_advisor.py', '--input', text_input]
+        
+        # Run the process
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        
+        # Return the stdout output
+        return result.stdout.strip()
+    except subprocess.CalledProcessError as e:
+        print(f"Error running run_interview_advisor.py: {e}")
+        print(f"Error output: {e.stderr}")
+        return None
+    except Exception as e:
+        print(f"Unexpected error running run_interview_advisor.py: {e}")
+        return None
 
 if __name__ == '__main__':
     app.run(debug=True)

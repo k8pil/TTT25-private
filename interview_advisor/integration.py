@@ -1,0 +1,74 @@
+"""
+Integration functions for the Interview Advisor
+
+This module provides integration functions for connecting the Interview Advisor
+with the main site.
+"""
+
+import os
+from typing import List, Optional
+
+# Path to resume files
+RESUME_DIR = "uploads/resumes"
+
+def mainmenu() -> List[str]:
+    """
+    Return the main menu options as a list of strings.
+    
+    Returns:
+        List[str]: A list of menu option strings
+    """
+    menu_options = [
+        "Upload Resume",
+        "Start Interview",
+        "Process Interview Answer",
+        "End Interview & Get Recommendations",
+        "Resume Analysis",
+        "Change TTS Voice",
+        "Test Audio",
+        "Configure Speech Input",
+        "Exit"
+    ]
+    return menu_options
+
+def getresumesir() -> str:
+    """
+    Get the path to the resume directory where resume files are stored.
+    
+    Returns:
+        str: Path to the resume directory
+    """
+    # Ensure the resume directory exists
+    if not os.path.exists(RESUME_DIR):
+        os.makedirs(RESUME_DIR, exist_ok=True)
+        
+    return RESUME_DIR
+
+def get_resume_path(resume_id: str) -> Optional[str]:
+    """
+    Get the full path to a specific resume file.
+    
+    Args:
+        resume_id (str): The ID or filename of the resume
+        
+    Returns:
+        Optional[str]: The full path to the resume file, or None if not found
+    """
+    resume_path = os.path.join(RESUME_DIR, resume_id)
+    
+    if os.path.exists(resume_path):
+        return resume_path
+    
+    return None
+
+def list_available_resumes() -> List[str]:
+    """
+    List all available resume files in the resume directory.
+    
+    Returns:
+        List[str]: A list of resume filenames
+    """
+    if not os.path.exists(RESUME_DIR):
+        return []
+        
+    return [f for f in os.listdir(RESUME_DIR) if os.path.isfile(os.path.join(RESUME_DIR, f))] 
