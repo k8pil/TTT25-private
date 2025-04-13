@@ -323,11 +323,11 @@ def start_guidance():
         flash('Please log in.', 'error')
         return redirect(url_for('login'))
     user_resume = Resume.query.filter_by(user_id=session['user_id']).first()
-    resume_path = user_resume.resume_path
-    if not resume_path:
+    if not user_resume:
         flash('Please upload a resume first.', 'error')
         return redirect(url_for('dashboard'))
-    
+    resume_path = user_resume.resume_path
+
     default_resume_path = resume_path
     resume_text = ""
     analysis = {}
@@ -516,10 +516,10 @@ def start_interview():
         return redirect(url_for('login'))
     
     user_resume = Resume.query.filter_by(user_id=session['user_id']).first()
-    resume_path = user_resume.resume_path
-    if not resume_path:
+    if not user_resume:
         flash('Please upload a resume first.', 'error')
         return redirect(url_for('dashboard'))
+    resume_path = user_resume.resume_path
     
     chat_history = session.get('chat_history', [])
 
