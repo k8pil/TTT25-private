@@ -1,299 +1,2165 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Career / Conquer - AI Interview Preparation</title>
-    <link
-      rel="icon"
-      type="image/png"
-      href="{{ url_for('static', filename='logo.png') }}"
-    />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='modern.css') }}"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <!-- GSAP Animation Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="{{ url_for('static', filename='theme.js') }}"></script>
-    <script src="{{ url_for('static', filename='animations.js') }}"></script>
-    <style>
-      /* Additional styles for animations and new sections */
-      .hero-section {
-        position: relative;
-        overflow: hidden;
-      }
-      
-      .hero-parallax-bg {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 120%;
-        background: linear-gradient(135deg, var(--accent-color) 0%, #6c5ce7 100%);
-        opacity: 0.05;
-        transform-origin: top center;
-        z-index: 0;
-      }
-      
-      .floating-element {
-        position: absolute;
-        border-radius: 50%;
-        background: var(--accent-color);
-        opacity: 0.1;
-        z-index: 1;
-      }
-      
-      .competitor-section {
-        padding: 80px 40px;
-        background-color: var(--bg-secondary);
-      }
-      
-      .competitor-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 30px;
-        margin-top: 40px;
-      }
-      
-      .competitor-card {
-        background-color: var(--card-bg);
-        border-radius: 8px;
-        padding: 25px;
-        box-shadow: var(--shadow);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-      }
-      
-      .competitor-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-      }
-      
-      .competitor-name {
-        font-size: 1.2rem;
-        font-weight: 600;
-        margin-bottom: 10px;
-        color: var(--text-primary);
-      }
-      
-      .our-advantage {
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid var(--border-color);
-      }
-      
-      .advantage-title {
-        font-weight: 600;
-        color: var(--accent-color);
-        margin-bottom: 5px;
-      }
-      
-      .cta-features {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
-        margin-bottom: 30px;
-        font-size: 1.1rem;
-        color: var(--accent-color);
-        font-weight: 500;
-      }
-      
-      @media (max-width: 768px) {
-        .competitor-grid {
-          grid-template-columns: 1fr;
-        }
-        .cta-features {
-          flex-direction: column;
-          gap: 10px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Theme Toggle Button -->
-    <button class="theme-toggle" aria-label="Toggle dark/light mode">
-      <!-- Icon will be inserted by JavaScript -->
-    </button>
-    
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CareerConquer - Your personal career guidance platform with AI-powered insights, interview preparation, and personalized recommendations.">
+  <meta name="keywords" content="career guidance, interview preparation, resume analysis, job search, career roadmap">
+  <title>CareerConquer | Personalized Career Guidance</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<style>
+:root {
+  --primary-color: #2e7d32;
+  --secondary-color: #4caf50;
+  --accent-color: #8bc34a;
+  --light-bg: #f1f8e9;
+  --dark-text: #1b5e20;
+  --light-text: #fff;
+  --shadow: 0 5px 15px rgba(46, 125, 50, 0.1);
+  --border-radius: 12px;
+  --font-size-base: 16px;
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-md: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem; /* 18px */
+  --font-size-xl: 1.25rem;  /* 20px */
+  --gradient: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+  --transition: all 0.3s ease;
+}
+
+/* Base Styles */
+html, body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+  color: var(--dark-text);
+  background-color: var(--light-bg);
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234caf50' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  line-height: 1.6;
+  font-size: var(--font-size-base);
+  display: block;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  box-sizing: border-box;
+}
+
+/* Button Styles */
+.btn {
+  cursor: pointer;
+  padding: 0.8rem 1.5rem;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  font-size: var(--font-size-md);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+  color: var(--light-text);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(46, 125, 50, 0.4);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+}
+
+.btn-secondary:hover {
+  background-color: rgba(46, 125, 50, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Card Styles */
+.card {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Section Styles */
+.section {
+  padding: 5rem 0;
+  width: 100%;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  text-align: center;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+  border-radius: 2px;
+}
+
+/* Grid Layouts */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  width: 100%;
+}
+
+/* Navbar Styles */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background-color: rgba(255, 255, 255, 0.95);
+  z-index: 1000;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.navbar.scrolled {
+  background-color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  position: relative;
+}
+
+.navbar-logo {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+  flex: 0 0 auto;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary-color);
+}
+
+.conquer-text {
+  background: linear-gradient(45deg, #2e7d32, #8bc34a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 2.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  flex: 0 0 auto;
+}
+
+.navbar-links li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+  font-size: 1.05rem;
+  padding: 0.5rem 0;
+}
+
+.navbar-links li a:hover {
+  color: var(--primary-color);
+}
+
+.navbar-links li a::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(45deg, #2e7d32, #8bc34a);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+.navbar-links li a:hover::after {
+  transform: scaleX(1);
+}
+
+.navbar-auth {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+.mobile-menu-toggle {
+  display: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--primary-color);
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding-top: 85px;
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.05) 0%, rgba(139, 195, 74, 0.05) 100%);
+  overflow: hidden;
+  touch-action: pan-y;
+  width: 100%;
+  max-width: 100%;
+}
+
+.hero-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+  position: relative;
+  z-index: 2;
+  padding: 2rem 0;
+  width: 100%;
+  max-width: 100%;
+  margin-left: 150px;
+}
+
+.hero-content {
+  flex: 2;
+  max-width: 600px;
+  animation: fadeInLeft 1s ease-out forwards;
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.hero-content h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(45deg, #2e7d32, #8bc34a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero-content p {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  color: #555;
+}
+
+.hero-image {
+  flex: 1;
+  max-width: 700px;
+  /* padding-right: 400px; */
+  margin-right: 100px;
+  animation: float 6s ease-in-out infinite, fadeInRight 1s ease-out forwards;
+  border-radius: 50%;
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.hero-image img {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 15px 20px rgba(46, 125, 50, 0.2));
+  border-radius: 15px;
+  transition: all 0.4s ease;
+  box-shadow: 0 10px 25px rgba(46, 125, 50, 0.1);
+  animation: professional-float 6s ease-in-out infinite;
+}
+
+.hero-image img:hover {
+  filter: drop-shadow(0 20px 25px rgba(46, 125, 50, 0.25));
+  transform: translateY(-10px);
+}
+
+@keyframes professional-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+/* Features Section */
+.features-section {
+  background-color: white;
+  position: relative;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.feature-card {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  position: relative;
+  transition: var(--transition);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--gradient);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.feature-card:hover::before {
+  transform: scaleX(1);
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(45deg, rgba(46, 125, 50, 0.1), rgba(139, 195, 74, 0.1));
+  border-radius: 50%;
+  color: var(--primary-color);
+}
+
+.feature-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.feature-card p {
+  margin-bottom: 1.5rem;
+  color: #555;
+  flex-grow: 1;
+}
+
+.feature-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  background: var(--gradient);
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+.feature-match {
+  margin-bottom: 1.5rem;
+}
+
+.match-progress {
+  width: 100%;
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  margin: 0.5rem 0;
+  overflow: hidden;
+}
+
+.match-bar {
+  height: 100%;
+  background: var(--gradient);
+  border-radius: 4px;
+}
+
+/* Call To Action Section */
+.cta-section {
+  background-color: #597164;
+  position: relative;
+  color: white;
+  text-align: center;
+  padding: 3.5rem 0;
+  overflow: hidden;
+}
+
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 10px;
+  background-color: #d4ddd1;
+}
+
+.cta-section::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background-color: #c09474;
+  z-index: 0;
+}
+
+.cta-container {
+  text-align: center;
+  color: white;
+  position: relative;
+  z-index: 2;
+}
+
+.cta-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: white;
+}
+
+.cta-section p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  color: #f0f0f0;
+}
+
+.btn-cta {
+  background: linear-gradient(90deg, #2e7d32, #8bc34a) !important;
+  color: var(--light-text);
+  font-size: 1.125rem;
+  font-weight: 700;
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  box-shadow: 0 10px 25px rgba(46, 125, 50, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.btn-cta:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(46, 125, 50, 0.4);
+}
+
+/* Tools Section */
+.tools-section {
+  background-color: var(--light-bg);
+}
+
+.tools-container {
+  margin-top: 3rem;
+}
+
+.tool-item {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+}
+
+.tool-item:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.tool-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, rgba(46, 125, 50, 0.1), rgba(139, 195, 74, 0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: var(--primary-color);
+  margin-right: 2rem;
+  flex-shrink: 0;
+}
+
+.tool-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.tool-content h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: var(--dark-text);
+}
+
+.tool-content p {
+  margin-bottom: 1.5rem;
+  color: #555;
+  flex-grow: 1;
+}
+
+.tool-content .btn {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+/* Success Stories Section */
+.success-stories-section {
+  background-color: white;
+}
+
+.success-theme {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.success-theme h3 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--dark-text);
+}
+
+.success-theme p {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.testimonials-carousel {
+  max-width: 700px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.testimonial-card {
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+}
+
+.testimonial-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.testimonial-image {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 1rem;
+  border: 3px solid transparent;
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+}
+
+.testimonial-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.testimonial-info h4 {
+  font-size: 1.2rem;
+  margin-bottom: 0.25rem;
+}
+
+.testimonial-info p {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.testimonial-content {
+  margin-bottom: 1.5rem;
+}
+
+.testimonial-quote {
+  position: relative;
+  padding-left: 2rem;
+  margin-bottom: 2rem;
+}
+
+.quote-icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  opacity: 0.3;
+}
+
+.testimonial-quote p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--dark-text);
+}
+
+.testimonial-metric {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  background: linear-gradient(45deg, rgba(46, 125, 50, 0.05), rgba(139, 195, 74, 0.05));
+}
+
+.metric-label {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+
+.metric-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.carousel-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.carousel-control {
+  background: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  color: var(--primary-color);
+  transition: all 0.3s ease;
+}
+
+.carousel-control:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.carousel-indicators {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0 1rem;
+}
+
+.indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ddd;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.indicator.active {
+  background-color: var(--primary-color);
+  transform: scale(1.3);
+}
+
+/* Footer */
+.footer {
+  background-color: #151629;
+  color: var(--light-text);
+  padding: 5rem 0 2rem;
+  position: relative;
+  z-index: 1;
+  margin-top: 0;
+  border-top: none;
+}
+
+.footer-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3rem;
+}
+
+.footer-logo {
+  grid-column: 1 / 2;
+}
+
+.footer-logo h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  font-weight: 800;
+}
+
+.footer-logo p {
+  color: #ccc;
+  margin-bottom: 1.5rem;
+}
+
+.footer-links {
+  grid-column: 2 / 3;
+}
+
+.footer-links h3 {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  display: inline-block;
+}
+
+.footer-links h3::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+}
+
+.footer-links ul {
+  list-style: none;
+}
+
+.footer-links ul li {
+  margin-bottom: 0.8rem;
+}
+
+.footer-links ul li a {
+  color: #ccc;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-links ul li a:hover {
+  color: var(--light-text);
+}
+
+.footer-contact {
+  grid-column: 3 / 4;
+}
+
+.footer-contact h3 {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  display: inline-block;
+}
+
+.footer-contact h3::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+}
+
+.contact-info {
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.contact-info i {
+  color: var(--primary-color);
+  font-size: 1.2rem;
+  min-width: 20px;
+}
+
+.footer-newsletter {
+  grid-column: 4 / 5;
+}
+
+.footer-newsletter h3 {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  display: inline-block;
+}
+
+.footer-newsletter h3::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+}
+
+.footer-newsletter p {
+  color: #ccc;
+  margin-bottom: 1.5rem;
+}
+
+.newsletter-form {
+  position: relative;
+}
+
+.newsletter-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 5px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.copyright {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 3rem;
+  padding-top: 2rem;
+  text-align: center;
+}
+
+.social-links {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.social-links a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+  transform: translateY(-3px);
+}
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .footer-container {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 3rem;
+  }
+  
+  .footer-logo {
+    grid-column: 1 / 2;
+  }
+  
+  .footer-links {
+    grid-column: 2 / 3;
+  }
+  
+  .footer-contact {
+    grid-column: 1 / 2;
+  }
+  
+  .footer-newsletter {
+    grid-column: 2 / 3;
+  }
+}
+
+@media (max-width: 992px) {
+  .navbar-links {
+    gap: 1.5rem;
+  }
+  
+  .hero-container {
+    flex-direction: column;
+    text-align: center;
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+  }
+
+  .hero-content {
+    max-width: 100%;
+  }
+
+  .hero-content h1 {
+    font-size: 2.5rem;
+  }
+  
+  .hero-content p {
+    font-size: 1.125rem;
+  }
+
+  .hero-image {
+    max-width: 90%;
+    order: -1;
+    margin-bottom: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    /* Slightly increase base font size on mobile */
+    --font-size-base: 16px;
+  }
+  
+  h1 {
+    font-size: 2rem !important;
+  }
+  
+  h2 {
+    font-size: 1.75rem !important;
+  }
+  
+  h3 {
+    font-size: 1.25rem !important;
+  }
+  
+  p {
+    font-size: var(--font-size-md) !important;
+  }
+  
+  .section {
+    padding: 3rem 0;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .container {
+    padding: 0 1.5rem;
+  }
+
+  .navbar-container {
+    justify-content: space-between;
+  }
+
+  .mobile-menu-toggle {
+    display: block;
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .navbar-links {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    flex-direction: column;
+    background-color: white;
+    padding: 2rem;
+    gap: 1.5rem;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-150%);
+    transition: transform 0.4s ease;
+    z-index: 999;
+    align-items: center;
+  }
+
+  .navbar-links.active {
+    transform: translateY(0);
+    left: 0;
+  }
+  
+  .navbar-links li {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .navbar-links li a {
+    display: block;
+    padding: 0.75rem 0;
+    font-size: 1rem;
+  }
+
+  .navbar-auth {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 1.5rem;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    transform: translateY(100%);
+    transition: transform 0.4s ease;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+  }
+  
+  .navbar-auth .btn {
+    flex: 1;
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  .navbar-auth.active {
+    transform: translateY(0);
+  }
+  
+  .navbar-logo {
+    margin-right: 0;
+  }
+  
+  .footer-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .footer-logo, .footer-links, .footer-contact, .footer-newsletter {
+    grid-column: 1;
+  }
+  
+  .hero-section {
+    padding-top: 70px;
+  }
+  
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+  
+  .hero-content p {
+    font-size: 1rem;
+  }
+  
+  .hero-content .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  /* Ensure touch targets are large enough */
+  .btn {
+    min-height: 44px;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  /* Fix for input elements on mobile to prevent zoom */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Scroll Progress Bar */
+.scroll-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background-color: rgba(0, 0, 0, 0.1);
+  z-index: 1001;
+}
+
+.scroll-progress-indicator {
+  height: 100%;
+  background: linear-gradient(to right, #2e7d32, #8bc34a);
+  width: 0%;
+  transition: width 0.1s ease;
+}
+
+/* Animated Background */
+.animated-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.dot {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #2e7d32, #8bc34a);
+  opacity: 0.2;
+  animation: float-around 15s infinite ease-in-out;
+}
+
+.dot-1 {
+  width: 180px;
+  height: 180px;
+  top: 10%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.dot-2 {
+  width: 120px;
+  height: 120px;
+  top: 60%;
+  left: 15%;
+  animation-delay: -2s;
+}
+
+.dot-3 {
+  width: 200px;
+  height: 200px;
+  top: 30%;
+  right: 10%;
+  animation-delay: -4s;
+}
+
+.dot-4 {
+  width: 150px;
+  height: 150px;
+  bottom: 20%;
+  right: 20%;
+  animation-delay: -6s;
+}
+
+.dot-5 {
+  width: 100px;
+  height: 100px;
+  bottom: 40%;
+  left: 30%;
+  animation-delay: -8s;
+}
+
+@keyframes float-around {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(5%, 5%) scale(1.1);
+  }
+  50% {
+    transform: translate(0, 10%) scale(1);
+  }
+  75% {
+    transform: translate(-5%, 5%) scale(0.9);
+  }
+}
+
+/* Animated Hero Styles */
+.animated-heading {
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+.animated-heading .highlight {
+  color: var(--secondary-color);
+  position: relative;
+  display: inline-block;
+}
+
+.animated-heading .highlight::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background-color: rgba(139, 195, 74, 0.3);
+  z-index: -1;
+  transform: translateY(5px);
+  animation: slideIn 0.5s 0.5s ease forwards;
+}
+
+.animated-features {
+  margin: 1.5rem 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  opacity: 0;
+  transform: translateX(-20px);
+  animation: fadeInRight 0.5s ease forwards;
+}
+
+.feature-item:nth-child(1) {
+  animation-delay: 0.7s;
+}
+
+.feature-item:nth-child(2) {
+  animation-delay: 0.9s;
+}
+
+.feature-item:nth-child(3) {
+  animation-delay: 1.1s;
+}
+
+.feature-icon-small {
+  font-size: 1.25rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(45deg, rgba(46, 125, 50, 0.2), rgba(139, 195, 74, 0.2));
+  color: var(--primary-color);
+  border-radius: 50%;
+}
+
+.hero-content .btn {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.5s 1.3s ease forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInRight {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Authentication Modals */
+.auth-modal {
+  display: none;
+  position: fixed;
+  z-index: 1100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  overflow: hidden;
+}
+
+.auth-modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 40%, rgba(76, 175, 80, 0.1) 0%, transparent 25%),
+              radial-gradient(circle at 70% 60%, rgba(139, 195, 74, 0.1) 0%, transparent 25%);
+  pointer-events: none;
+}
+
+.bokeh-effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.bokeh {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(76, 175, 80, 0.3) 0%, rgba(76, 175, 80, 0) 70%);
+  animation: float-bokeh 8s infinite ease-in-out;
+  opacity: 0.6;
+}
+
+.bokeh:nth-child(1) {
+  width: 150px;
+  height: 150px;
+  left: 20%;
+  top: 15%;
+  animation-delay: 0s;
+}
+
+.bokeh:nth-child(2) {
+  width: 120px;
+  height: 120px;
+  right: 25%;
+  top: 30%;
+  animation-delay: -2s;
+  background: radial-gradient(circle at center, rgba(139, 195, 74, 0.3) 0%, rgba(139, 195, 74, 0) 70%);
+}
+
+.bokeh:nth-child(3) {
+  width: 180px;
+  height: 180px;
+  left: 30%;
+  bottom: 20%;
+  animation-delay: -4s;
+  background: radial-gradient(circle at center, rgba(76, 175, 80, 0.25) 0%, rgba(76, 175, 80, 0) 70%);
+}
+
+@keyframes float-bokeh {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-10px, 10px);
+  }
+  50% {
+    transform: translate(5px, -5px);
+  }
+  75% {
+    transform: translate(10px, 5px);
+  }
+}
+
+.auth-modal-content {
+  background-color: rgba(255, 255, 255, 0.95);
+  margin: auto;
+  width: 90%;
+  max-width: 450px;
+  border-radius: var(--border-radius);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 
+              0 0 0 1px rgba(255, 255, 255, 0.2);
+  position: relative;
+  padding: 2rem;
+  animation: modalFadeIn 0.3s;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-modal .close {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  color: #777;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.auth-modal .close:hover {
+  color: var(--primary-color);
+}
+
+.auth-modal h2 {
+  margin-bottom: 1.5rem;
+  color: var(--dark-text);
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.auth-modal .form-group {
+  margin-bottom: 1.2rem;
+}
+
+.auth-modal label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.auth-modal input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.auth-modal input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
+  outline: none;
+}
+
+.auth-modal button {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.auth-modal p {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #666;
+}
+
+.auth-modal a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-modal a:hover {
+  text-decoration: underline;
+}
+
+.error-message {
+  display: none;
+  color: #e53935;
+  background-color: rgba(229, 57, 53, 0.1);
+  padding: 0.8rem;
+  border-radius: var(--border-radius);
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* Authentication Messages */
+.message {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  padding: 1rem 1.5rem;
+  border-radius: var(--border-radius);
+  background: white;
+  color: #333;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  z-index: 1200;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s, transform 0.3s;
+  max-width: 90%;
+}
+
+.message.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.message.success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border-left: 4px solid #2e7d32;
+}
+
+.message.error {
+  background-color: #ffebee;
+  color: #c62828;
+  border-left: 4px solid #c62828;
+}
+
+.message.info {
+  background-color: #e3f2fd;
+  color: #0277bd;
+  border-left: 4px solid #0277bd;
+}
+
+.user-greeting {
+  margin-right: 1rem;
+  color: var(--dark-text);
+  font-weight: 500;
+} 
+
+</style>
+<body>
+  <div class="app">
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+      <div class="container navbar-container">
+        <a href="#" class="navbar-logo">
+          <span class="logo-text">Career / <span class="conquer-text">Conquer</span></span>
+        </a>
+
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+          <i class="fas fa-bars"></i>
+        </button>
+
+        <ul class="navbar-links" id="navbar-links">
+          <li><a href="#">Home</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#tools">Tools</a></li>
+          <li><a href="#success-stories">Success Stories</a></li>
+        </ul>
+
+        <div class="navbar-auth" id="navbar-auth">
+          <a href="{{ url_for('login') }}" class="btn btn-secondary">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </a>
+          <a href="{{ url_for('signup') }}" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i> Sign Up
+          </a>
+        </div>
+      </div>
+    </nav>
+
     <!-- Hero Section -->
     <section class="hero-section">
-      <div class="hero-parallax-bg"></div>
-      <!-- Floating elements for visual interest -->
-      <div class="floating-element" style="width: 100px; height: 100px; top: 20%; left: 10%;"></div>
-      <div class="floating-element" style="width: 60px; height: 60px; top: 60%; left: 15%;"></div>
-      <div class="floating-element" style="width: 80px; height: 80px; top: 30%; right: 15%;"></div>
-      <div class="floating-element" style="width: 40px; height: 40px; top: 70%; right: 10%;"></div>
-      
-      <div class="hero-content">
-        <h1 class="hero-title">Career / Conquer</h1>
-        <p class="hero-subtitle">AI-powered interview preparation that analyzes your performance in real-time with personalized feedback</p>
-        <div class="cta-buttons">
-          <a href="{{ url_for('signup') }}" class="cta-button primary-cta">Get Started</a>
-          <a href="{{ url_for('login') }}" class="cta-button secondary-cta">Login</a>
+      <div class="animated-background">
+        <div class="dot dot-1"></div>
+        <div class="dot dot-2"></div>
+        <div class="dot dot-3"></div>
+        <div class="dot dot-4"></div>
+        <div class="dot dot-5"></div>
+      </div>
+      <div class="container hero-container">
+        <div class="hero-content">
+          <h1 class="animated-heading">Conquer Your Career <span class="highlight">Journey</span>.</h1>
+          <div class="animated-features">
+            <div class="feature-item">
+              <i class="fas fa-comment-dots feature-icon-small"></i>
+              <span>Real-time Interview Prep</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-route feature-icon-small"></i>
+              <span>Personalized Guidance</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-lightbulb feature-icon-small"></i>
+              <span>Career Clarity</span>
+            </div>
+          </div>
+          <a href="#" class="btn btn-primary">
+            <i class="fas fa-file-upload"></i> Get Started — Upload Resume
+          </a>
+        </div>
+        <div class="hero-image">
+          <img src="{{ url_for('static', filename='home2.png') }}" alt="Career dashboard interface">
         </div>
       </div>
     </section>
-    
+
     <!-- Features Section -->
-    <section class="features-section">
-      <h2 class="section-title">WHY CHOOSE CAREER / CONQUER?</h2>
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">📊</div>
-          <h3 class="feature-title">Resume-Based Questions</h3>
-          <p class="feature-description">Our AI analyzes your resume to generate tailored interview questions specific to your experience and industry.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🎯</div>
-          <h3 class="feature-title">Real-Time Feedback</h3>
-          <p class="feature-description">Get in-session tips and immediate feedback during your mock interview, unlike other platforms that only provide post-interview analysis.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">😊</div>
-          <h3 class="feature-title">Emotional Intelligence</h3>
-          <p class="feature-description">Advanced sentiment analysis evaluates your confidence, tone, and body language to help you project the right presence.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🔊</div>
-          <h3 class="feature-title">Hybrid Interview Options</h3>
-          <p class="feature-description">Choose between AI-powered practice or connect with real mentors for live feedback in our unique hybrid approach.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">📈</div>
-          <h3 class="feature-title">Progress Tracking</h3>
-          <p class="feature-description">Track your improvement with detailed analytics and gamified achievements that keep you motivated throughout your interview preparation journey.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">👨‍💼</div>
-          <h3 class="feature-title">Industry Mentors</h3>
-          <p class="feature-description">Access AI mentors trained on real industry expert data, providing domain-specific guidance for your target role and sector.</p>
+    <section id="features" class="section features-section">
+      <div class="container">
+        <h2 class="section-title">Key Features</h2>
+        
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-file-alt"></i>
+            </div>
+            <h3>Resume Upload</h3>
+            <p>Supports file formats: PDF, DOC, DOCX. Unlocks tailored interview questions and detailed resume analysis.</p>
+            <div class="feature-badge">Quick Analysis</div>
+          </div>
+          
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-road"></i>
+            </div>
+            <h3>Personalized Career Guidance</h3>
+            <p>Based on user-uploaded resume, skills, and career aspirations.</p>
+            <div class="feature-match">
+              <span>Example role match: Data Scientist</span>
+              <div class="match-progress">
+                <div class="match-bar" style="width: 60%"></div>
+              </div>
+              <span>Match: 60%</span>
+            </div>
+            <div class="feature-badge">High Growth Potential</div>
+          </div>
+          
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-comments"></i>
+            </div>
+            <h3>Real-time Interview Simulation</h3>
+            <p>Adaptive question sets based on the uploaded resume. Includes response analysis, feedback, and emotional intelligence metrics.</p>
+            <div class="feature-badge">AI-Powered</div>
+          </div>
+          
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-road"></i>
+            </div>
+            <h3>Career Roadmap Tool</h3>
+            <p>Milestone-based planning for career progression. Insights for resume improvement and skill gap analysis.</p>
+            <div class="feature-badge">Personalized Path</div>
+          </div>
+          
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-tachometer-alt"></i>
+            </div>
+            <h3>Interactive Dashboard</h3>
+            <p>Sections: Dashboard | Profile | Logout. Drag-and-drop upload area with file preview functionality.</p>
+            <div class="feature-badge">User-Friendly</div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-user-graduate"></i>
+            </div>
+            <h3>Learning Resources Hub</h3>
+            <p>Access curated learning materials based on your career goals. Courses, tutorials, and certification paths to enhance your skills.</p>
+            <div class="feature-badge">Continuous Growth</div>
+          </div>
         </div>
       </div>
     </section>
-    
-    <!--
-    <section class="competitor-section">
-      <h2 class="section-title">HOW WE COMPARE</h2>
-      <div class="competitor-grid">
-        <div class="competitor-card">
-          <h3 class="competitor-name">Interviewer.ai</h3>
-          <p>Resume-based question generation and AI-powered video interviews with automated performance insights.</p>
-          <div class="our-advantage">
-            <p class="advantage-title">Our Advantage</p>
-            <p>We offer more customizable industry-specific questions and provide in-session feedback tips that Interviewer.ai lacks.</p>
-          </div>
-        </div>
-        <div class="competitor-card">
-          <h3 class="competitor-name">HireVue</h3>
-          <p>Enterprise-level AI video interviews with facial analysis and sentiment detection.</p>
-          <div class="our-advantage">
-            <p class="advantage-title">Our Advantage</p>
-            <p>We reframe emotional analytics for learning, not screening, and provide a personalized learning dashboard that HireVue doesn't offer.</p>
-          </div>
-        </div>
-        <div class="competitor-card">
-          <h3 class="competitor-name">Interviewing.io</h3>
-          <p>Real-time anonymous technical interviews with peer-to-peer mock interviews.</p>
-          <div class="our-advantage">
-            <p class="advantage-title">Our Advantage</p>
-            <p>We combine AI-powered sessions with optional live interviews in a unique hybrid approach that spans all industries.</p>
-          </div>
-        </div>
-      </div>
-    </section> -->
-    
-    <!-- How It Works Section -->
-    <section class="how-it-works">
-      <h2 class="section-title">HOW IT WORKS</h2>
-      <div class="steps-container">
-        <div class="step-card">
-          <div class="step-number">1</div>
-          <h3 class="step-title">Create an Account</h3>
-          <p class="step-description">Sign up and select your industry to personalize your experience.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-number">2</div>
-          <h3 class="step-title">Upload Your Resume</h3>
-          <p class="step-description">Our NLP technology analyzes your resume to generate tailored questions.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-number">3</div>
-          <h3 class="step-title">Choose Your Mode</h3>
-          <p class="step-description">Select AI-powered practice or schedule a live session with a mentor.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-number">4</div>
-          <h3 class="step-title">Get Comprehensive Feedback</h3>
-          <p class="step-description">Receive real-time tips and detailed post-interview analysis with a personalized improvement plan.</p>
-        </div>
-      </div>
-    </section>
-    
-    <!-- Testimonials Section -->
-    <section class="testimonials">
-      <h2 class="section-title">SUCCESS STORIES</h2>
-      <div class="testimonial-container">
-        <div class="testimonial-card">
-          <p class="testimonial-text">"After practicing with CAREER / CONQUER for just two weeks, I felt so much more confident in my actual interview. The real-time feedback and resume-based questions were exactly what I needed. I got the job at my dream tech company!"</p>
-          <div class="testimonial-author">
-            <div class="author-info">
-              <p class="author-name">Sarah Johnson</p>
-              <p class="author-position">Software Engineer at Tech Corp</p>
+
+    <!-- Tools Section -->
+    <section id="tools" class="section tools-section">
+      <div class="container">
+        <h2 class="section-title">Additional Tools</h2>
+        
+        <div class="tools-container grid-container">
+          <div class="tool-item">
+            <div class="tool-icon">
+              <i class="fas fa-search"></i>
+            </div>
+            <div class="tool-content">
+              <h3>Resume Analyzer Tool</h3>
+              <p>Get comprehensive feedback on your resume with actionable suggestions for improvement. Our AI-driven analysis identifies strengths and weaknesses.</p>
+              <button class="btn btn-secondary">Analyze My Resume</button>
             </div>
           </div>
-        </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"The emotional intelligence assessment was a game-changer for me. Unlike other platforms that just analyze answers, CAREER / CONQUER helped me understand how I was coming across and provided specific tips to improve my presence."</p>
-          <div class="testimonial-author">
-            <div class="author-info">
-              <p class="author-name">Michael Chen</p>
-              <p class="author-position">Marketing Manager at Brand Solutions</p>
+          
+          <!-- <div class="tool-item">
+            <div class="tool-icon">
+              <i class="fas fa-code-branch"></i>
+            </div>
+            <div class="tool-content">
+              <h3>Career Path Comparison</h3>
+              <p>Compare different career paths based on your skills and interests. Visualize potential trajectories and make informed decisions about your professional future.</p>
+              <button class="btn btn-secondary">Compare Paths</button>
+            </div>
+          </div> -->
+          
+          <div class="tool-item">
+            <div class="tool-icon">
+              <i class="fas fa-robot"></i>
+            </div>
+            <div class="tool-content">
+              <h3>Ask-the-Mentor Chatbot</h3>
+              <p>Get real-time answers to your career questions from our AI career mentor. Available 24/7 to provide guidance and advice tailored to your specific situation.</p>
+              <button class="btn btn-secondary">Chat with Mentor</button>
             </div>
           </div>
-        </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"I tried several interview platforms before finding CAREER / CONQUER. The hybrid approach of AI practice combined with mentor feedback gave me the best of both worlds. The personalized improvement plan helped me land interviews at three top companies!"</p>
-          <div class="testimonial-author">
-            <div class="author-info">
-              <p class="author-name">Priya Sharma</p>
-              <p class="author-position">Data Scientist at Analytics Inc</p>
+          
+          <div class="tool-item">
+            <div class="tool-icon">
+              <i class="fas fa-network-wired"></i>
+            </div>
+            <div class="tool-content">
+              <h3>Networking Opportunities</h3>
+              <p>Discover industry connections and networking events relevant to your career goals. Expand your professional network and unlock new opportunities.</p>
+              <button class="btn btn-secondary">Find Connections</button>
             </div>
           </div>
         </div>
       </div>
     </section>
-    
+
+    <!-- Success Stories Section -->
+    <section id="success-stories" class="section success-stories-section">
+      <div class="container">
+        <h2 class="section-title">Success Stories</h2>
+        <div class="success-theme">
+          <h3>From Confused to Conquering</h3>
+          <p>See how CareerConquer has transformed careers and lives</p>
+        </div>
+        
+        <div class="testimonials-carousel">
+          <div class="testimonial-card">
+            <div class="testimonial-header">
+              <div class="testimonial-image">
+                <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Sarah Johnson">
+              </div>
+              <div class="testimonial-info">
+                <h4>Sarah Johnson</h4>
+                <p>Software Engineer</p>
+              </div>
+            </div>
+            <div class="testimonial-content">
+              <div class="testimonial-quote">
+                <i class="fas fa-quote-left quote-icon"></i>
+                <p>CareerConquer transformed my job search. After uploading my resume, I received personalized feedback that helped me land interviews at top tech companies. My interview success rate improved by 45%!</p>
+              </div>
+              <div class="testimonial-metric">
+                <div class="metric-label">Improvement</div>
+                <div class="metric-value">Interview Success Rate: +45%</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="carousel-controls">
+            <button class="carousel-control" aria-label="Previous testimonial">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="carousel-indicators">
+              <div class="indicator active"></div>
+              <div class="indicator"></div>
+              <div class="indicator"></div>
+              <div class="indicator"></div>
+              <div class="indicator"></div>
+              <div class="indicator"></div>
+              <div class="indicator"></div>
+            </div>
+            <button class="carousel-control" aria-label="Next testimonial">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Call to Action Section -->
     <section class="cta-section">
-      <div class="cta-content">
-        <h2 class="cta-title">READY TO ACE YOUR NEXT INTERVIEW?</h2>
-        <p class="cta-description">Join thousands of job seekers who have improved their interview skills with our industry-leading platform</p>
-        <p class="cta-features">✓ Resume-based questions ✓ Real-time feedback ✓ Emotional intelligence analysis ✓ Hybrid interview options</p>
-        <div class="cta-buttons">
-          <a href="{{ url_for('signup') }}" class="cta-button primary-cta">Get Started Now</a>
-        </div>
+      <div class="container cta-container">
+        <h2>Start Your Career Transformation Today</h2>
+        <p>Join thousands of professionals who have accelerated their career growth with CareerConquer</p>
+        <a href="#" class="btn btn-cta">Get Started</a>
       </div>
     </section>
-    
+
     <!-- Footer -->
-    <footer>
-      <div class="footer-content">
+    <footer class="footer">
+      <div class="container footer-container">
         <div class="footer-logo">
-          <img src="{{ url_for('static', filename='logo.png') }}" alt="CAREER CONQUER Logo">
-          <h3>CAREER / CONQUER</h3>
+          <h2>Career<span style="color: #4caf50;">Conquer</span></h2>
+          <p>Your personal AI-powered career guidance platform. Get personalized recommendations, prepare for interviews, and chart your professional path.</p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+          </div>
         </div>
+        
         <div class="footer-links">
-          <a href="#">About Us</a>
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Service</a>
-          <a href="#">Contact</a>
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#tools">Tools</a></li>
+            <li><a href="#success-stories">Success Stories</a></li>
+            <li><a href="#">Login</a></li>
+            <li><a href="#">Sign Up</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-contact">
+          <h3>Contact Us</h3>
+          <div class="contact-info">
+            <i class="fas fa-envelope"></i>
+            <span>support@careerconquer.com</span>
+          </div>
+          <div class="contact-info">
+            <i class="fas fa-phone"></i>
+            <span>+1 (555) 123-4567</span>
+          </div>
+          <div class="contact-info">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>123 Innovation Way, Tech City, TC 10101</span>
+          </div>
+        </div>
+        
+        <div class="footer-newsletter">
+          <h3>Stay Updated</h3>
+          <p>Subscribe to our newsletter for the latest career tips and platform updates.</p>
+          <div class="newsletter-form">
+            <input type="email" class="newsletter-input" placeholder="Your email address">
+            <button class="btn btn-primary">Subscribe</button>
+          </div>
         </div>
       </div>
-      <p class="footer-copyright">© 2025 CAREER CONQUER. All rights reserved.</p>
+      <div class="copyright container">
+        <p>&copy; 2025 CareerConquer. All rights reserved.</p>
+      </div>
     </footer>
-  </body>
-</html>
+  </div>
+
+  <div class="scroll-progress-bar">
+    <div class="scroll-progress-indicator"></div>
+  </div>
+
+  <script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+      const navbar = document.getElementById('navbar');
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+      
+      // Update scroll progress bar
+      const scrollTop = window.scrollY;
+      const docHeight = document.body.offsetHeight - window.innerHeight;
+      const scrollPercent = (scrollTop / docHeight) * 100;
+      document.querySelector('.scroll-progress-indicator').style.width = scrollPercent + '%';
+    });
+
+    // Mobile menu toggle
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const navbarLinks = document.getElementById('navbar-links');
+    const navbarAuth = document.getElementById('navbar-auth');
+
+    mobileMenuToggle.addEventListener('click', function() {
+      navbarLinks.classList.toggle('active');
+      navbarAuth.classList.toggle('active');
+      
+      // Change icon
+      const icon = mobileMenuToggle.querySelector('i');
+      if (icon.classList.contains('fa-bars')) {
+        icon.classList.remove('fa-bars');
+        icon.classList.add('fa-times');
+      } else {
+        icon.classList.remove('fa-times');
+        icon.classList.add('fa-bars');
+      }
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        
+        // Close mobile menu if open
+        navbarLinks.classList.remove('active');
+        navbarAuth.classList.remove('active');
+        
+        const href = this.getAttribute('href');
+        
+        if (href === '#') return;
+        
+        const target = document.querySelector(href);
+        if (target) {
+          const navbarHeight = 70;
+          const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
+          
+          window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+  </script>
+  <script>
+    const testimonials = [
+  {
+    id: 1,
+    name: 'Sarah Johnson',
+    role: 'Software Engineer',
+    image: 'https://randomuser.me/api/portraits/women/32.jpg',
+    quote: 'CareerConquer transformed my job search. After uploading my resume, I received personalized feedback that helped me land interviews at top tech companies. My interview success rate improved by 45%!',
+    metric: 'Interview Success Rate: +45%'
+  },
+  {
+    id: 2,
+    name: 'Michael Chen',
+    role: 'Marketing Manager',
+    image: 'https://randomuser.me/api/portraits/men/9.jpg',
+    quote: 'I was stuck in my career path until I found CareerConquer. The personalized roadmap showed me exactly what skills I needed to develop. Within 6 months, I secured a promotion and a 30% salary increase.',
+    metric: 'Salary Increase: +30%'
+  },
+  {
+    id: 3,
+    name: 'Emily Rodriguez',
+    role: 'Data Scientist',
+    image: 'https://randomuser.me/api/portraits/women/44.jpg',
+    quote: 'The interview simulation feature was a game-changer for me. It prepared me for tough questions and gave me the confidence to excel. I went from being nervous and unprepared to landing my dream job.',
+    metric: 'Job Satisfaction: +65%'
+  },
+  {
+    id: 4,
+    name: 'James Wilson',
+    role: 'Project Manager',
+    image: 'https://randomuser.me/api/portraits/men/42.jpg',
+    quote: 'From confused about my next career move to conquering leadership roles, CareerConquer helped me map out a clear progression path. My team management skills improved dramatically.',
+    metric: 'Leadership Rating: +52%'
+  },
+  {
+    id: 5,
+    name: 'Sophia Garcia',
+    role: 'UX Designer',
+    image: 'https://randomuser.me/api/portraits/women/68.jpg',
+    quote: 'I was overwhelmed by the job market until CareerConquer helped me focus on my strengths. The portfolio advice was invaluable, and I went from confused freelancer to conquering design challenges at a top agency.',
+    metric: 'Portfolio Quality: +70%'
+  },
+  {
+    id: 6,
+    name: 'David Kim',
+    role: 'Financial Analyst',
+    image: 'https://randomuser.me/api/portraits/men/75.jpg',
+    quote: 'The Career Roadmap tool transformed my approach to professional development. I was confused about industry requirements, but now I\'m conquering advanced certifications and receiving multiple job offers.',
+    metric: 'Career Advancement: +38%'
+  },
+  {
+    id: 7,
+    name: 'Olivia Martinez',
+    role: 'HR Specialist',
+    image: 'https://randomuser.me/api/portraits/women/90.jpg',
+    quote: 'From confused about HR best practices to conquering workplace challenges, CareerConquer gave me the tools to excel. The mentorship feature connected me with industry leaders who guided my growth.',
+    metric: 'Industry Knowledge: +56%'
+  }
+];
+
+// Wait for the DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+  // Get the testimonial container
+  const carouselContainer = document.querySelector('.testimonials-carousel');
+  const testimonialCard = document.querySelector('.testimonial-card');
+  const prevButton = document.querySelector('button[aria-label="Previous testimonial"]');
+  const nextButton = document.querySelector('button[aria-label="Next testimonial"]');
+  const indicators = document.querySelectorAll('.carousel-indicators .indicator');
+  
+  // Current slide index
+  let currentIndex = 0;
+  let autoSlideInterval;
+  
+  // Function to update the testimonial content
+  function updateTestimonial(direction = 'next') {
+    // Add transition effect
+    testimonialCard.style.opacity = '0';
+    testimonialCard.style.transform = direction === 'next' ? 'translateX(20px)' : 'translateX(-20px)';
+    
+    // Allow the fade-out effect to complete
+    setTimeout(() => {
+      const testimonial = testimonials[currentIndex];
+      
+      // Update testimonial content
+      testimonialCard.innerHTML = `
+        <div class="testimonial-header">
+          <div class="testimonial-image">
+            <img src="${testimonial.image}" alt="${testimonial.name}">
+          </div>
+          <div class="testimonial-info">
+            <h4>${testimonial.name}</h4>
+            <p>${testimonial.role}</p>
+          </div>
+        </div>
+        <div class="testimonial-content">
+          <div class="testimonial-quote">
+            <i class="fas fa-quote-left quote-icon"></i>
+            <p>${testimonial.quote}</p>
+          </div>
+          <div class="testimonial-metric">
+            <div class="metric-label">Improvement</div>
+            <div class="metric-value">${testimonial.metric}</div>
+          </div>
+        </div>
+      `;
+      
+      // Update indicators
+      indicators.forEach((indicator, index) => {
+        if (index === currentIndex) {
+          indicator.classList.add('active');
+        } else {
+          indicator.classList.remove('active');
+        }
+      });
+      
+      // Fade back in
+      setTimeout(() => {
+        testimonialCard.style.opacity = '1';
+        testimonialCard.style.transform = 'translateX(0)';
+      }, 50);
+      
+    }, 300);
+  }
+  
+  // Function to start the auto-slide
+  function startAutoSlide() {
+    // Clear any existing interval first
+    if (autoSlideInterval) {
+      clearInterval(autoSlideInterval);
+    }
+    
+    // Create new interval
+    autoSlideInterval = setInterval(function() {
+      currentIndex = (currentIndex + 1) % testimonials.length;
+      updateTestimonial('next');
+    }, 5000);
+  }
+  
+  // Event listeners for previous and next buttons
+  prevButton.addEventListener('click', function() {
+    clearInterval(autoSlideInterval); // Reset the timer when manually changing
+    currentIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
+    updateTestimonial('prev');
+    startAutoSlide(); // Restart the timer
+  });
+  
+  nextButton.addEventListener('click', function() {
+    clearInterval(autoSlideInterval); // Reset the timer when manually changing
+    currentIndex = (currentIndex + 1) % testimonials.length;
+    updateTestimonial('next');
+    startAutoSlide(); // Restart the timer
+  });
+  
+  // Event listeners for indicators
+  indicators.forEach((indicator, index) => {
+    indicator.addEventListener('click', function() {
+      clearInterval(autoSlideInterval);
+      const direction = index > currentIndex ? 'next' : 'prev';
+      currentIndex = index;
+      updateTestimonial(direction);
+      startAutoSlide();
+    });
+  });
+  
+  // Add CSS transitions to testimonial card
+  testimonialCard.style.transition = 'opacity 0.3s ease, transform 0.4s ease';
+  
+  // Pause auto-advance when hovering over the carousel
+  carouselContainer.addEventListener('mouseenter', function() {
+    clearInterval(autoSlideInterval);
+  });
+  
+  // Resume auto-advance when leaving the carousel
+  carouselContainer.addEventListener('mouseleave', function() {
+    startAutoSlide();
+  });
+  
+  // Initialize the first testimonial and start auto-slide
+  updateTestimonial();
+  startAutoSlide();
+  
+  // Log to console to confirm initialization
+  console.log('Testimonial carousel initialized with ' + testimonials.length + ' testimonials');
+}); 
+  </script>
+  
+  
+</body>
+</html> 
