@@ -15,6 +15,7 @@ import cv2
 import base64
 from video_analysis import InterviewMetricsTracker
 #from body_language_decoder import BodyLanguageDecoder
+import sqlite3
 
 load_dotenv()
 
@@ -85,9 +86,50 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 db.init_app(app)
 
+# Initialize databases on startup
 with app.app_context():
+    # Create tables in main database
     db.create_all()
-
+    
+    # Ensure eye metrics database exists
+    try:
+        # Create eye_metrics tables
+        db.create_all(bind_key='eye_metrics')
+        print(f"Eye metrics tables created in {eye_db_path}")
+    except Exception as e:
+        print(f"Error initializing eye_metrics database: {str(e)}")
+        
+        # Attempt manual initialization if SQLAlchemy fails
+        try:
+            # Make sure instance directory exists
+            os.makedirs(instance_path, exist_ok=True)
+            
+            # Create the database file directly with SQLite
+            conn = sqlite3.connect(eye_db_path)
+            cursor = conn.cursor()
+            
+            # Create the eye_metrics table
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS eye_metrics (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                session_id TEXT NOT NULL,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                hand_detection_count INTEGER DEFAULT 0,
+                hand_detection_duration REAL DEFAULT 0.0,
+                loss_eye_contact_count INTEGER DEFAULT 0,
+                looking_away_duration REAL DEFAULT 0.0,
+                bad_posture_count INTEGER DEFAULT 0,
+                bad_posture_duration REAL DEFAULT 0.0,
+                is_auto_save BOOLEAN DEFAULT 0
+            )
+            ''')
+            
+            conn.commit()
+            conn.close()
+            print(f"Manually created eye metrics table in {eye_db_path}")
+        except Exception as e2:
+            print(f"Failed manual database initialization: {str(e2)}")
 
 @app.route('/')
 def home():
@@ -354,7 +396,7 @@ def start_guidance():
             "sales", "finance", "accounting", "human resources", "operations", "devops", "cloud"
         ]
 
-    functions.initialize(default_resume_path, resume_text, analysis, career_paths, skill_keywords)
+    functions.initialize(default_resume_path, resume_text, analysis, career_paths, skill_keywords, session['user_id'])
     career_paths_list = functions.run()
     print(career_paths_list)
 
@@ -468,6 +510,8 @@ def process_image():
         # Save to database if requested (every 30 frames/~1 second)
         if save_prediction and detected_emotion:
             user_id = session.get('user_id')
+            # Save using both methods for compatibility
+            # 1. Using the UserEmotionData model
             emotion_data = UserEmotionData(
                 user_id=user_id,
                 emotion=detected_emotion,
@@ -475,6 +519,12 @@ def process_image():
             )
             db.session.add(emotion_data)
             db.session.commit()
+            
+            # 2. Using the functions.py save_emotion function
+            try:
+                functions.save_emotion(detected_emotion, probability, user_id)
+            except Exception as e:
+                print(f"Error using functions.save_emotion: {str(e)}")
     
     # Encode the processed image back to base64
     _, buffer = cv2.imencode('.jpg', frame)
@@ -556,6 +606,43 @@ def end_video_analysis():
         # Save final metrics
         metrics_tracker.close()
         
+        # Make sure instance directory exists
+        instance_path = os.path.join(os.getcwd(), 'instance')
+        os.makedirs(instance_path, exist_ok=True)
+        
+        # Ensure database file exists
+        eye_db_path = os.path.join(instance_path, 'eye.sqlite')
+        if not os.path.exists(eye_db_path):
+            # Create the database file if it doesn't exist
+            try:
+                # Initialize eye.sqlite with the eye_metrics table
+                conn = sqlite3.connect(eye_db_path)
+                cursor = conn.cursor()
+                
+                # Create the eye_metrics table
+                cursor.execute('''
+                CREATE TABLE IF NOT EXISTS eye_metrics (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER,
+                    session_id TEXT NOT NULL,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    hand_detection_count INTEGER DEFAULT 0,
+                    hand_detection_duration REAL DEFAULT 0.0,
+                    loss_eye_contact_count INTEGER DEFAULT 0,
+                    looking_away_duration REAL DEFAULT 0.0,
+                    bad_posture_count INTEGER DEFAULT 0,
+                    bad_posture_duration REAL DEFAULT 0.0,
+                    is_auto_save BOOLEAN DEFAULT 0
+                )
+                ''')
+                
+                conn.commit()
+                conn.close()
+                print(f"Created database file: {eye_db_path}")
+            except Exception as e:
+                print(f"Error creating database file: {str(e)}")
+                return jsonify({'success': False, 'error': f'Database error: {str(e)}'})
+        
         # Save final metrics to our SQLAlchemy model
         try:
             # Create a final EyeMetrics record
@@ -577,8 +664,24 @@ def end_video_analysis():
             
             print(f"Final eye metrics saved to database for session {metrics_tracker.session_id}")
         except Exception as e:
-            print(f"Error saving final eye metrics: {str(e)}")
+            error_msg = str(e)
+            print(f"Error saving final eye metrics: {error_msg}")
             db.session.rollback()
+            
+            # Additional debugging info
+            if "no such table" in error_msg.lower():
+                # The table doesn't exist, try to create it
+                try:
+                    with app.app_context():
+                        db.create_all(bind_key='eye_metrics')
+                        print("Created eye_metrics table")
+                        
+                        # Try saving again
+                        db.session.add(final_metrics)
+                        db.session.commit()
+                        print("Successfully saved metrics after creating table")
+                except Exception as inner_e:
+                    print(f"Failed to create table: {str(inner_e)}")
         
         # Clear the tracker
         metrics_tracker = None
@@ -599,6 +702,43 @@ def get_video_metrics():
     if metrics_tracker is not None:
         # Auto save metrics to database for persistence
         metrics_tracker.auto_save_metrics()
+        
+        # Make sure instance directory exists
+        instance_path = os.path.join(os.getcwd(), 'instance')
+        os.makedirs(instance_path, exist_ok=True)
+        
+        # Ensure database file exists
+        eye_db_path = os.path.join(instance_path, 'eye.sqlite')
+        if not os.path.exists(eye_db_path):
+            # Create the database file if it doesn't exist
+            try:
+                # Initialize eye.sqlite with the eye_metrics table
+                conn = sqlite3.connect(eye_db_path)
+                cursor = conn.cursor()
+                
+                # Create the eye_metrics table
+                cursor.execute('''
+                CREATE TABLE IF NOT EXISTS eye_metrics (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER,
+                    session_id TEXT NOT NULL,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    hand_detection_count INTEGER DEFAULT 0,
+                    hand_detection_duration REAL DEFAULT 0.0,
+                    loss_eye_contact_count INTEGER DEFAULT 0,
+                    looking_away_duration REAL DEFAULT 0.0,
+                    bad_posture_count INTEGER DEFAULT 0,
+                    bad_posture_duration REAL DEFAULT 0.0,
+                    is_auto_save BOOLEAN DEFAULT 0
+                )
+                ''')
+                
+                conn.commit()
+                conn.close()
+                print(f"Created database file: {eye_db_path}")
+            except Exception as e:
+                print(f"Error creating database file: {str(e)}")
+                # Continue anyway, as we'll still return the current metrics
         
         # Also save to our Flask SQLAlchemy model
         try:
@@ -637,8 +777,36 @@ def get_video_metrics():
                 
             db.session.commit()
         except Exception as e:
-            print(f"Error saving to eye metrics database: {str(e)}")
+            error_msg = str(e)
+            print(f"Error saving to eye metrics database: {error_msg}")
             db.session.rollback()
+            
+            # Additional handling for common errors
+            if "no such table" in error_msg.lower():
+                # The table doesn't exist, try to create it
+                try:
+                    with app.app_context():
+                        db.create_all(bind_key='eye_metrics')
+                        print("Created eye_metrics table")
+                        
+                        # Try saving again
+                        if existing:
+                            # Update record
+                            existing.hand_detection_count = metrics_tracker.metrics["handDetectionCount"]
+                            existing.hand_detection_duration = metrics_tracker.metrics["handDetectionDuration"]
+                            existing.loss_eye_contact_count = metrics_tracker.metrics["lossEyeContactCount"]
+                            existing.looking_away_duration = metrics_tracker.metrics["lookingAwayDuration"]
+                            existing.bad_posture_count = metrics_tracker.metrics["badPostureCount"]
+                            existing.bad_posture_duration = metrics_tracker.metrics["badPostureDuration"]
+                            existing.timestamp = datetime.now()
+                        else:
+                            # Add new record
+                            db.session.add(eye_metrics)
+                            
+                        db.session.commit()
+                        print("Successfully saved metrics after creating table")
+                except Exception as inner_e:
+                    print(f"Failed to create table: {str(inner_e)}")
         
         return jsonify({
             'success': True,

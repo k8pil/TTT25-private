@@ -5,10 +5,60 @@ from PIL import Image
 import fitz
 from roadmap_interactive import handle_roadmap_interactive
 import datetime
+import sqlite3
 
 HAS_ROADMAP_INTERACTIVE = True
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
+# Database setup
+def get_db_connection():
+    # Use the same eye.sqlite database that the rest of the app uses
+    instance_path = os.path.join(os.getcwd(), 'instance')
+    os.makedirs(instance_path, exist_ok=True)
+    db_path = os.path.join(instance_path, 'eye.sqlite')
+    
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row  # This enables column access by name
+    return conn
+
+def initialize_db():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Create resume_data table if it doesn't exist
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS resume_data (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        resume_path TEXT NOT NULL,
+        resume_text TEXT,
+        skills TEXT,
+        education TEXT,
+        experience TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    ''')
+    
+    # Create career_paths table if it doesn't exist
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS career_matches (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        resume_id INTEGER,
+        career_path TEXT,
+        match_score INTEGER,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (resume_id) REFERENCES resume_data(id)
+    )
+    ''')
+    
+    conn.commit()
+    conn.close()
+    
+    print("Resume database tables initialized in eye.sqlite")
+
+# Call initialize_db when the module is imported
+initialize_db()
 
 default_resume_path = ""
 resume_text = ""
@@ -19,20 +69,22 @@ skill_keywords = []
 skills = []
 education = []
 experience = []
+current_user_id = None
 
-
-def initialize(a,b,c,d,e):
+def initialize(a, b, c, d, e, user_id=None):
     global default_resume_path
     global resume_text
     global analysis
     global career_paths
     global skill_keywords
+    global current_user_id
 
     default_resume_path = a
     resume_text = b
     analysis = c
     career_paths = d
     skill_keywords = e
+    current_user_id = user_id
 
 def extract_text_from_image(image_path):
 
@@ -81,13 +133,13 @@ def extract_text_from_pdf(pdf_path):
             return ""
 
 def analyze_resume(resume_path):
-
     global resume_text
     global skills
     global education
     global experience
     global analysis
     global skill_keywords
+    global current_user_id
 
     """Analyze the resume text to extract skills, education, and experience"""
     # Extract text based on file type
@@ -104,7 +156,6 @@ def analyze_resume(resume_path):
         return False
     
     # Simple extraction of skills, education, and experience
-
     skills = []
     for skill in skill_keywords:
         if skill in resume_text.lower():
@@ -170,14 +221,38 @@ def analyze_resume(resume_path):
         "experience": experience
     }
     
+    # Save to database
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Convert lists to strings for database storage
+        skills_str = "|".join(skills) if skills else ""
+        education_str = "|".join(education) if education else ""
+        experience_str = "|".join(experience) if experience else ""
+        
+        # Insert into resume_data table
+        cursor.execute('''
+        INSERT INTO resume_data (user_id, resume_path, resume_text, skills, education, experience)
+        VALUES (?, ?, ?, ?, ?, ?)
+        ''', (current_user_id, resume_path, resume_text, skills_str, education_str, experience_str))
+        
+        conn.commit()
+        resume_id = cursor.lastrowid
+        conn.close()
+        
+        print(f"Resume data saved to database with ID: {resume_id}")
+    except Exception as e:
+        print(f"Error saving resume data to database: {str(e)}")
+    
     return True
 
 def get_matching_career_paths(limit=3):
-
     global skills
     global education
     global experience
     global analysis
+    global current_user_id
 
     """Get the most suitable career paths based on resume analysis"""
     if not analysis:
@@ -207,11 +282,51 @@ def get_matching_career_paths(limit=3):
     
     # Return the top matches with match percentage
     results = []
+    
+    # Get the latest resume ID from the database
+    resume_id = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Get the most recent resume for the current user
+        cursor.execute('''
+        SELECT id FROM resume_data 
+        WHERE user_id = ? 
+        ORDER BY created_at DESC LIMIT 1
+        ''', (current_user_id,))
+        
+        row = cursor.fetchone()
+        if row:
+            resume_id = row[0]
+        
+        conn.close()
+    except Exception as e:
+        print(f"Error retrieving resume ID from database: {str(e)}")
+    
+    # Save matches to database
     for path, score in scored_paths[:limit]:
         match_percentage = min(95, max(60, score))  # Limit percentage between 60% and 95%
         path_copy = path.copy()
         path_copy["match_score"] = match_percentage
         results.append(path_copy)
+        
+        # Save to database if we have a resume_id
+        if resume_id and current_user_id:
+            try:
+                conn = get_db_connection()
+                cursor = conn.cursor()
+                
+                # Insert career match
+                cursor.execute('''
+                INSERT INTO career_matches (user_id, resume_id, career_path, match_score)
+                VALUES (?, ?, ?, ?)
+                ''', (current_user_id, resume_id, path['title'], match_percentage))
+                
+                conn.commit()
+                conn.close()
+            except Exception as e:
+                print(f"Error saving career match to database: {str(e)}")
     
     return results
 
@@ -350,26 +465,68 @@ def generate_roadmap(career_path):
     return roadmap
 
 def run():
-
     global skills
     global education
     global experience
     global default_resume_path
     global analysis
+    global current_user_id
 
     resume_path = default_resume_path
     if not os.path.exists(resume_path):
         print(f"\nDefault resume file not found at: {resume_path}")
         print("Please update the default_resume_path in the code.")
-        return
+        return []
         
     message = "\nAnalyzing your resume... This may take a moment."
     print(message)
-    success = analyze_resume(resume_path)
     
-    if not success:
-        print("Failed to analyze resume. Please check the file format.")
-        return
+    # Check if we already have this resume analyzed in the database
+    resume_already_analyzed = False
+    
+    if current_user_id:
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
+            # Check if we have an entry for this resume
+            cursor.execute('''
+            SELECT id, skills, education, experience 
+            FROM resume_data 
+            WHERE user_id = ? AND resume_path = ? 
+            ORDER BY created_at DESC LIMIT 1
+            ''', (current_user_id, resume_path))
+            
+            row = cursor.fetchone()
+            if row:
+                resume_already_analyzed = True
+                # Load data from database
+                resume_id = row[0]
+                
+                # Convert database strings back to lists
+                skills = row[1].split('|') if row[1] else []
+                education = row[2].split('|') if row[2] else []
+                experience = row[3].split('|') if row[3] else []
+                
+                analysis = {
+                    "skills": skills,
+                    "education": education,
+                    "experience": experience
+                }
+                
+                print(f"\nLoaded resume analysis from database (ID: {resume_id})")
+            
+            conn.close()
+        except Exception as e:
+            print(f"Error checking database for existing resume: {str(e)}")
+    
+    # If not found in database, analyze the resume
+    if not resume_already_analyzed:
+        success = analyze_resume(resume_path)
+        
+        if not success:
+            print("Failed to analyze resume. Please check the file format.")
+            return []
     
     # Display the analysis
     message = "\nHere's what I found in your resume:"
@@ -411,7 +568,7 @@ def run():
     if not career_paths:
         message = "\nI couldn't determine suitable career paths based on your resume. Please try a different resume or add more details to your current one."
         print(message)
-        return
+        return []
     
     message = "\nBased on your skills and experience, here are the top career paths for you:"
     print(message)
@@ -438,9 +595,6 @@ def run():
     
     return career_paths_list
 
-    
-    
-    
 def provide_resume_tips():
 
     global skills
@@ -557,11 +711,35 @@ def provide_resume_tips():
     
     return structure_tips, content_improvement_tips, tech_and_soft_skill_tips, experience_tips, achievement_tips, ats_tips, modern_tips, tailoring_tips
 
-""" def save_emotion(cursor, conn, emotion, confidence=1.0):
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    cursor.execute(
-        "INSERT INTO emotions (timestamp, emotion, confidence) VALUES (?, ?, ?)",
-        (timestamp, emotion, confidence)
-    )
-    conn.commit() """
+def save_emotion(emotion, confidence=1.0, user_id=None):
+    """Save emotion data to the eye.sqlite database"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Check if emotions table exists, create if not
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS emotions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            emotion TEXT NOT NULL,
+            confidence REAL DEFAULT 1.0
+        )
+        ''')
+        
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        cursor.execute(
+            "INSERT INTO emotions (user_id, timestamp, emotion, confidence) VALUES (?, ?, ?, ?)",
+            (user_id, timestamp, emotion, confidence)
+        )
+        conn.commit()
+        emotion_id = cursor.lastrowid
+        conn.close()
+        
+        print(f"Emotion data saved to database (ID: {emotion_id})")
+        return True
+    except Exception as e:
+        print(f"Error saving emotion data: {str(e)}")
+        return False
 
