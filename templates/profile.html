@@ -24,6 +24,8 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
     />
     <script src="{{ url_for('static', filename='theme.js') }}"></script>
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
       /* Footer Styles */
       footer {
@@ -141,6 +143,11 @@
         padding: 20px;
         border-radius: 10px;
         margin-bottom: 30px;
+      }
+      
+      #performanceChart {
+        height: 300px;
+        width: 100%;
       }
 
       .recent-interviews {
@@ -524,6 +531,160 @@
         font-size: 14px;
         color: var(--text-secondary);
       }
+      
+      /* Analytics Section Styles */
+      .analytics-section {
+        margin-top: 30px;
+        margin-bottom: 30px;
+      }
+      
+      .analytics-section h3, 
+      .stats-summary h3 {
+        color: var(--primary-color);
+        font-size: 18px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+      }
+      
+      .analytics-section h3 i,
+      .stats-summary h3 i {
+        margin-right: 10px;
+        color: rgb(20, 241, 149);
+      }
+      
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+      }
+      
+      .metric-card {
+        background-color: var(--bg-secondary);
+        border-radius: 10px;
+        padding: 16px;
+        display: flex;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      
+      .metric-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      }
+      
+      .highlight-card {
+        border: 1px solid rgba(20, 241, 149, 0.3);
+      }
+      
+      .metric-icon {
+        width: 50px;
+        height: 50px;
+        background-color: rgba(20, 241, 149, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 16px;
+        flex-shrink: 0;
+      }
+      
+      .metric-icon i {
+        font-size: 20px;
+        color: rgb(20, 241, 149);
+      }
+      
+      .metric-content {
+        flex: 1;
+      }
+      
+      .metric-content h4 {
+        margin: 0 0 12px;
+        color: var(--text-primary);
+        font-size: 16px;
+      }
+      
+      .metric-data {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .metric-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .metric-label {
+        color: var(--text-secondary);
+        font-size: 14px;
+      }
+      
+      .metric-value {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 15px;
+      }
+      
+      .highlight-value {
+        color: rgb(20, 241, 149);
+        font-size: 16px;
+        font-weight: 700;
+      }
+      
+      /* Stats Summary Styles */
+      .stats-summary {
+        margin-bottom: 30px;
+      }
+      
+      .stats-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+      }
+      
+      .stat-summary-card {
+        background-color: var(--bg-secondary);
+        border-radius: 10px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      
+      .stat-title {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 12px;
+        font-size: 15px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border-color);
+      }
+      
+      .stat-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      
+      .stat-list li {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+      
+      .stat-list li strong {
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+      
+      @media (max-width: 768px) {
+        .metrics-grid,
+        .stats-cards {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
@@ -629,6 +790,169 @@
           <div class="dashboard-header">
             <h2>Performance Overview</h2>
             <p>Track your interview performance and progress</p>
+          </div>
+          
+          <!-- Performance Chart Section -->
+          <div class="performance-chart">
+            <canvas id="performanceChart"></canvas>
+          </div>
+          
+          <!-- Interview Analytics Dashboard -->
+          <div class="analytics-section">
+            <h3><i class="fas fa-chart-bar"></i> Interview Performance Metrics</h3>
+            <div class="metrics-grid">
+              <!-- Eye Contact Metrics -->
+              <div class="metric-card">
+                <div class="metric-icon">
+                  <i class="fas fa-eye"></i>
+                </div>
+                <div class="metric-content">
+                  <h4>Eye Contact</h4>
+                  <div class="metric-data">
+                    <div class="metric-item">
+                      <span class="metric-label">Lost Count:</span>
+                      <span class="metric-value" id="eyeContactLoss">{{ analytics.eye_contact_loss|default('0')|round(2) }}</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Looking Away:</span>
+                      <span class="metric-value" id="lookingAwayTime">{{ analytics.looking_away|default('0')|round(2) }}s</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Focus Rate:</span>
+                      <span class="metric-value" id="focusRate">{{ analytics.focus_rate|default('0')|round(2) }}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Posture Metrics -->
+              <div class="metric-card">
+                <div class="metric-icon">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="metric-content">
+                  <h4>Posture</h4>
+                  <div class="metric-data">
+                    <div class="metric-item">
+                      <span class="metric-label">Bad Posture Count:</span>
+                      <span class="metric-value" id="badPostureCount">{{ analytics.bad_posture_count|default('0')|round(2) }}</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Bad Posture Duration:</span>
+                      <span class="metric-value" id="badPostureDuration">{{ analytics.bad_posture_duration|default('0')|round(2) }}s</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Posture Quality:</span>
+                      <span class="metric-value" id="postureQuality">{{ analytics.posture_quality|default('0')|round(2) }}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Hand Movement Metrics -->
+              <div class="metric-card">
+                <div class="metric-icon">
+                  <i class="fas fa-hand-paper"></i>
+                </div>
+                <div class="metric-content">
+                  <h4>Hand Movement</h4>
+                  <div class="metric-data">
+                    <div class="metric-item">
+                      <span class="metric-label">Hand Duration:</span>
+                      <span class="metric-value" id="handDuration">{{ analytics.hand_duration|default('0')|round(2) }}s</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Movement Frequency:</span>
+                      <span class="metric-value" id="handFrequency">{{ analytics.hand_frequency|default('0')|round(2) }}/min</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Overall Metrics -->
+              <div class="metric-card highlight-card">
+                <div class="metric-icon">
+                  <i class="fas fa-star"></i>
+                </div>
+                <div class="metric-content">
+                  <h4>Overall Assessment</h4>
+                  <div class="metric-data">
+                    <div class="metric-item">
+                      <span class="metric-label">Total Interview Time:</span>
+                      <span class="metric-value" id="totalTime">{{ analytics.total_time|default('0')|round(2) }}s</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Looking Away Ratio:</span>
+                      <span class="metric-value" id="lookingAwayRatio">{{ analytics.looking_away_ratio|default('0')|round(2) }}%</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Confidence Score:</span>
+                      <span class="metric-value highlight-value" id="confidenceScore">{{ analytics.confidence_score|default('0')|round(2) }}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Stats Summary -->
+          <div class="stats-summary">
+            <h3><i class="fas fa-tachometer-alt"></i> Performance Summary</h3>
+            <div class="stats-cards">
+              <div class="stat-summary-card">
+                <div class="stat-title">Averages</div>
+                <ul class="stat-list">
+                  <li>
+                    <span>Avg. Eye Contact Loss:</span>
+                    <strong>{{ analytics.avg_eye_contact_loss|default('0')|round(2) }}</strong>
+                  </li>
+                  <li>
+                    <span>Avg. Looking Away Ratio:</span>
+                    <strong>{{ analytics.avg_looking_away_ratio|default('0')|round(2) }}%</strong>
+                  </li>
+                  <li>
+                    <span>Avg. Bad Posture Count:</span>
+                    <strong>{{ analytics.avg_bad_posture_count|default('0')|round(2) }}</strong>
+                  </li>
+                </ul>
+              </div>
+              
+              <div class="stat-summary-card">
+                <div class="stat-title">Maximums</div>
+                <ul class="stat-list">
+                  <li>
+                    <span>Max Eye Contact Loss:</span>
+                    <strong>{{ analytics.max_eye_contact_loss|default('0')|round(2) }}</strong>
+                  </li>
+                  <li>
+                    <span>Max Looking Away Time:</span>
+                    <strong>{{ analytics.max_looking_away|default('0')|round(2) }}s</strong>
+                  </li>
+                  <li>
+                    <span>Max Bad Posture Duration:</span>
+                    <strong>{{ analytics.max_bad_posture_duration|default('0')|round(2) }}s</strong>
+                  </li>
+                </ul>
+              </div>
+              
+              <div class="stat-summary-card">
+                <div class="stat-title">Minimums</div>
+                <ul class="stat-list">
+                  <li>
+                    <span>Min Eye Contact Loss:</span>
+                    <strong>{{ analytics.min_eye_contact_loss|default('0')|round(2) }}</strong>
+                  </li>
+                  <li>
+                    <span>Min Looking Away Time:</span>
+                    <strong>{{ analytics.min_looking_away|default('0')|round(2) }}s</strong>
+                  </li>
+                  <li>
+                    <span>Min Bad Posture Duration:</span>
+                    <strong>{{ analytics.min_bad_posture_duration|default('0')|round(2) }}s</strong>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -833,6 +1157,222 @@
             }
           }
         });
+      });
+      
+      // Initialize Performance Chart
+      document.addEventListener('DOMContentLoaded', function() {
+        // Get the chart canvas element
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        
+        // Dummy data (12 points)
+        const performanceData = {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          datasets: [{
+            label: 'Interview Performance',
+            data: [65, 72, 68, 75, 82, 78, 85, 89, 84, 91, 88, 94],
+            borderColor: 'rgb(20, 241, 149)',
+            backgroundColor: 'rgba(20, 241, 149, 0.1)',
+            tension: 0.3,
+            fill: true,
+            pointBackgroundColor: 'rgb(20, 241, 149)',
+            pointBorderColor: 'rgb(20, 241, 149)',
+            pointRadius: function(context) {
+              // Points grow during animation
+              const index = context.dataIndex;
+              const value = context.dataset.data[index];
+              const progress = context.chart.getDatasetMeta(0).controller._valueAnimations?.data?._animations?.[index]?.active;
+              return progress ? (6 * (value/100)) : 4;
+            },
+            pointHoverRadius: 8,
+            borderWidth: 3,
+            cubicInterpolationMode: 'monotone'
+          }]
+        };
+        
+        // Chart configuration
+        const chartConfig = {
+          type: 'line',
+          data: performanceData,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animations: {
+              tension: {
+                duration: 800,
+                easing: 'elastic',
+                from: 0.5,
+                to: 0.3,
+                loop: false
+              }
+            },
+            animation: {
+              duration: 800,
+              easing: 'easeOutQuart',
+              delay: function(context) {
+                return context.dataIndex * 30;
+              },
+              onProgress: function(animation) {
+                // Add a slight wave effect during animation
+                const chart = animation.chart;
+                const ctx = chart.ctx;
+                const dataset = chart.data.datasets[0];
+                const wave = Math.sin(animation.currentStep / 5) * 5;
+                
+                dataset.data = dataset.data.map((point, index) => {
+                  const original = performanceData.datasets[0].data[index];
+                  if (animation.currentStep < 50) {
+                    return original + (wave * (index % 2 ? 1 : -1));
+                  }
+                  return original;
+                });
+              }
+            },
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                titleColor: '#fff',
+                bodyColor: '#fff',
+                borderColor: 'rgb(20, 241, 149)',
+                borderWidth: 1,
+                padding: 10,
+                displayColors: false
+              },
+              // Custom drawing plugin
+              drawingPlugin: {
+                beforeDraw: function(chart) {
+                  const progress = chart.getDatasetMeta(0).controller._valueAnimations?.data?.progress || 0;
+                  if (progress < 1) {
+                    const ctx = chart.ctx;
+                    ctx.save();
+                    ctx.globalCompositeOperation = 'destination-in';
+                    ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+                    ctx.fillRect(0, 0, chart.width * progress, chart.height);
+                    ctx.restore();
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: {
+                  display: false
+                },
+                ticks: {
+                  color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary')
+                }
+              },
+              y: {
+                beginAtZero: true,
+                max: 100,
+                grid: {
+                  color: getComputedStyle(document.documentElement).getPropertyValue('--border-color'),
+                  drawBorder: false
+                },
+                ticks: {
+                  color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary'),
+                  callback: function(value) {
+                    return value + '%';
+                  }
+                }
+              }
+            }
+          }
+        };
+        
+        // Create the chart
+        const myChart = new Chart(ctx, chartConfig);
+        
+        // Add pulse glow effect
+        let glowEffect = 0;
+        let increasing = true;
+        
+        function addGlowEffect() {
+          // Pulse the glow effect
+          if (increasing) {
+            glowEffect += 0.1;
+            if (glowEffect >= 1) increasing = false;
+          } else {
+            glowEffect -= 0.1;
+            if (glowEffect <= 0) increasing = true;
+          }
+          
+          // Apply shadow effect to canvas
+          ctx.shadowColor = 'rgba(20, 241, 149, ' + glowEffect * 0.5 + ')';
+          ctx.shadowBlur = 8 + (glowEffect * 5);
+          
+          // Request next frame if chart exists
+          if (myChart) requestAnimationFrame(addGlowEffect);
+        }
+        
+        // Start the glow effect animation
+        addGlowEffect();
+        
+        // Update analytics metrics based on the data
+        function updateAnalyticsMetrics() {
+          // Only perform client-side calculations if server didn't provide analytics
+          // Check if we have any meaningful data from the server
+          const serverProvidedValues = 
+            document.getElementById('eyeContactLoss').textContent.trim() !== '0' ||
+            document.getElementById('lookingAwayTime').textContent.trim() !== '0s';
+          
+          // If server provided data, don't overwrite it
+          if (serverProvidedValues) {
+            console.log('Using server-provided analytics data');
+            return;
+          }
+          
+          console.log('No server data found, using client-side calculations');
+          
+          // Sample interview data (this would be replaced with actual data from the backend)
+          const interviewData = {
+            eye_contact_loss: 49,
+            looking_away: 27.0,
+            bad_posture_count: 32,
+            bad_posture_duration: 19.0,
+            hand_duration: 43.0,
+            total_time: 180
+          };
+          
+          // Calculate derived metrics
+          const lookingAwayRatio = Math.round((interviewData.looking_away / interviewData.total_time) * 100);
+          const focusRate = Math.round(100 - ((interviewData.looking_away / interviewData.total_time) * 100));
+          const postureQuality = Math.round(100 - ((interviewData.bad_posture_duration / interviewData.total_time) * 100));
+          const handFrequency = parseFloat((interviewData.hand_duration / (interviewData.total_time / 60)).toFixed(1));
+          
+          // Update the DOM elements with calculated metrics (only if server didn't provide them)
+          const elements = {
+            lookingAwayRatio: document.getElementById('lookingAwayRatio'),
+            focusRate: document.getElementById('focusRate'),
+            postureQuality: document.getElementById('postureQuality'),
+            handFrequency: document.getElementById('handFrequency')
+          };
+          
+          // Only update if element exists and is empty/zero
+          Object.keys(elements).forEach(key => {
+            if (elements[key] && elements[key].textContent.trim() === '0%') {
+              switch (key) {
+                case 'lookingAwayRatio':
+                  elements[key].textContent = `${lookingAwayRatio}%`;
+                  break;
+                case 'focusRate':
+                  elements[key].textContent = `${focusRate}%`;
+                  break;
+                case 'postureQuality':
+                  elements[key].textContent = `${postureQuality}%`;
+                  break;
+                case 'handFrequency':
+                  elements[key].textContent = `${handFrequency}/min`;
+                  break;
+              }
+            }
+          });
+        }
+        
+        // Call the function to update metrics
+        updateAnalyticsMetrics();
       });
     </script>
   </body>

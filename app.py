@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash , jsonify
-from models import db, User, Resume, UserEmotionData, SessionSummary
+from models import db, User, Resume, UserEmotionData, SessionSummary, EyeMetrics, Performance
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
@@ -171,8 +171,155 @@ def profile():
     if 'user_id' not in session:
         flash('Please log in.', 'error')
         return redirect(url_for('home'))
+    
     user = User.query.get(session['user_id'])
-    return render_template('profile.html', user=user)
+    
+    # Fetch eye metrics data for the current user
+    user_id = session['user_id']
+    
+    # Get all metrics records for this user
+    metrics_data = EyeMetrics.query.filter_by(user_id=user_id).all()
+    
+    # Calculate analytics based on eye metrics data
+    analytics = {}
+    
+    if metrics_data:
+        # Initialize counters
+        total_eye_contact_loss = 0
+        total_looking_away = 0.0
+        total_bad_posture_count = 0
+        total_bad_posture_duration = 0.0
+        total_hand_duration = 0.0
+        total_interviews = len(metrics_data)
+        
+        # Max and min values
+        max_eye_contact_loss = 0
+        min_eye_contact_loss = float('inf')
+        max_looking_away = 0.0
+        min_looking_away = float('inf')
+        max_bad_posture_duration = 0.0
+        min_bad_posture_duration = float('inf')
+        
+        # Calculate totals and find max/min values
+        for metric in metrics_data:
+            # Add to totals
+            total_eye_contact_loss += metric.loss_eye_contact_count
+            total_looking_away += metric.looking_away_duration
+            total_bad_posture_count += metric.bad_posture_count
+            total_bad_posture_duration += metric.bad_posture_duration
+            total_hand_duration += metric.hand_detection_duration
+            
+            # Update max values
+            max_eye_contact_loss = max(max_eye_contact_loss, metric.loss_eye_contact_count)
+            max_looking_away = max(max_looking_away, metric.looking_away_duration)
+            max_bad_posture_duration = max(max_bad_posture_duration, metric.bad_posture_duration)
+            
+            # Update min values (only if not zero to avoid skewing data)
+            if metric.loss_eye_contact_count > 0:
+                min_eye_contact_loss = min(min_eye_contact_loss, metric.loss_eye_contact_count)
+            if metric.looking_away_duration > 0:
+                min_looking_away = min(min_looking_away, metric.looking_away_duration)
+            if metric.bad_posture_duration > 0:
+                min_bad_posture_duration = min(min_bad_posture_duration, metric.bad_posture_duration)
+        
+        # Calculate averages
+        avg_eye_contact_loss = round(total_eye_contact_loss / total_interviews)
+        avg_looking_away = round(total_looking_away / total_interviews, 1)
+        avg_bad_posture_count = round(total_bad_posture_count / total_interviews)
+        avg_bad_posture_duration = round(total_bad_posture_duration / total_interviews, 1)
+        avg_hand_duration = round(total_hand_duration / total_interviews, 1)
+        
+        # Handle case where min was never updated (no non-zero values)
+        if min_eye_contact_loss == float('inf'):
+            min_eye_contact_loss = 0
+        if min_looking_away == float('inf'):
+            min_looking_away = 0.0
+        if min_bad_posture_duration == float('inf'):
+            min_bad_posture_duration = 0.0
+        
+        # Get the most recent interview data for the current metrics
+        latest_metric = metrics_data[0] if metrics_data else None
+        
+        # Calculate total time (estimated from durations or use a default)
+        estimated_total_time = 180  # default 3 minutes if no data
+        
+        if latest_metric:
+            # Try to estimate the interview duration from the metrics
+            # Use hand, eye and posture durations to estimate the total time
+            estimated_total_time = max(
+                180,  # minimum 3 min
+                latest_metric.hand_detection_duration + latest_metric.looking_away_duration + 60
+            )
+        
+        # Calculate looking away ratio
+        looking_away_ratio = round((latest_metric.looking_away_duration / estimated_total_time) * 100) if latest_metric else 0
+        
+        # Calculate focus rate
+        focus_rate = 100 - looking_away_ratio
+        
+        # Calculate posture quality
+        posture_quality = round(100 - ((latest_metric.bad_posture_duration / estimated_total_time) * 100)) if latest_metric else 0
+        
+        # Calculate hand movement frequency (movements per minute)
+        hand_frequency = round((latest_metric.hand_detection_count / (estimated_total_time / 60)), 1) if latest_metric else 0
+        
+        # Calculate overall confidence score (weighted average of key metrics)
+        confidence_score = round(
+            (focus_rate * 0.4) +  # 40% weight to focus
+            (posture_quality * 0.4) +  # 40% weight to posture
+            (min(100, 100 - (hand_frequency * 3)) * 0.2)  # 20% weight to hand movement
+        )
+        
+        # Store all analytics in the dictionary
+        analytics = {
+            # Current session metrics (from latest interview)
+            'eye_contact_loss': latest_metric.loss_eye_contact_count if latest_metric else 0,
+            'looking_away': latest_metric.looking_away_duration if latest_metric else 0,
+            'bad_posture_count': latest_metric.bad_posture_count if latest_metric else 0,
+            'bad_posture_duration': latest_metric.bad_posture_duration if latest_metric else 0,
+            'hand_duration': latest_metric.hand_detection_duration if latest_metric else 0,
+            'total_time': estimated_total_time,
+            
+            # Calculated metrics
+            'focus_rate': focus_rate,
+            'looking_away_ratio': looking_away_ratio,
+            'posture_quality': posture_quality,
+            'hand_frequency': hand_frequency,
+            'confidence_score': confidence_score,
+            
+            # Average metrics
+            'avg_eye_contact_loss': avg_eye_contact_loss,
+            'avg_looking_away': avg_looking_away,
+            'avg_looking_away_ratio': round((avg_looking_away / 180) * 100),  # Assuming avg interview is 3 min
+            'avg_bad_posture_count': avg_bad_posture_count,
+            'avg_bad_posture_duration': avg_bad_posture_duration,
+            
+            # Max metrics
+            'max_eye_contact_loss': max_eye_contact_loss,
+            'max_looking_away': round(max_looking_away, 1),
+            'max_bad_posture_duration': round(max_bad_posture_duration, 1),
+            
+            # Min metrics
+            'min_eye_contact_loss': min_eye_contact_loss,
+            'min_looking_away': round(min_looking_away, 1),
+            'min_bad_posture_duration': round(min_bad_posture_duration, 1),
+            
+            # Additional analytics
+            'total_interviews': total_interviews
+        }
+        
+        # Determine improvement areas (areas with the lowest scores)
+        improvement_areas = []
+        if focus_rate < 70:
+            improvement_areas.append("Eye Contact")
+        if posture_quality < 70:
+            improvement_areas.append("Posture")
+        if hand_frequency > 10:
+            improvement_areas.append("Hand Movement")
+        
+        analytics['improvement_areas'] = ", ".join(improvement_areas) if improvement_areas else "None"
+    
+    return render_template('profile.html', user=user, analytics=analytics)
 
 
 @app.route('/update_profile', methods=['POST'])
