@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Career Guidance - Career / Conquer</title>
+    <title>Career Guidance - Career/Conquer</title>
     <link
       rel="icon"
       type="image/png"
@@ -976,7 +976,7 @@
     <!-- Floating Navigation Bar -->
     <nav class="floating-nav">
       <a href="{{ url_for('home') }}" class="nav-logo">
-        <!-- <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" /> -->
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" />
         <h1>Career / Conquer</h1>
       </a>
       <div class="nav-links">
@@ -1032,11 +1032,11 @@
               <i class="fas fa-arrow-right icon"></i>
             </button>
             
-            <button class="num-btn">
+            <a class="num-btn" href="{{ url_for('start_guidance')}}">
               <span class="number">2</span>
               Ask a question about a careers, interviews and academics
               <i class="fas fa-arrow-right icon"></i>
-            </button>
+            </a>
             
             <a class="num-btn" style="font-family: Arial, Helvetica, sans-serif" href="{{ url_for('dashboard') }}">
               <span class="number">3</span>
@@ -1046,7 +1046,7 @@
             
             <button class="num-btn" style="font-family: Arial, Helvetica, sans-serif">
               <span class="number">4</span>
-              Resume improvement tips (dynamically tailored for you)
+              Resume improvement tips for you
               <i class="fas fa-arrow-right icon"></i>
             </button>
           </div>
