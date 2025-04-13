@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash , jsonify
-from models import db, User, Resume, UserEmotionData, SessionSummary
+from models import db, User, Resume, UserEmotionData, SessionSummary, EyeMetrics
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
@@ -21,7 +21,20 @@ load_dotenv()
 app = Flask(__name__)
 
 app.secret_key = os.getenv('SECRET_KEY')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project_db.sqlite3'
+
+# Ensure instance directory exists
+instance_path = os.path.join(os.getcwd(), 'instance')
+os.makedirs(instance_path, exist_ok=True)
+
+# Define absolute paths for databases
+main_db_path = os.path.join(instance_path, 'project_db.sqlite3')
+eye_db_path = os.path.join(instance_path, 'eye.sqlite')
+
+# Use absolute paths for all database URIs
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{main_db_path}'
+app.config['SQLALCHEMY_BINDS'] = {
+    'eye_metrics': f'sqlite:///{eye_db_path}'
+}
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
@@ -539,12 +552,40 @@ def end_video_analysis():
     if 'user_id' not in session:
         return jsonify({'success': False, 'error': 'User not logged in'})
     
-    # Clean up and save metrics if the tracker exists
     if metrics_tracker is not None:
-        metrics_tracker.close()  # Stop thread and save metrics
+        # Save final metrics
+        metrics_tracker.close()
+        
+        # Save final metrics to our SQLAlchemy model
+        try:
+            # Create a final EyeMetrics record
+            final_metrics = EyeMetrics(
+                user_id=session['user_id'],
+                session_id=metrics_tracker.session_id,
+                hand_detection_count=metrics_tracker.metrics["handDetectionCount"],
+                hand_detection_duration=metrics_tracker.metrics["handDetectionDuration"],
+                loss_eye_contact_count=metrics_tracker.metrics["lossEyeContactCount"],
+                looking_away_duration=metrics_tracker.metrics["lookingAwayDuration"],
+                bad_posture_count=metrics_tracker.metrics["badPostureCount"],
+                bad_posture_duration=metrics_tracker.metrics["badPostureDuration"],
+                is_auto_save=False  # This is a final save, not an auto-save
+            )
+            
+            # Add and commit
+            db.session.add(final_metrics)
+            db.session.commit()
+            
+            print(f"Final eye metrics saved to database for session {metrics_tracker.session_id}")
+        except Exception as e:
+            print(f"Error saving final eye metrics: {str(e)}")
+            db.session.rollback()
+        
+        # Clear the tracker
         metrics_tracker = None
-    
-    return jsonify({'success': True, 'message': 'Video analysis ended and metrics saved'})
+        
+        return jsonify({'success': True})
+    else:
+        return jsonify({'success': False, 'error': 'Video analysis not started'})
 
 # Route to get current metrics
 @app.route('/video_metrics', methods=['GET'])
@@ -559,6 +600,46 @@ def get_video_metrics():
         # Auto save metrics to database for persistence
         metrics_tracker.auto_save_metrics()
         
+        # Also save to our Flask SQLAlchemy model
+        try:
+            # Create a new EyeMetrics record
+            eye_metrics = EyeMetrics(
+                user_id=session['user_id'],
+                session_id=metrics_tracker.session_id,
+                hand_detection_count=metrics_tracker.metrics["handDetectionCount"],
+                hand_detection_duration=metrics_tracker.metrics["handDetectionDuration"],
+                loss_eye_contact_count=metrics_tracker.metrics["lossEyeContactCount"],
+                looking_away_duration=metrics_tracker.metrics["lookingAwayDuration"],
+                bad_posture_count=metrics_tracker.metrics["badPostureCount"],
+                bad_posture_duration=metrics_tracker.metrics["badPostureDuration"],
+                is_auto_save=True
+            )
+            
+            # Check if there's an existing auto-save record for this session
+            existing = EyeMetrics.query.filter_by(
+                user_id=session['user_id'], 
+                session_id=metrics_tracker.session_id,
+                is_auto_save=True
+            ).first()
+            
+            if existing:
+                # Update existing record instead of creating a new one
+                existing.hand_detection_count = metrics_tracker.metrics["handDetectionCount"]
+                existing.hand_detection_duration = metrics_tracker.metrics["handDetectionDuration"]
+                existing.loss_eye_contact_count = metrics_tracker.metrics["lossEyeContactCount"]
+                existing.looking_away_duration = metrics_tracker.metrics["lookingAwayDuration"]
+                existing.bad_posture_count = metrics_tracker.metrics["badPostureCount"]
+                existing.bad_posture_duration = metrics_tracker.metrics["badPostureDuration"]
+                existing.timestamp = datetime.now()
+            else:
+                # Add new record
+                db.session.add(eye_metrics)
+                
+            db.session.commit()
+        except Exception as e:
+            print(f"Error saving to eye metrics database: {str(e)}")
+            db.session.rollback()
+        
         return jsonify({
             'success': True,
             'metrics': metrics_tracker.metrics
@@ -568,6 +649,44 @@ def get_video_metrics():
             'success': False,
             'error': 'Video analysis not started'
         })
+
+@app.route('/view_eye_metrics')
+def view_eye_metrics():
+    if 'user_id' not in session:
+        flash('Please log in.', 'error')
+        return redirect(url_for('login'))
+    
+    # Query data from the eye_metrics table by user_id directly
+    user_id = session['user_id']
+    metrics_data = EyeMetrics.query.filter_by(user_id=user_id).order_by(EyeMetrics.timestamp.desc()).limit(10).all()
+    
+    # Format the data for display
+    formatted_data = []
+    for metric in metrics_data:
+        formatted_data.append({
+            'id': metric.id,
+            'session_id': metric.session_id,
+            'timestamp': metric.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+            'hand_detection_count': metric.hand_detection_count,
+            'hand_detection_duration': f"{metric.hand_detection_duration:.2f}s",
+            'loss_eye_contact_count': metric.loss_eye_contact_count,
+            'looking_away_duration': f"{metric.looking_away_duration:.2f}s",
+            'bad_posture_count': metric.bad_posture_count,
+            'bad_posture_duration': f"{metric.bad_posture_duration:.2f}s",
+            'is_auto_save': 'Yes' if metric.is_auto_save else 'No'
+        })
+    
+    # Show the database file path
+    instance_path = os.path.join(os.getcwd(), 'instance')
+    db_path = os.path.join(instance_path, 'eye.sqlite')
+    db_exists = os.path.exists(db_path)
+    
+    return jsonify({
+        'success': True,
+        'db_path': db_path,
+        'db_exists': db_exists,
+        'data': formatted_data
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)

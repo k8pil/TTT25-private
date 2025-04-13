@@ -43,3 +43,24 @@ class SessionSummary(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     summary_text = db.Column(db.Text, nullable=False)
 
+class EyeMetrics(db.Model):
+    __tablename__ = 'eye_metrics'
+    __bind_key__ = 'eye_metrics'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=True)
+    session_id = db.Column(db.String(50), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Metrics from video_analysis.py
+    hand_detection_count = db.Column(db.Integer, default=0)
+    hand_detection_duration = db.Column(db.Float, default=0.0)
+    loss_eye_contact_count = db.Column(db.Integer, default=0)
+    looking_away_duration = db.Column(db.Float, default=0.0)
+    bad_posture_count = db.Column(db.Integer, default=0)
+    bad_posture_duration = db.Column(db.Float, default=0.0)
+    is_auto_save = db.Column(db.Boolean, default=False)
+    
+    def __repr__(self):
+        return f'<EyeMetrics {self.id} - Session: {self.session_id}>'
+
