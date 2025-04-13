@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash , jsonify
-from models import db, User, Resume, UserEmotionData, SessionSummary, EyeMetrics
+from models import db, User, Resume, UserEmotionData, SessionSummary
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
@@ -171,7 +171,96 @@ def profile():
     if 'user_id' not in session:
         flash('Please log in.', 'error')
         return redirect(url_for('home'))
-    return render_template('profile.html')
+    user = User.query.get(session['user_id'])
+    return render_template('profile.html', user=user)
+
+
+@app.route('/update_profile', methods=['POST'])
+def update_profile():
+    if 'user_id' not in session:
+        flash('Please log in.', 'error')
+        return redirect(url_for('login'))
+        
+    user = User.query.get(session['user_id'])
+    
+    # Verify current password
+    current_password = request.form['current_password']
+    if not check_password_hash(user.password, current_password):
+        flash('Current password is incorrect.', 'error')
+        return redirect(url_for('profile'))
+    
+    # Update username if changed
+    new_username = request.form['username']
+    if new_username != user.username:
+        # Check if username already exists
+        existing_user = User.query.filter_by(username=new_username).first()
+        if existing_user and existing_user.id != user.id:
+            flash('Username already in use.', 'error')
+            return redirect(url_for('profile'))
+        user.username = new_username
+    
+    # Update email if changed
+    new_email = request.form['email']
+    if new_email != user.email:
+        # Check if email already exists
+        existing_user = User.query.filter_by(email=new_email).first()
+        if existing_user and existing_user.id != user.id:
+            flash('Email already in use.', 'error')
+            return redirect(url_for('profile'))
+        user.email = new_email
+    
+    # Update password if provided
+    new_password = request.form['new_password']
+    if new_password:
+        user.password = generate_password_hash(new_password)
+    
+    # Save changes
+    db.session.commit()
+    flash('Profile updated successfully.', 'success')
+    return redirect(url_for('profile'))
+
+
+@app.route('/delete_account', methods=['POST'])
+def delete_account():
+    if 'user_id' not in session:
+        flash('Please log in.', 'error')
+        return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+    
+    # Verify password
+    password = request.form['password']
+    if not check_password_hash(user.password, password):
+        flash('Password is incorrect.', 'error')
+        return redirect(url_for('profile'))
+    
+    try:
+        # Delete associated data
+        Resume.query.filter_by(user_id=user.id).delete()
+        Performance.query.filter_by(user_id=user.id).delete()
+        
+        # Check if UserEmotionData and SessionSummary exist 
+        if hasattr(db.Model, 'UserEmotionData'):
+            UserEmotionData.query.filter_by(user_id=user.id).delete()
+        
+        if hasattr(db.Model, 'SessionSummary'):
+            SessionSummary.query.filter_by(user_id=user.id).delete()
+        
+        # Delete the user
+        db.session.delete(user)
+        db.session.commit()
+        
+        # Clear session
+        session.clear()
+        
+        flash('Your account has been permanently deleted.', 'success')
+        return redirect(url_for('home'))
+    
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error deleting account: {e}")
+        flash('An error occurred while deleting your account.', 'error')
+        return redirect(url_for('profile'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
