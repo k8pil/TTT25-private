@@ -7,6 +7,7 @@ from datetime import datetime
 instance_path = os.path.join(os.getcwd(), 'instance')
 db_path = os.path.join(instance_path, 'eye.sqlite')
 
+
 def check_db_exists():
     """Check if the database exists"""
     if not os.path.exists(db_path):
@@ -14,38 +15,39 @@ def check_db_exists():
         return False
     return True
 
+
 def view_data():
     """View all records in the eye_metrics table"""
     if not check_db_exists():
         return
-    
+
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    
+
     # Get column names first
     cursor.execute("PRAGMA table_info(eye_metrics)")
     columns = [column[1] for column in cursor.fetchall()]
-    
+
     # Now get the data
     cursor.execute("SELECT * FROM eye_metrics ORDER BY timestamp DESC")
     rows = cursor.fetchall()
-    
+
     print(f"Database: {db_path}")
     print(f"Found {len(rows)} records in eye_metrics table.\n")
-    
+
     if len(rows) == 0:
         print("No records found.")
     else:
         # Print header
         print("Records in eye_metrics table:")
         print("-" * 80)
-        
+
         # Print each record
         for i, row in enumerate(rows):
             print(f"Record #{i+1}:")
             for j, value in enumerate(row):
                 column_name = columns[j] if j < len(columns) else f"Column {j}"
-                
+
                 if column_name in ['hand_detection_duration', 'looking_away_duration', 'bad_posture_duration']:
                     print(f"  {column_name}: {value:.2f}s")
                 elif column_name == 'is_auto_save':
@@ -53,36 +55,39 @@ def view_data():
                 else:
                     print(f"  {column_name}: {value}")
             print("-" * 40)
-    
+
     conn.close()
+
 
 def reset_data():
     """Delete all records from the eye_metrics table"""
     if not check_db_exists():
         return
-    
-    confirm = input("Are you sure you want to delete ALL records from the eye_metrics table? (y/n): ")
+
+    confirm = input(
+        "Are you sure you want to delete ALL records from the eye_metrics table? (y/n): ")
     if confirm.lower() != 'y':
         print("Operation cancelled.")
         return
-    
+
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    
+
     cursor.execute("DELETE FROM eye_metrics")
     conn.commit()
-    
+
     print(f"All records deleted from eye_metrics table.")
     conn.close()
+
 
 def add_test_data():
     """Add test records to the eye_metrics table"""
     if not check_db_exists():
         return
-    
+
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    
+
     # Add 3 test records
     for i in range(3):
         cursor.execute('''
@@ -110,26 +115,28 @@ def add_test_data():
             (i + 1) * 1.7,  # bad_posture_duration
             i % 2 == 0  # is_auto_save
         ))
-    
+
     conn.commit()
     print(f"Added 3 test records to eye_metrics table.")
     conn.close()
 
+
 def recreate_db():
     """Recreate the database from scratch"""
     if os.path.exists(db_path):
-        confirm = input(f"Database {db_path} already exists. Recreate it? (y/n): ")
+        confirm = input(
+            f"Database {db_path} already exists. Recreate it? (y/n): ")
         if confirm.lower() != 'y':
             print("Operation cancelled.")
             return
-    
+
     # Ensure instance directory exists
     os.makedirs(instance_path, exist_ok=True)
-    
+
     # Create new database
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    
+
     # Create table
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS eye_metrics (
@@ -146,12 +153,13 @@ def recreate_db():
         is_auto_save BOOLEAN DEFAULT 0
     )
     ''')
-    
+
     conn.commit()
     conn.close()
-    
+
     print(f"Database created at: {db_path}")
     print("Eye metrics table created.")
+
 
 def show_help():
     """Show usage information"""
@@ -165,13 +173,14 @@ def show_help():
     print("  recreate - Recreate the database from scratch")
     print("  help    - Show this help message")
 
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         show_help()
         sys.exit(0)
-    
+
     command = sys.argv[1].lower()
-    
+
     if command == "view":
         view_data()
     elif command == "reset":
@@ -184,4 +193,4 @@ if __name__ == "__main__":
         show_help()
     else:
         print(f"Unknown command: {command}")
-        show_help() 
+        show_help()

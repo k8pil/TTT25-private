@@ -12,10 +12,10 @@ try:
     )
     print(f"Status Code: {response.status_code}")
     print(f"Response: {response.text}")
-    
+
     session_data = response.json()
     session_id = session_data.get("session_id")
-    
+
     if session_id:
         # Test getting the session
         print("\nGetting session info...")
@@ -25,7 +25,7 @@ try:
         )
         print(f"Status Code: {response.status_code}")
         print(f"Response: {response.text}")
-        
+
         # Test sending posture metrics
         print("\nSending posture metrics...")
         response = requests.post(
@@ -42,7 +42,7 @@ try:
         )
         print(f"Status Code: {response.status_code}")
         print(f"Response: {response.text}")
-        
+
         # Test getting all sessions
         print("\nGetting all sessions...")
         response = requests.get(
@@ -51,6 +51,6 @@ try:
         )
         print(f"Status Code: {response.status_code}")
         print(f"Response: {response.text}")
-        
+
 except Exception as e:
-    print(f"Error: {str(e)}") 
+    print(f"Error: {str(e)}")

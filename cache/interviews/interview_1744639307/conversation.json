@@ -1,0 +1,19 @@
+{
+  "conversation": [
+    {
+      "role": "interviewer",
+      "content": "Hi Kapil, thanks for joining me today.  It's great to see your impressive resume \u2013 particularly your work as CTO at Aero Touch and your award-winning project at the Smart India Hackathon.  Your experience with drone technology, AI, and developing  scalable solutions like Mark Mate is really interesting.\n\nTo start, could you please introduce yourself and briefly describe your background and what specifically interests you about this role (assuming this is a job interview for a position)?\n",
+      "timestamp": 1744639308.7108552
+    },
+    {
+      "role": "candidate",
+      "content": "hay hay hello hello hello",
+      "timestamp": 1744639326.41765
+    },
+    {
+      "role": "interviewer",
+      "content": "I find your greeting entirely unprofessional and frankly, unacceptable.  This is a job interview, not a playground.  Repeating \"hay\" and \"hello\" is childish and demonstrates a lack of seriousness.  I expect a professional demeanor.  Please, rephrase your greeting appropriately and let's proceed with the interview in a manner befitting this context.\n",
+      "timestamp": 1744639328.7032733
+    }
+  ]
+}

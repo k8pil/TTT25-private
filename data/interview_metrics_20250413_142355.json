@@ -1,0 +1,10 @@
+{
+    "sessionId": "20250413142204",
+    "timestamp": "20250413_142355",
+    "handDetectionCount": 33,
+    "handDetectionDuration": 22.034056901931763,
+    "lossEyeContactCount": 28,
+    "lookingAwayDuration": 15.01675009727478,
+    "badPostureCount": 22,
+    "badPostureDuration": 12.015532732009888
+}

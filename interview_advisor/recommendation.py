@@ -5,50 +5,52 @@ import os
 import re
 from .utils import save_json_file
 
+
 class RecommendationEngine:
     def __init__(self, ai_client, tts_service=None):
         """Initialize the recommendation engine."""
         self.ai_client = ai_client
         self.tts_service = tts_service
-        
+
     def generate_recommendations(self, resume_data: Dict, conversation: List[Dict], session_dir: str) -> Dict:
         """Generate recommendations based on the resume and interview conversation."""
         try:
             # Create a conversation transcript in a readable format
             transcript = self._create_transcript(conversation)
-            
+
             # Generate the recommendations
             recommendations = self._analyze_interview(resume_data, transcript)
-            
+
             # Save recommendations to file
             save_path = os.path.join(session_dir, "recommendations.json")
             save_json_file(recommendations, save_path)
-            
+
             # Format recommendations for display
-            formatted_recommendations = self._format_recommendations(recommendations)
-            
+            formatted_recommendations = self._format_recommendations(
+                recommendations)
+
             # Generate TTS for the formatted recommendations
             if self.tts_service:
                 self.tts_service.text_to_speech(formatted_recommendations)
-            
+
             return recommendations
-        
+
         except Exception as e:
             print(f"Error generating recommendations: {e}")
             return {"error": str(e)}
-    
+
     def _create_transcript(self, conversation: List[Dict]) -> str:
         """Create a readable transcript from the conversation history."""
         transcript = ""
-        
+
         for entry in conversation:
             role = entry["role"].capitalize()
             content = entry["content"]
-            
+
             transcript += f"{role}: {content}\n\n"
-            
+
         return transcript
-    
+
     def _analyze_interview(self, resume_data: Dict, transcript: str) -> Dict:
         """Analyze the interview and generate recommendations."""
         try:
@@ -56,7 +58,7 @@ class RecommendationEngine:
             system_prompt = """You are an expert career counselor with experience in HR and technical recruiting.
             Analyze this interview transcript and provide detailed, constructive feedback and recommendations.
             Your goal is to help the candidate improve their interview skills and career prospects."""
-            
+
             user_prompt = f"""Below is a resume and transcript of a job interview.
             
             RESUME DATA:
@@ -85,10 +87,10 @@ class RecommendationEngine:
             
             {system_prompt}
             """
-            
+
             # Initialize Gemini model with a preference for structured output
             model = self.ai_client.GenerativeModel('gemini-1.5-flash')
-            
+
             # Configure the model for more structured output
             generation_config = {
                 "temperature": 0.2,
@@ -96,16 +98,16 @@ class RecommendationEngine:
                 "top_k": 40,
                 "response_mime_type": "application/json"
             }
-            
+
             # Generate recommendations
             response = model.generate_content(
                 user_prompt,
                 generation_config=generation_config
             )
-            
+
             # Extract and parse JSON from the response
             response_text = response.text
-            
+
             # Try to parse JSON from the response
             try:
                 # Try to parse directly
@@ -122,13 +124,13 @@ class RecommendationEngine:
                 else:
                     print("No JSON content found in recommendations response")
                     return self._create_fallback_recommendations()
-            
+
             return recommendations
-            
+
         except Exception as e:
             print(f"Error analyzing interview: {e}")
             return self._create_fallback_recommendations()
-    
+
     def _create_fallback_recommendations(self) -> Dict:
         """Create a fallback recommendations structure if analysis fails."""
         return {
@@ -141,60 +143,61 @@ class RecommendationEngine:
             "career_advice": [],
             "interview_preparation_tips": []
         }
-    
+
     def _format_recommendations(self, recommendations: Dict) -> str:
         """Format recommendations into a readable text for display and TTS."""
         try:
             formatted = "# Interview Feedback and Recommendations\n\n"
-            
+
             # Strengths
             formatted += "## Strengths\n"
             for strength in recommendations.get("strengths", []):
                 formatted += f"- **{strength.get('title')}**: {strength.get('explanation')}\n\n"
-            
+
             # Areas for improvement
             formatted += "## Areas for Improvement\n"
             for area in recommendations.get("areas_for_improvement", []):
                 formatted += f"- **{area.get('title')}**: {area.get('explanation')}\n\n"
-            
+
             # Communication skills
             comm = recommendations.get("communication_skills", {})
             formatted += f"## Communication Skills\n**Rating**: {comm.get('rating', 'N/A')}\n{comm.get('feedback', '')}\n\n"
-            
+
             # Technical assessment
             tech = recommendations.get("technical_assessment", {})
             formatted += f"## Technical Assessment\n**Rating**: {tech.get('rating', 'N/A')}\n{tech.get('feedback', '')}\n\n"
-            
+
             # Skill recommendations
             formatted += "## Recommended Skills to Learn\n"
             for skill in recommendations.get("skill_recommendations", []):
                 formatted += f"- **{skill.get('title')}**: {skill.get('explanation')}\n\n"
-            
+
             # Career advice
             formatted += "## Career Advice\n"
             for advice in recommendations.get("career_advice", []):
                 formatted += f"- **{advice.get('title')}**: {advice.get('explanation')}\n\n"
-            
+
             # Interview preparation tips
             formatted += "## Interview Preparation Tips\n"
             for tip in recommendations.get("interview_preparation_tips", []):
                 formatted += f"- **{tip.get('title')}**: {tip.get('explanation')}\n\n"
-            
+
             # Simplify for TTS without markdown
-            tts_text = formatted.replace("# ", "").replace("## ", "").replace("**", "").replace("\n\n", "\n")
-            
+            tts_text = formatted.replace("# ", "").replace(
+                "## ", "").replace("**", "").replace("\n\n", "\n")
+
             return tts_text
-            
+
         except Exception as e:
             print(f"Error formatting recommendations: {e}")
             return "Error formatting recommendations."
-    
+
     def get_recommendations_summary(self, recommendations: Dict) -> str:
         """Generate a concise summary of the key recommendations."""
         try:
             system_prompt = """You are a professional career coach summarizing feedback after a job interview.
             Create a concise, encouraging summary highlighting key points."""
-            
+
             user_prompt = f"""Here are detailed recommendations after a job interview:
             {json.dumps(recommendations, indent=2)}
             
@@ -208,15 +211,15 @@ class RecommendationEngine:
             
             {system_prompt}
             """
-            
+
             # Initialize Gemini model
             model = self.ai_client.GenerativeModel('gemini-1.5-flash')
-            
+
             # Generate summary
             response = model.generate_content(user_prompt)
-            
+
             return response.text
-            
+
         except Exception as e:
             print(f"Error generating recommendations summary: {e}")
-            return "Unable to generate recommendations summary at this time." 
+            return "Unable to generate recommendations summary at this time."

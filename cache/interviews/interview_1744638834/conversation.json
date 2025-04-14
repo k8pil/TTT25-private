@@ -1,0 +1,27 @@
+[
+  {
+    "role": "interviewer",
+    "content": "Hello, and welcome to your interview! My name is AI Interviewer. Could you please introduce yourself and tell me a bit about your background and experience?",
+    "timestamp": 1744638834.2911375
+  },
+  {
+    "role": "candidate",
+    "content": "i dont know anything",
+    "timestamp": 1744638843.298606
+  },
+  {
+    "role": "interviewer",
+    "content": "Can you tell me about a challenging project you worked on?",
+    "timestamp": 1744638843.298606
+  },
+  {
+    "role": "candidate",
+    "content": "nope",
+    "timestamp": 1744638847.7223
+  },
+  {
+    "role": "interviewer",
+    "content": "What are your key technical skills and how have you applied them in your work?",
+    "timestamp": 1744638847.7223
+  }
+]

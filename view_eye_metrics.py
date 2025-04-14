@@ -40,4 +40,4 @@ for i, row in enumerate(rows):
     print()
 
 # Close the connection
-conn.close() 
+conn.close()

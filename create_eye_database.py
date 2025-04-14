@@ -64,4 +64,4 @@ conn.close()
 
 print(f"Database created at: {db_path}")
 print("Eye metrics table created with test data.")
-print(f"Directory contents: {os.listdir(instance_path)}") 
+print(f"Directory contents: {os.listdir(instance_path)}")

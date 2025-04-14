@@ -19,25 +19,25 @@ tables = cursor.fetchall()
 print(f"Tables in database:")
 for table in tables:
     print(f"  - {table[0]}")
-    
+
     # Show table schema
     cursor.execute(f"PRAGMA table_info({table[0]})")
     columns = cursor.fetchall()
     print(f"    Columns:")
     for col in columns:
         print(f"      {col[1]} ({col[2]})")
-    
+
     # Count records
     cursor.execute(f"SELECT COUNT(*) FROM {table[0]}")
     count = cursor.fetchone()[0]
     print(f"    Record count: {count}")
-    
+
     # Show sample data if available
     if count > 0:
         cursor.execute(f"SELECT * FROM {table[0]} LIMIT 1")
         sample = cursor.fetchone()
         print(f"    Sample data: {sample}")
-    
+
     print()
 
-conn.close() 
+conn.close()

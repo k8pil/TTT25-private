@@ -7,9 +7,10 @@ import time
 import sqlite3
 from typing import Dict, List, Any, Optional
 
+
 class DatabaseManager:
     """Manages database connections and operations for tracking metrics."""
-    
+
     def __init__(self, db_path: str = "interview_metrics.db"):
         """Initialize the database manager."""
         self.db_path = db_path
@@ -21,14 +22,14 @@ class DatabaseManager:
             import traceback
             traceback.print_exc()
             self.conn = None
-    
+
     def initialize_database(self) -> None:
         """Create tables if they don't exist."""
         try:
             print(f"Connecting to database at {self.db_path}")
             self.conn = sqlite3.connect(self.db_path)
             cursor = self.conn.cursor()
-            
+
             # Create session table
             print("Creating tables if they don't exist...")
             cursor.execute('''
@@ -40,7 +41,7 @@ class DatabaseManager:
                 questions_count INTEGER DEFAULT 0
             )
             ''')
-            
+
             # Create table for audio metrics
             cursor.execute('''
             CREATE TABLE IF NOT EXISTS audio_metrics (
@@ -56,7 +57,7 @@ class DatabaseManager:
                 FOREIGN KEY (session_id) REFERENCES sessions(session_id)
             )
             ''')
-            
+
             # Create table for posture/eye/hand metrics
             cursor.execute('''
             CREATE TABLE IF NOT EXISTS posture_metrics (
@@ -72,7 +73,7 @@ class DatabaseManager:
                 FOREIGN KEY (session_id) REFERENCES sessions(session_id)
             )
             ''')
-            
+
             # Create table for interview analysis results
             cursor.execute('''
             CREATE TABLE IF NOT EXISTS interview_analysis (
@@ -86,7 +87,7 @@ class DatabaseManager:
                 FOREIGN KEY (session_id) REFERENCES sessions(session_id)
             )
             ''')
-            
+
             self.conn.commit()
             print(f"Database initialized at {self.db_path}")
         except sqlite3.Error as e:
@@ -101,7 +102,7 @@ class DatabaseManager:
             if self.conn:
                 self.conn = None
             raise
-    
+
     def create_session(self, session_id: str, resume_id: Optional[str] = None) -> bool:
         """Create a new session record."""
         try:
@@ -115,7 +116,7 @@ class DatabaseManager:
         except Exception as e:
             print(f"Error creating session: {e}")
             return False
-    
+
     def end_session(self, session_id: str, questions_count: int) -> bool:
         """Update session with end time and questions count."""
         try:
@@ -129,7 +130,7 @@ class DatabaseManager:
         except Exception as e:
             print(f"Error ending session: {e}")
             return False
-    
+
     def save_audio_metrics(self, session_id: str, metrics: Dict[str, Any]) -> bool:
         """Save audio analysis metrics."""
         try:
@@ -155,7 +156,7 @@ class DatabaseManager:
         except Exception as e:
             print(f"Error saving audio metrics: {e}")
             return False
-    
+
     def save_posture_metrics(self, session_id: str, metrics: Dict[str, Any]) -> bool:
         """Save posture metrics."""
         try:
@@ -182,18 +183,19 @@ class DatabaseManager:
         except Exception as e:
             print(f"Error saving posture metrics: {e}")
             return False
-    
+
     def save_analysis_results(self, session_id: str, analysis: Dict[str, Any]) -> bool:
         """Save interview analysis results."""
         try:
             cursor = self.conn.cursor()
-            
+
             # Convert lists to JSON strings if needed
             import json
             strengths = json.dumps(analysis.get("strengths", []))
-            areas_for_improvement = json.dumps(analysis.get("areas_for_improvement", []))
+            areas_for_improvement = json.dumps(
+                analysis.get("areas_for_improvement", []))
             recommendations = json.dumps(analysis.get("recommendations", []))
-            
+
             cursor.execute(
                 """INSERT INTO interview_analysis
                    (session_id, strengths, areas_for_improvement,
@@ -213,7 +215,7 @@ class DatabaseManager:
         except Exception as e:
             print(f"Error saving analysis results: {e}")
             return False
-    
+
     def get_session_metrics(self, session_id: str) -> Dict[str, Any]:
         """Get all metrics for a specific session."""
         try:
@@ -224,13 +226,13 @@ class DatabaseManager:
                 (session_id,)
             )
             session_data = cursor.fetchone()
-            
+
             if not session_data:
                 return {"error": "Session not found"}
-            
+
             session_cols = [col[0] for col in cursor.description]
             session_dict = dict(zip(session_cols, session_data))
-            
+
             # Get audio metrics
             cursor.execute(
                 "SELECT * FROM audio_metrics WHERE session_id = ? ORDER BY timestamp",
@@ -239,7 +241,7 @@ class DatabaseManager:
             audio_data = cursor.fetchall()
             audio_cols = [col[0] for col in cursor.description]
             audio_metrics = [dict(zip(audio_cols, row)) for row in audio_data]
-            
+
             # Get posture metrics
             cursor.execute(
                 "SELECT * FROM posture_metrics WHERE session_id = ? ORDER BY timestamp",
@@ -247,8 +249,9 @@ class DatabaseManager:
             )
             posture_data = cursor.fetchall()
             posture_cols = [col[0] for col in cursor.description]
-            posture_metrics = [dict(zip(posture_cols, row)) for row in posture_data]
-            
+            posture_metrics = [dict(zip(posture_cols, row))
+                               for row in posture_data]
+
             # Get analysis results
             cursor.execute(
                 "SELECT * FROM interview_analysis WHERE session_id = ?",
@@ -256,20 +259,21 @@ class DatabaseManager:
             )
             analysis_data = cursor.fetchone()
             analysis_dict = {}
-            
+
             if analysis_data:
                 analysis_cols = [col[0] for col in cursor.description]
                 analysis_dict = dict(zip(analysis_cols, analysis_data))
-                
+
                 # Parse JSON strings back to lists
                 import json
                 for field in ["strengths", "areas_for_improvement", "recommendations"]:
                     if field in analysis_dict and analysis_dict[field]:
                         try:
-                            analysis_dict[field] = json.loads(analysis_dict[field])
+                            analysis_dict[field] = json.loads(
+                                analysis_dict[field])
                         except:
                             analysis_dict[field] = []
-            
+
             # Combine all data
             result = {
                 "session": session_dict,
@@ -277,12 +281,12 @@ class DatabaseManager:
                 "posture_metrics": posture_metrics,
                 "analysis": analysis_dict
             }
-            
+
             return result
         except Exception as e:
             print(f"Error getting session metrics: {e}")
             return {"error": str(e)}
-    
+
     def get_all_sessions(self) -> List[Dict[str, Any]]:
         """Get a list of all sessions."""
         try:
@@ -291,22 +295,22 @@ class DatabaseManager:
                 "SELECT * FROM sessions ORDER BY start_time DESC"
             )
             sessions_data = cursor.fetchall()
-            
+
             if not sessions_data:
                 return []
-            
+
             session_cols = [col[0] for col in cursor.description]
             sessions = []
-            
+
             for row in sessions_data:
                 session_dict = dict(zip(session_cols, row))
                 sessions.append(session_dict)
-            
+
             return sessions
         except Exception as e:
             print(f"Error getting all sessions: {e}")
             return []
-    
+
     def get_session_details(self, session_id: str) -> Dict[str, Any]:
         """Get details for a specific session."""
         try:
@@ -316,56 +320,57 @@ class DatabaseManager:
                 (session_id,)
             )
             session_data = cursor.fetchone()
-            
+
             if not session_data:
                 return {"error": "Session not found"}
-            
+
             session_cols = [col[0] for col in cursor.description]
             session_dict = dict(zip(session_cols, session_data))
-            
+
             # Get analysis results
             cursor.execute(
                 "SELECT * FROM interview_analysis WHERE session_id = ?",
                 (session_id,)
             )
             analysis_data = cursor.fetchone()
-            
+
             if analysis_data:
                 analysis_cols = [col[0] for col in cursor.description]
                 analysis_dict = dict(zip(analysis_cols, analysis_data))
-                
+
                 # Parse JSON strings back to lists
                 import json
                 for field in ["strengths", "areas_for_improvement", "recommendations"]:
                     if field in analysis_dict and analysis_dict[field]:
                         try:
-                            analysis_dict[field] = json.loads(analysis_dict[field])
+                            analysis_dict[field] = json.loads(
+                                analysis_dict[field])
                         except:
                             analysis_dict[field] = []
-                
+
                 session_dict["analysis"] = analysis_dict
-            
+
             # Get metrics counts
             cursor.execute(
                 "SELECT COUNT(*) FROM audio_metrics WHERE session_id = ?",
                 (session_id,)
             )
             audio_count = cursor.fetchone()[0]
-            
+
             cursor.execute(
                 "SELECT COUNT(*) FROM posture_metrics WHERE session_id = ?",
                 (session_id,)
             )
             posture_count = cursor.fetchone()[0]
-            
+
             session_dict["audio_metrics_count"] = audio_count
             session_dict["posture_metrics_count"] = posture_count
-            
+
             return session_dict
         except Exception as e:
             print(f"Error getting session details: {e}")
             return {"error": str(e)}
-    
+
     def get_audio_metrics(self, session_id: str) -> List[Dict[str, Any]]:
         """Get audio metrics for a specific session."""
         try:
@@ -375,24 +380,25 @@ class DatabaseManager:
                 (session_id,)
             )
             metrics_data = cursor.fetchall()
-            
+
             if not metrics_data:
                 return []
-            
+
             metrics_cols = [col[0] for col in cursor.description]
             metrics = []
-            
+
             for row in metrics_data:
                 metrics_dict = dict(zip(metrics_cols, row))
                 # Convert boolean fields
-                metrics_dict["is_stuttering"] = bool(metrics_dict["is_stuttering"])
+                metrics_dict["is_stuttering"] = bool(
+                    metrics_dict["is_stuttering"])
                 metrics.append(metrics_dict)
-            
+
             return metrics
         except Exception as e:
             print(f"Error getting audio metrics: {e}")
             return []
-    
+
     def get_posture_metrics(self, session_id: str) -> List[Dict[str, Any]]:
         """Get posture metrics for a specific session."""
         try:
@@ -402,27 +408,27 @@ class DatabaseManager:
                 (session_id,)
             )
             metrics_data = cursor.fetchall()
-            
+
             if not metrics_data:
                 return []
-            
+
             metrics_cols = [col[0] for col in cursor.description]
             metrics = []
-            
+
             for row in metrics_data:
                 metrics_dict = dict(zip(metrics_cols, row))
                 # Convert boolean fields
                 for field in ["hand_detected", "not_facing_camera", "bad_posture_detected"]:
                     metrics_dict[field] = bool(metrics_dict[field])
                 metrics.append(metrics_dict)
-            
+
             return metrics
         except Exception as e:
             print(f"Error getting posture metrics: {e}")
             return []
-    
+
     def close(self):
         """Close the database connection."""
         if self.conn:
             self.conn.close()
-            self.conn = None 
+            self.conn = None

@@ -1,0 +1,29 @@
+{
+  "conversation": [
+    {
+      "role": "candidate",
+      "content": "1",
+      "timestamp": 1744638532.0031211
+    },
+    {
+      "role": "interviewer",
+      "content": "Hi Kapil, welcome! It's great to finally meet you.  I've been reviewing your resume, and I'm particularly impressed with your experience as CTO at Aero Touch and your impressive projects, especially the Mark Mate automated grading system \u2013 that sounds incredibly innovative.  Your skills in Python, deep learning, and NLP are also very relevant to the roles we're discussing.\n\nTo get started, could you please tell me a little about yourself, your background, and what areas within technology most excite you?\n",
+      "timestamp": 1744638532.4533305
+    },
+    {
+      "role": "interviewer",
+      "content": "Given your success in raising seed funding for Aero Touch, can you describe your approach to identifying and securing investment opportunities, and what were some key factors that contributed to your success in raising 1.5 Cr?\n",
+      "timestamp": 1744638534.1034207
+    },
+    {
+      "role": "candidate",
+      "content": "Sorry, I couldn't transcribe your audio. Please try again.",
+      "timestamp": 1744638563.0945842
+    },
+    {
+      "role": "interviewer",
+      "content": "Building on your experience with Mark Mate,  can you walk me through the technical challenges you encountered in implementing the OCR and NLP components, and how you overcame them to achieve a 70% reduction in grading time?\n",
+      "timestamp": 1744638565.196152
+    }
+  ]
+}

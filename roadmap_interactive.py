@@ -3,10 +3,11 @@ Enhanced implementation of the roadmap interactive feature for the career adviso
 This provides a more sophisticated prompt handling after showing a career roadmap.
 """
 
+
 def handle_roadmap_interactive(career_path, roadmap, use_speech=False, speak_function=None):
     """
     Handle interactive prompts about a specific career roadmap with enhanced capabilities
-    
+
     Args:
         career_path: Dictionary containing career path details
         roadmap: Dictionary containing roadmap details
@@ -14,29 +15,38 @@ def handle_roadmap_interactive(career_path, roadmap, use_speech=False, speak_fun
         speak_function: Function to use for speech output
     """
     print("\nYou can now ask specific questions about this career path. Type 'back' to return to the main menu.")
-    
+
     # If no speak function is provided, create a simple one
     if speak_function is None:
         def speak_function(text):
             if use_speech:
                 print(f"[Speaking]: {text}")
-    
+
     # Define enhanced keyword sets for better question detection
-    salary_keywords = ["salary", "pay", "money", "compensation", "earn", "income", "wage", "payment", "remuneration", "benefits"]
-    skills_keywords = ["skill", "skills", "learn", "require", "need", "competency", "ability", "expertise", "proficiency", "capability"]
-    time_keywords = ["time", "long", "years", "month", "duration", "timeline", "period", "schedule", "roadmap", "plan"]
-    growth_keywords = ["growth", "future", "potential", "prospect", "advance", "promotion", "career", "progression", "opportunities", "advancement"]
-    trend_keywords = ["trend", "industry", "emerging", "technology", "tech", "current", "future", "evolving", "cutting-edge", "innovation"]
-    education_keywords = ["certif", "qualif", "degree", "education", "diploma", "training", "course", "learning", "study", "academic"]
-    project_keywords = ["project", "portfolio", "showcase", "demonstrate", "example", "work", "sample", "build", "create", "develop"]
-    interview_keywords = ["interview", "question", "ask", "hiring", "recruiter", "hr", "prepare", "common", "respond", "answer"]
-    remote_keywords = ["remote", "work from home", "wfh", "telecommute", "virtual", "online", "distance", "location", "flexibility", "hybrid"]
-    
+    salary_keywords = ["salary", "pay", "money", "compensation",
+                       "earn", "income", "wage", "payment", "remuneration", "benefits"]
+    skills_keywords = ["skill", "skills", "learn", "require", "need",
+                       "competency", "ability", "expertise", "proficiency", "capability"]
+    time_keywords = ["time", "long", "years", "month", "duration",
+                     "timeline", "period", "schedule", "roadmap", "plan"]
+    growth_keywords = ["growth", "future", "potential", "prospect", "advance",
+                       "promotion", "career", "progression", "opportunities", "advancement"]
+    trend_keywords = ["trend", "industry", "emerging", "technology",
+                      "tech", "current", "future", "evolving", "cutting-edge", "innovation"]
+    education_keywords = ["certif", "qualif", "degree", "education",
+                          "diploma", "training", "course", "learning", "study", "academic"]
+    project_keywords = ["project", "portfolio", "showcase", "demonstrate",
+                        "example", "work", "sample", "build", "create", "develop"]
+    interview_keywords = ["interview", "question", "ask", "hiring",
+                          "recruiter", "hr", "prepare", "common", "respond", "answer"]
+    remote_keywords = ["remote", "work from home", "wfh", "telecommute",
+                       "virtual", "online", "distance", "location", "flexibility", "hybrid"]
+
     # Advanced industry trends data
     industry_trends = {
         "Data Scientist": [
             "• Increased focus on ethical AI and responsible data usage",
-            "• Growing demand for real-time analytics and stream processing", 
+            "• Growing demand for real-time analytics and stream processing",
             "• AutoML tools enabling wider adoption of machine learning",
             "• Integration of AI with IoT and edge computing",
             "• Rise of explainable AI (XAI) for transparency in models",
@@ -107,7 +117,7 @@ def handle_roadmap_interactive(career_path, roadmap, use_speech=False, speak_fun
             "• Increased adoption of security as code practices"
         ]
     }
-    
+
     # Common interview questions by role
     interview_questions = {
         "Data Scientist": [
@@ -146,7 +156,7 @@ def handle_roadmap_interactive(career_path, roadmap, use_speech=False, speak_fun
             "• How do you balance stability with the need for rapid deployments?"
         ]
     }
-    
+
     # Remote work advice by role
     remote_work_advice = {
         "Data Scientist": [
@@ -185,25 +195,28 @@ def handle_roadmap_interactive(career_path, roadmap, use_speech=False, speak_fun
             "• Set up clear on-call processes and rotation for distributed teams"
         ]
     }
-    
+
     while True:
         custom_prompt = input("\nYour question > ").strip()
-        
+
         if custom_prompt.lower() == 'back':
             break
-            
+
         if not custom_prompt.strip():
-            print("Please ask a specific question about this career path or type 'back' to return.")
+            print(
+                "Please ask a specific question about this career path or type 'back' to return.")
             continue
-        
+
         # Process the custom prompt
-        print(f"\nAnswering your question about the {career_path['title']} career path:")
+        print(
+            f"\nAnswering your question about the {career_path['title']} career path:")
         if use_speech:
-            speak_function(f"Answering your question about the {career_path['title']} career path:")
-        
+            speak_function(
+                f"Answering your question about the {career_path['title']} career path:")
+
         # Extract keywords from the prompt
         keywords = custom_prompt.lower().split()
-        
+
         # Enhanced keyword matching with more comprehensive responses
         if any(word in keywords for word in salary_keywords):
             answer = f"The typical salary range for a {career_path['title']} is {career_path['salary_range']} depending on location, experience, and company size."
@@ -213,7 +226,7 @@ def handle_roadmap_interactive(career_path, roadmap, use_speech=False, speak_fun
             if use_speech:
                 speak_function(answer)
                 speak_function(additional_info)
-                
+
         elif any(word in keywords for word in skills_keywords):
             answer = f"The key skills needed for a {career_path['title']} position are:"
             print(answer)
@@ -223,13 +236,13 @@ def handle_roadmap_interactive(career_path, roadmap, use_speech=False, speak_fun
                 print(f"• {skill}")
                 if use_speech:
                     speak_function(f"• {skill}")
-            
+
             # Additional context about skills
             additional_info = f"\nFor a {career_path['title']} role, it's recommended to focus on both technical and soft skills. Technical skills demonstrate your capabilities, while soft skills like communication and teamwork are equally important for career advancement."
             print(additional_info)
             if use_speech:
                 speak_function(additional_info)
-            
+
         elif any(word in keywords for word in time_keywords):
             answer = f"For a {career_path['title']} career path:"
             print(answer)
@@ -239,25 +252,25 @@ def handle_roadmap_interactive(career_path, roadmap, use_speech=False, speak_fun
                 print(f"• {step['timeframe']}: {step['focus']}")
                 if use_speech:
                     speak_function(f"• {step['timeframe']}: {step['focus']}")
-            
+
             # Additional context about timeline
             additional_info = f"\nThis timeline can vary based on your prior experience, learning capacity, and dedication. Some individuals progress faster with intensive learning and practical applications, while others prefer a more measured approach."
             print(additional_info)
             if use_speech:
                 speak_function(additional_info)
-            
+
         elif any(word in keywords for word in growth_keywords):
             answer = f"The {career_path['title']} position has {career_path['growth_potential']} growth potential in the current job market."
             print(answer)
             if use_speech:
                 speak_function(answer)
-                
+
             # Additional context about career growth
             additional_info = f"\nTypical career progression for a {career_path['title']} includes:"
             print(additional_info)
             if use_speech:
                 speak_function(additional_info)
-                
+
             progression_paths = {
                 "Data Scientist": [
                     "• Junior Data Scientist → Data Scientist → Senior Data Scientist",
@@ -285,7 +298,7 @@ def handle_roadmap_interactive(career_path, roadmap, use_speech=False, speak_fun
                     "• Can specialize in Cloud Architecture, Platform Engineering, or Technical Operations Director"
                 ]
             }
-            
+
             if career_path['title'] in progression_paths:
                 for path in progression_paths[career_path['title']]:
                     print(path)
@@ -301,13 +314,13 @@ def handle_roadmap_interactive(career_path, roadmap, use_speech=False, speak_fun
                     print(path)
                     if use_speech:
                         speak_function(path)
-            
+
         elif any(word in keywords for word in trend_keywords):
             answer = f"Current industry trends for {career_path['title']} roles:"
             print(answer)
             if use_speech:
                 speak_function(answer)
-            
+
             if career_path['title'] in industry_trends:
                 for trend in industry_trends[career_path['title']]:
                     print(trend)
@@ -327,13 +340,13 @@ def handle_roadmap_interactive(career_path, roadmap, use_speech=False, speak_fun
                     print(trend)
                     if use_speech:
                         speak_function(trend)
-            
+
         elif any(word in keywords for word in education_keywords):
             answer = f"Recommended certifications and education for a {career_path['title']}:"
             print(answer)
             if use_speech:
                 speak_function(answer)
-            
+
             cert_recommendations = {
                 "Data Scientist": [
                     "• AWS Certified Data Analytics or Google Professional Data Engineer",
@@ -371,7 +384,7 @@ def handle_roadmap_interactive(career_path, roadmap, use_speech=False, speak_fun
                     "• Technical degree with DevOps experience often valued more than specific certifications"
                 ]
             }
-            
+
             if career_path['title'] in cert_recommendations:
                 for cert in cert_recommendations[career_path['title']]:
                     print(cert)
@@ -389,13 +402,13 @@ def handle_roadmap_interactive(career_path, roadmap, use_speech=False, speak_fun
                     print(cert)
                     if use_speech:
                         speak_function(cert)
-        
+
         elif any(word in keywords for word in project_keywords):
             answer = f"Project ideas to build your portfolio for a {career_path['title']} role:"
             print(answer)
             if use_speech:
                 speak_function(answer)
-            
+
             project_ideas = {
                 "Data Scientist": [
                     "• Predictive model using public datasets with full documentation",
@@ -438,7 +451,7 @@ def handle_roadmap_interactive(career_path, roadmap, use_speech=False, speak_fun
                     "• Disaster recovery plan and implementation"
                 ]
             }
-            
+
             if career_path['title'] in project_ideas:
                 for idea in project_ideas[career_path['title']]:
                     print(idea)
@@ -457,13 +470,13 @@ def handle_roadmap_interactive(career_path, roadmap, use_speech=False, speak_fun
                     print(idea)
                     if use_speech:
                         speak_function(idea)
-        
+
         elif any(word in keywords for word in interview_keywords):
             answer = f"Common interview questions for {career_path['title']} positions:"
             print(answer)
             if use_speech:
                 speak_function(answer)
-            
+
             if career_path['title'] in interview_questions:
                 for question in interview_questions[career_path['title']]:
                     print(question)
@@ -481,18 +494,18 @@ def handle_roadmap_interactive(career_path, roadmap, use_speech=False, speak_fun
                     print(question)
                     if use_speech:
                         speak_function(question)
-                        
+
             additional_info = "\nWhen preparing for interviews, research the company thoroughly, practice your responses to common questions, prepare thoughtful questions to ask, and be ready to discuss your projects in detail."
             print(additional_info)
             if use_speech:
                 speak_function(additional_info)
-        
+
         elif any(word in keywords for word in remote_keywords):
             answer = f"Tips for remote work as a {career_path['title']}:"
             print(answer)
             if use_speech:
                 speak_function(answer)
-            
+
             if career_path['title'] in remote_work_advice:
                 for tip in remote_work_advice[career_path['title']]:
                     print(tip)
@@ -510,16 +523,16 @@ def handle_roadmap_interactive(career_path, roadmap, use_speech=False, speak_fun
                     print(tip)
                     if use_speech:
                         speak_function(tip)
-        
+
         # Handle questions about alternatives or not wanting this career path
         elif any(word in custom_prompt.lower() for word in ["alternative", "alternatives", "other", "different", "instead"]) or \
-             "not" in custom_prompt.lower() and any(word in custom_prompt.lower() for word in ["want", "like", "interested", "pursue", "follow"]):
-            
+                "not" in custom_prompt.lower() and any(word in custom_prompt.lower() for word in ["want", "like", "interested", "pursue", "follow"]):
+
             answer = f"If you're looking for alternatives to becoming a {career_path['title']}, here are some related career paths you might consider:"
             print(answer)
             if use_speech:
                 speak_function(answer)
-            
+
             # Define related alternative careers for each path
             alternative_careers = {
                 "Data Scientist": [
@@ -558,7 +571,7 @@ def handle_roadmap_interactive(career_path, roadmap, use_speech=False, speak_fun
                     "• Database Administrator - Specialize in database systems"
                 ]
             }
-            
+
             # Display alternatives based on the current career path
             if career_path['title'] in alternative_careers:
                 for alt in alternative_careers[career_path['title']]:
@@ -578,19 +591,19 @@ def handle_roadmap_interactive(career_path, roadmap, use_speech=False, speak_fun
                     print(alt)
                     if use_speech:
                         speak_function(alt)
-            
+
             additional_advice = "\nWhen considering alternative careers, assess which aspects of the original path appeal to you and which don't. This can help you find a better fit that leverages your existing skills and interests."
             print(additional_advice)
             if use_speech:
                 speak_function(additional_advice)
-        
+
         else:
             # For any other question, provide a general response based on the roadmap
             answer = f"To succeed as a {career_path['title']}, focus on building the core skills mentioned in the roadmap and follow the progression timeline. Network with professionals in the field, keep learning, and build practical projects to demonstrate your abilities."
             print(answer)
             if use_speech:
                 speak_function(answer)
-            
+
             additional_tip = f"\nFor more specific information about the {career_path['title']} role, try asking about salary, skills, timeline, growth potential, industry trends, certifications, project ideas, interview questions, or remote work tips."
             print(additional_tip)
             if use_speech:
@@ -607,7 +620,7 @@ if __name__ == "__main__":
         "growth_potential": "High",
         "salary_range": "$90,000 - $150,000"
     }
-    
+
     # Sample roadmap
     sample_roadmap = {
         "title": "Career Roadmap for Data Scientist",
@@ -631,33 +644,33 @@ if __name__ == "__main__":
         ],
         "additional_resources": [
             "Online learning platforms: Coursera, Udemy, edX",
-            "Professional certifications in data science", 
+            "Professional certifications in data science",
             "Industry conferences and meetups",
             "Communities like Kaggle and GitHub for practice"
         ]
     }
-    
+
     # Display the roadmap
     print(f"\n{sample_roadmap['title']}")
     print(f"\n{sample_roadmap['overview']}")
-    
+
     for step in sample_roadmap['steps']:
         print(f"\n{step['timeframe']} - {step['focus']}:")
         for task in step['tasks']:
             print(f"• {task}")
-    
+
     print("\nAdditional Resources:")
     for resource in sample_roadmap['additional_resources']:
         print(f"• {resource}")
-        
+
     # Simple speak function for demonstration
     def simple_speak(text):
         print(f"[Speaking]: {text}")
-        
+
     # Start interactive mode
     handle_roadmap_interactive(
-        career_path=sample_path, 
-        roadmap=sample_roadmap, 
+        career_path=sample_path,
+        roadmap=sample_roadmap,
         use_speech=True,
         speak_function=simple_speak
-    ) 
+    )
