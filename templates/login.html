@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login - Career/Conquer</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='logo.png') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='modern.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
+  </head>
+  <body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" aria-label="Toggle dark/light mode">
+      <!-- Icon will be inserted by JavaScript -->
+    </button>
+    
+    <main>
+      <div class="left-panel">
+        <div class="form-box">
+          <h2>Login</h2>
+          {% with messages = get_flashed_messages(with_categories=true) %} {% if
+          messages %} {% for category, message in messages %}
+          <div class="alert {{ category }}">{{ message }}</div>
+          {% endfor %} {% endif %} {% endwith %}
+
+          <form method="POST" action="{{ url_for('login') }}">
+            <input type="text" name="username" placeholder="Username" required />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              required
+            />
+            <button type="submit">Login</button>
+          </form>
+
+          <p>
+            Don't have an account? <a href="{{ url_for('signup') }}">Sign up</a>
+          </p>
+        </div>
+      </div>
+      <div class="right-panel">
+        <!-- Decorative panel -->
+      </div>
+    </main>
+  </body>
+</html>

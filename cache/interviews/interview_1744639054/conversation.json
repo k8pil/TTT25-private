@@ -1,0 +1,39 @@
+{
+  "conversation": [
+    {
+      "role": "candidate",
+      "content": "1",
+      "timestamp": 1744639055.0661757
+    },
+    {
+      "role": "interviewer",
+      "content": "Hi Kapil, it's a pleasure to meet you.  Thanks for taking the time to speak with me today.  Your resume is incredibly impressive, particularly your experience as CTO at Aero Touch and your award-winning work on the PSR Image Denoising project.  The Mark Mate project also showcases a strong understanding of practical application and business development.\n\nTo get started, could you please tell me a bit about yourself, your background, and what aspects of this role or our company particularly interest you?\n",
+      "timestamp": 1744639056.2066138
+    },
+    {
+      "role": "interviewer",
+      "content": "Given your experience leading the technical strategy at Aero Touch Drone Technology, and raising significant seed funding,  can you describe a challenging technical decision you had to make, and how you navigated the process of reaching a solution and gaining buy-in from your team?\n",
+      "timestamp": 1744639057.9329176
+    },
+    {
+      "role": "candidate",
+      "content": "can you start again",
+      "timestamp": 1744639081.4277124
+    },
+    {
+      "role": "interviewer",
+      "content": "Your Mark Mate project highlights your skills in OCR and NLP for automated grading.  Can you walk me through the specific challenges you encountered in developing the PDF processing component, and how you addressed the accuracy and efficiency of the OCR engine?\n",
+      "timestamp": 1744639083.5153894
+    },
+    {
+      "role": "candidate",
+      "content": "Sorry, I couldn't transcribe your audio. Please try again.",
+      "timestamp": 1744639101.6947844
+    },
+    {
+      "role": "interviewer",
+      "content": "Your resume mentions you designed a scalable business model for Mark Mate with tiered subscription plans.  Can you elaborate on the key considerations that went into designing these plans, and how you balanced the needs of different user segments (Basic, Premium, Enterprise) to ensure profitability while maintaining user satisfaction?\n",
+      "timestamp": 1744639103.8914104
+    }
+  ]
+}

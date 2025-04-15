@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Advisor</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h1 class="text-center">Interview Advisor</h1>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <h2>Practice Your Interview Skills</h2>
+                            <p class="lead">Upload your resume and start a mock interview session with AI-powered feedback.</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h3>Upload Resume</h3>
+                            <form id="resumeForm" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <input type="file" class="form-control" id="resumeFile" name="resume" accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg">
+                                    <div class="form-text">Supported formats: PDF, DOC, DOCX, TXT, PNG, JPG</div>
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="uploadBtn">Upload Resume</button>
+                            </form>
+                            <div id="uploadStatus" class="mt-2"></div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <a href="{{ url_for('interview.interview_page') }}" class="btn btn-success btn-lg" id="startInterviewBtn" disabled>Start Interview</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Resume upload functionality
+        document.getElementById('resumeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const fileInput = document.getElementById('resumeFile');
+            
+            if (fileInput.files.length === 0) {
+                document.getElementById('uploadStatus').innerHTML = 
+                    '<div class="alert alert-danger">Please select a file to upload</div>';
+                return;
+            }
+            
+            formData.append('resume', fileInput.files[0]);
+            
+            document.getElementById('uploadBtn').disabled = true;
+            document.getElementById('uploadStatus').innerHTML = 
+                '<div class="alert alert-info">Uploading...</div>';
+            
+            fetch('/upload-resume', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('uploadStatus').innerHTML = 
+                        '<div class="alert alert-success">Resume uploaded successfully!</div>';
+                    document.getElementById('startInterviewBtn').disabled = false;
+                    
+                    // Store resume ID in session storage
+                    sessionStorage.setItem('resumeId', data.resume_id);
+                } else {
+                    document.getElementById('uploadStatus').innerHTML = 
+                        '<div class="alert alert-danger">Error: ' + (data.error || 'Unknown error') + '</div>';
+                }
+                document.getElementById('uploadBtn').disabled = false;
+            })
+            .catch(error => {
+                document.getElementById('uploadStatus').innerHTML = 
+                    '<div class="alert alert-danger">Error: ' + error.message + '</div>';
+                document.getElementById('uploadBtn').disabled = false;
+            });
+        });
+    </script>
+</body>
+</html> 

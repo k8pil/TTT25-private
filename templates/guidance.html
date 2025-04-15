@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Career Guidance - Career/Conquer</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='logo.png') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='modern.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='navbar.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link 
+      rel="stylesheet" 
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
+    <style>
+      .dashboard-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: calc(100vh - 80px);
+        padding-top: 40px;
+      }
+      
+      .content {
+        width: 100%;
+        max-width: 1200px;
+        padding: 0 20px;
+      }
+      
+      .card {
+        background-color: var(--bg-accent);
+        border-radius: 12px;
+        padding: 25px;
+        margin: 15px 0;
+        transition: all 0.3s ease;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: box-shadow 0.8s ease;
+      }
+      
+      .card-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: var(--primary-color);
+      }
+      
+      .card-description {
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        max-width: 90%;
+      }
+      
+      .page-title {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      
+      .page-title h1 {
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+      }
+      
+      .page-title p {
+        font-size: 18px;
+        color: var(--text-secondary);
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      
+      .card-btn {
+        background-color: rgb(20, 241, 149);
+        color: #1a1a1a;
+        border: none;
+        border-radius: 30px;
+        padding: 12px 30px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 6px 15px rgba(20, 241, 149, 0.3);
+        margin-top: 20px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .card-btn:hover {
+        background-color: rgb(16, 218, 134);
+        box-shadow: 0 8px 20px rgba(20, 241, 149, 0.5);
+        transform: translateY(-3px);
+      }
+      
+      .card-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 10px rgba(20, 241, 149, 0.3);
+      }
+      
+      .card-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: 0.5s;
+      }
+      
+      .card-btn:hover::before {
+        left: 100%;
+      }
+      
+      .card-icon {
+        font-size: 48px;
+        color: rgb(20, 241, 149);
+        margin-bottom: 20px;
+        background-color: rgba(20, 241, 149, 0.1);
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(20, 241, 149, 0.2);
+      }
+      
+      .card:hover .card-icon {
+        transform: scale(1.1);
+        background-color: rgba(20, 241, 149, 0.2);
+        box-shadow: 0 8px 25px rgba(20, 241, 149, 0.3);
+      }
+      
+      /* Guidance-specific styles */
+      .guidance-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+        width: 100%;
+        margin-top: 30px;
+      }
+      
+      .path-card {
+        background-color: var(--bg-secondary);
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom:30px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid rgb(20, 241, 149);
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        min-height: 280px;
+        width: 60%;
+        justify-content: space-between;
+      }
+      
+      .path-card:hover {
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+      
+      .path-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--primary-color);
+      }
+      
+      .path-description {
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--text-primary);
+      }
+      
+      .path-skills {
+        font-size: 14px;
+        color: var(--text-secondary);
+        background-color: var(--bg-accent);
+        padding: 12px 15px;
+        border-radius: 8px;
+      }
+      
+      .path-growth {
+        font-size: 15px;
+        color: rgb(20, 241, 149);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      
+      .path-growth::before {
+        content: '↗';
+        font-size: 18px;
+      }
+      
+      .path-salary {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--primary-color);
+        background-color: rgba(20, 241, 149, 0.1);
+        padding: 8px 15px;
+        border-radius: 20px;
+        display: inline-block;
+      }
+      
+      .guidance-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+      
+      .guidance-item h3 {
+        color: var(--primary-color);
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+      
+      .guidance-item p {
+        color: var(--text-primary);
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      
+      /* Action buttons styles */
+      .action-btns-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        width: 100%;
+        max-width: 600px;
+      }
+      
+      .num-btn {
+        display: flex;
+        align-items: center;
+        background-color: var(--bg-secondary);
+        border: none;
+        border-radius: 10px;
+        padding: 16px 20px;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 16px;
+        color: var(--text-primary);
+        font-weight: 500;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+      
+      .num-btn:hover {
+        background-color: rgba(20, 241, 149, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      
+      .num-btn .number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: rgb(20, 241, 149);
+        color: #1a1a1a;
+        font-weight: 700;
+        margin-right: 15px;
+        flex-shrink: 0;
+      }
+      
+      .num-btn .icon {
+        margin-left: auto;
+        font-size: 18px;
+        color: rgb(20, 241, 149);
+      }
+      
+      /* Footer Styles */
+      footer {
+        background-color: var(--bg-accent);
+        padding: 40px 0 20px;
+        margin-top: 60px;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      }
+      
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 0 20px;
+      }
+      
+      .footer-logo {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      
+      .footer-logo img {
+        height: 40px;
+        margin-right: 10px;
+      }
+      
+      .footer-logo h3 {
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 0;
+      }
+      
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      
+      .footer-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+      
+      .footer-links a:hover {
+        color: var(--primary-color);
+      }
+      
+      .footer-copyright {
+        text-align: center;
+        color: var(--text-secondary);
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color);
+        font-size: 14px;
+      }
+      
+      @media (max-width: 768px) {
+        .footer-content {
+          flex-direction: column;
+        }
+        
+        .footer-links {
+          margin-top: 20px;
+        }
+        
+        .guidance-items {
+          grid-template-columns: 1fr;
+        }
+        
+        .action-btns-container {
+          width: 100%;
+        }
+      }
+
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 900px;
+        width: 90%;
+        max-height: 90vh;
+        background-color: var(--bg-secondary);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .modal.active {
+        display: block;
+        opacity: 1;
+      }
+
+      #modal-backdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      #modal-backdrop.active {
+        display: block;
+        opacity: 1;
+      }
+
+      .modal-header {
+        padding: 20px 25px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        background-color: var(--bg-secondary);
+        z-index: 10;
+      }
+
+      .modal-header h2 {
+        margin: 0;
+        font-size: 24px;
+        color: var(--primary-color);
+      }
+
+      .close-modal {
+        font-size: 28px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: color 0.2s ease;
+      }
+
+      .close-modal:hover {
+        color: var(--primary-color);
+      }
+
+      .modal-body {
+        padding: 25px;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+
+      /* Resume Tips Styles */
+      .tip-container {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+      }
+
+      .tip-category {
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 20px;
+      }
+
+      .tip-category:last-child {
+        border-bottom: none;
+      }
+
+      .tip-category h3 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: var(--primary-color);
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+      }
+
+      .tip-category h3 i {
+        margin-right: 10px;
+        color: rgb(20, 241, 149);
+      }
+
+      .tip-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 15px;
+      }
+
+      .tip {
+        display: flex;
+        background-color: var(--bg-accent);
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .tip:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .tip-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: rgba(20, 241, 149, 0.15);
+        color: rgb(20, 241, 149);
+        font-size: 14px;
+        margin-right: 15px;
+        flex-shrink: 0;
+      }
+
+      .tip-content p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.5;
+        color: var(--text-primary);
+      }
+
+      @media (max-width: 768px) {
+        .tip-list {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Roadmap Styles */
+      .section-title {
+        color: var(--primary-color);
+        font-size: 20px;
+        margin-top: 0;
+        margin-bottom: 10px;
+      }
+      
+      .section-description {
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+        line-height: 1.5;
+      }
+      
+      .path-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+      }
+      
+      .path-option {
+        background-color: var(--bg-accent);
+        border: 2px solid transparent;
+        border-radius: 10px;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      
+      .path-option:hover {
+        background-color: rgba(20, 241, 149, 0.05);
+        transform: translateY(-3px);
+      }
+      
+      .path-option.selected {
+        border-color: rgb(20, 241, 149);
+        background-color: rgba(20, 241, 149, 0.1);
+      }
+      
+      .path-option-header {
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 8px;
+        color: var(--primary-color);
+      }
+      
+      .path-option-desc {
+        font-size: 14px;
+        color: var(--text-secondary);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      
+      .modal-actions {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+      }
+      
+      .action-btn {
+        padding: 10px 20px;
+        border-radius: 30px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        font-size: 15px;
+      }
+      
+      .primary-btn {
+        background-color: rgb(20, 241, 149);
+        color: #1a1a1a;
+      }
+      
+      .primary-btn:hover {
+        background-color: rgb(16, 218, 134);
+        transform: translateY(-2px);
+      }
+      
+      .primary-btn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+        transform: none;
+      }
+      
+      .secondary-btn {
+        background-color: var(--bg-accent);
+        color: var(--text-primary);
+      }
+      
+      .secondary-btn:hover {
+        background-color: var(--border-color);
+      }
+      
+      /* Roadmap Timeline */
+      .roadmap-timeline {
+        margin: 30px 0;
+      }
+      
+      .timeline-phase {
+        display: flex;
+        margin-bottom: 25px;
+      }
+      
+      .phase-marker {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-right: 20px;
+      }
+      
+      .phase-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: rgb(20, 241, 149);
+        color: #1a1a1a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        z-index: 2;
+      }
+      
+      .phase-line {
+        width: 2px;
+        flex-grow: 1;
+        background-color: rgb(20, 241, 149);
+        margin: 5px 0;
+      }
+      
+      .timeline-phase:last-child .phase-line {
+        display: none;
+      }
+      
+      .phase-content {
+        flex: 1;
+      }
+      
+      .phase-content h4 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: var(--primary-color);
+      }
+      
+      .phase-tasks {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+      
+      .phase-tasks li {
+        position: relative;
+        padding-left: 25px;
+        margin-bottom: 10px;
+        color: var(--text-primary);
+      }
+      
+      .phase-tasks li:before {
+        content: "•";
+        color: rgb(20, 241, 149);
+        font-size: 20px;
+        position: absolute;
+        left: 0;
+        top: -3px;
+      }
+      
+      /* Resources Section */
+      .resources-section {
+        margin-top: 30px;
+        border-top: 1px solid var(--border-color);
+        padding-top: 20px;
+      }
+      
+      .resources-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+      }
+      
+      .resource-item {
+        background-color: var(--bg-accent);
+        border-radius: 10px;
+        padding: 15px;
+        transition: transform 0.3s ease;
+      }
+      
+      .resource-item:hover {
+        transform: translateY(-3px);
+      }
+      
+      .resource-icon {
+        color: rgb(20, 241, 149);
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+      
+      .resource-title {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: var(--primary-color);
+      }
+      
+      .resource-description {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
+      @media (max-width: 768px) {
+        .tip-list, .path-options, .resources-grid {
+          grid-template-columns: 1fr;
+        }
+        
+        .timeline-phase {
+          flex-direction: column;
+        }
+        
+        .phase-marker {
+          flex-direction: row;
+          margin-right: 0;
+          margin-bottom: 15px;
+        }
+        
+        .phase-line {
+          width: auto;
+          height: 2px;
+          flex-grow: 1;
+          margin: 0 5px;
+        }
+      }
+
+      /* Question Modal Styles */
+      .question-container {
+        margin-bottom: 30px;
+      }
+      
+      .question-input-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+      
+      .question-textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-accent);
+        color: var(--text-primary);
+        font-size: 15px;
+        resize: vertical;
+        transition: border-color 0.3s;
+      }
+      
+      .question-textarea:focus {
+        outline: none;
+        border-color: rgb(20, 241, 149);
+      }
+      
+      .question-suggestions h4 {
+        font-size: 16px;
+        margin-top: 0;
+        margin-bottom: 10px;
+        color: var(--text-secondary);
+      }
+      
+      .suggestion-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      
+      .suggestion-chip {
+        background-color: var(--bg-accent);
+        border-radius: 20px;
+        padding: 8px 16px;
+        font-size: 14px;
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      
+      .suggestion-chip:hover {
+        background-color: rgba(20, 241, 149, 0.1);
+        color: rgb(20, 241, 149);
+      }
+      
+      .answer-container {
+        background-color: var(--bg-accent);
+        border-radius: 10px;
+        padding: 20px;
+        border-left: 3px solid rgb(20, 241, 149);
+      }
+      
+      .answer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+      
+      .answer-header h3 {
+        margin: 0;
+        color: var(--primary-color);
+      }
+      
+      .small-btn {
+        font-size: 13px;
+        padding: 6px 12px;
+      }
+      
+      .answer-content {
+        line-height: 1.6;
+      }
+      
+      .answer-list {
+        padding-left: 20px;
+        margin-top: 10px;
+      }
+      
+      .answer-list li {
+        margin-bottom: 8px;
+      }
+
+      /* Vertical Path Options Styles */
+      .vertical-path-options {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 25px;
+        max-width: 100%;
+      }
+      
+      .path-dropdown {
+        width: 100%;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        overflow: hidden;
+        background-color: var(--bg-accent);
+        transition: all 0.3s ease;
+      }
+      
+      .path-dropdown:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+      
+      .path-dropdown-header {
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        background-color: var(--bg-accent);
+        transition: background-color 0.2s ease;
+      }
+      
+      .path-dropdown-header:hover {
+        background-color: rgba(20, 241, 149, 0.1);
+      }
+      
+      .path-title {
+        font-weight: 600;
+        font-size: 16px;
+        color: var(--primary-color);
+      }
+      
+      .path-dropdown-icon {
+        color: var(--text-secondary);
+        transition: transform 0.3s ease;
+      }
+      
+      .path-dropdown.active .path-dropdown-icon {
+        transform: rotate(180deg);
+      }
+      
+      .path-dropdown-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s ease;
+        background-color: var(--bg-secondary);
+        border-top: 1px solid var(--border-color);
+      }
+      
+      .path-dropdown.active .path-dropdown-content {
+        max-height: 2000px; /* Arbitrary large value to accommodate content */
+      }
+      
+      .roadmap-content {
+        padding: 20px;
+      }
+
+      /* Additional styles for resources list */
+      .roadmap-overview {
+        font-size: 15px;
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+        line-height: 1.5;
+      }
+      
+      .resources-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 15px 0 0 0;
+      }
+      
+      .resources-list li {
+        position: relative;
+        padding: 10px 15px;
+        margin-bottom: 10px;
+        background-color: var(--bg-accent);
+        border-radius: 8px;
+        color: var(--text-primary);
+        padding-left: 30px;
+        transition: transform 0.2s ease;
+      }
+      
+      .resources-list li:hover {
+        transform: translateX(5px);
+      }
+      
+      .resources-list li:before {
+        content: "•";
+        color: rgb(20, 241, 149);
+        font-size: 20px;
+        position: absolute;
+        left: 10px;
+        top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" aria-label="Toggle dark/light mode">
+      <!-- Icon will be inserted by JavaScript -->
+    </button>
+    
+    <!-- Floating Navigation Bar -->
+    <nav class="floating-nav">
+      <a href="{{ url_for('home') }}" class="nav-logo">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" />
+        <h1>Career / Conquer</h1>
+      </a>
+      <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint == 'dashboard' }}">Dashboard</a>
+        <span class="nav-separator">|</span>
+        <a href="{{ url_for('profile') }}" class="{{ 'active' if request.endpoint == 'profile' }}">Profile</a>
+        <span class="nav-separator">|</span>
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    </nav>
+    
+    <div class="dashboard-container">
+      <div class="content">
+        <div class="page-title">
+          <h1>Career Guidance</h1>
+          <p>Receive personalized career advice based on your resume, skills, and career goals. Our AI-powered system provides tailored recommendations to help you advance in your professional journey.</p>
+        </div>
+        
+        <!-- Career paths card -->
+        <div class="card">
+          <div class="card-icon">
+            <i class="fas fa-compass"></i>
+          </div>
+          <div class="card-title">Your Career Roadmap</div>
+          <div class="card-description">
+            Based on your resume and profile information, we've generated personalized guidance to help you achieve your career goals. Explore the recommendations below and check back regularly for updates.
+          </div>
+          {% for path in career_paths_list %}
+            <div class="path-card">
+              <div class="path-title">{{ path[0] }}</div>
+              <div class="path-description">{{ path[1] }}</div>
+              <div class="path-skills">{{ path[2] }}</div>
+              <div class="path-growth">{{ path[3] }}</div>
+              <div class="path-salary">{{ path[4] }}</div>
+            </div>
+          {% endfor %}
+        </div>
+        
+        <!-- Actions card -->
+        <div class="card" style="margin-top: 40px;">
+          <div class="card-icon">
+            <i class="fas fa-tools"></i>
+          </div>
+          <div class="card-title">Career Tools</div>
+          <div class="card-description">
+            Take advantage of our advanced career planning tools to help you make informed decisions about your professional future.
+          </div>
+          
+          <div class="action-btns-container">
+            <button class="num-btn">
+              <span class="number">1</span>
+              Get a detailed roadmap for one of the career paths
+              <i class="fas fa-arrow-right icon"></i>
+            </button>
+            
+            <a class="num-btn" href="{{ url_for('start_guidance')}}">
+              <span class="number">2</span>
+              Ask a question about a careers, interviews and academics
+              <i class="fas fa-arrow-right icon"></i>
+            </a>
+            
+            <a class="num-btn" style="font-family: Arial, Helvetica, sans-serif" href="{{ url_for('dashboard') }}">
+              <span class="number">3</span>
+              Analyze a different resume
+              <i class="fas fa-arrow-right icon"></i>
+            </a>
+            
+            <button class="num-btn" style="font-family: Arial, Helvetica, sans-serif">
+              <span class="number">4</span>
+              Resume improvement tips for you
+              <i class="fas fa-arrow-right icon"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-logo">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="CAREER CONQUER Logo">
+          <h3>CAREER / CONQUER</h3>
+        </div>
+        <div class="footer-links">
+          <a href="#">About Us</a>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact</a>
+        </div>
+      </div>
+      <p class="footer-copyright">© 2023 CAREER CONQUER. All rights reserved.</p>
+    </footer>
+
+    <!-- Resume Tips Modal -->
+    <div id="resume-tips-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Resume Improvement Tips</h2>
+          <span class="close-modal" data-modal="resume-tips-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div class="tip-container">
+            <!-- Tips will be inserted here -->
+            {% if structure_tips %}
+              <div class="tip-category">
+                <h3><i class="fas fa-file-alt"></i> Structure & Formatting</h3>
+                <div class="tip-list">
+                  {% for tip in structure_tips %}
+                    <div class="tip">
+                      <div class="tip-icon"><i class="fas fa-check-circle"></i></div>
+                      <div class="tip-content">
+                        <p>{{ tip }}</p>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+            
+            {% if content_improvement_tips %}
+              <div class="tip-category">
+                <h3><i class="fas fa-edit"></i> Content Improvement</h3>
+                <div class="tip-list">
+                  {% for tip in content_improvement_tips %}
+                    <div class="tip">
+                      <div class="tip-icon"><i class="fas fa-check-circle"></i></div>
+                      <div class="tip-content">
+                        <p>{{ tip }}</p>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+            
+            {% if tech_and_soft_skill_tips %}
+              <div class="tip-category">
+                <h3><i class="fas fa-cogs"></i> Technical & Soft Skills</h3>
+                <div class="tip-list">
+                  {% for tip in tech_and_soft_skill_tips %}
+                    <div class="tip">
+                      <div class="tip-icon"><i class="fas fa-check-circle"></i></div>
+                      <div class="tip-content">
+                        <p>{{ tip }}</p>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+            
+            {% if experience_tips %}
+              <div class="tip-category">
+                <h3><i class="fas fa-briefcase"></i> Experience Highlights</h3>
+                <div class="tip-list">
+                  {% for tip in experience_tips %}
+                    <div class="tip">
+                      <div class="tip-icon"><i class="fas fa-check-circle"></i></div>
+                      <div class="tip-content">
+                        <p>{{ tip }}</p>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+            
+            {% if achievement_tips %}
+              <div class="tip-category">
+                <h3><i class="fas fa-trophy"></i> Achievements & Results</h3>
+                <div class="tip-list">
+                  {% for tip in achievement_tips %}
+                    <div class="tip">
+                      <div class="tip-icon"><i class="fas fa-check-circle"></i></div>
+                      <div class="tip-content">
+                        <p>{{ tip }}</p>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+            
+            {% if ats_tips %}
+              <div class="tip-category">
+                <h3><i class="fas fa-robot"></i> ATS Optimization</h3>
+                <div class="tip-list">
+                  {% for tip in ats_tips %}
+                    <div class="tip">
+                      <div class="tip-icon"><i class="fas fa-check-circle"></i></div>
+                      <div class="tip-content">
+                        <p>{{ tip }}</p>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+            
+            {% if modern_tips %}
+              <div class="tip-category">
+                <h3><i class="fas fa-chart-line"></i> Modern Resume Trends</h3>
+                <div class="tip-list">
+                  {% for tip in modern_tips %}
+                    <div class="tip">
+                      <div class="tip-icon"><i class="fas fa-check-circle"></i></div>
+                      <div class="tip-content">
+                        <p>{{ tip }}</p>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+            
+            {% if tailoring_tips %}
+              <div class="tip-category">
+                <h3><i class="fas fa-bullseye"></i> Tailoring to Job Descriptions</h3>
+                <div class="tip-list">
+                  {% for tip in tailoring_tips %}
+                    <div class="tip">
+                      <div class="tip-icon"><i class="fas fa-check-circle"></i></div>
+                      <div class="tip-content">
+                        <p>{{ tip }}</p>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Career Roadmap Modal -->
+    <div id="roadmap-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Career Path Roadmap</h2>
+          <span class="close-modal" data-modal="roadmap-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+          <h3 class="section-title">Select a Career Path</h3>
+          <p class="section-description">Choose a career path to view a detailed roadmap with steps and resources:</p>
+          
+          <div class="vertical-path-options">
+            {% for path in career_paths_list %}
+              <div class="path-dropdown">
+                <div class="path-dropdown-header">
+                  <div class="path-title">{{ path[0][:-13] }}</div>
+                  <div class="path-dropdown-icon"><i class="fas fa-chevron-down"></i></div>
+                </div>
+                <div class="path-dropdown-content">
+                  {% if roadmap_dict and path[0] in roadmap_dict %}
+                    <div class="roadmap-content">
+                      <h4>{{ roadmap_dict[path[0]]['title'] }}</h4>
+                      <p class="roadmap-overview">{{ roadmap_dict[path[0]]['overview'] }}</p>
+                      
+                      <div class="roadmap-timeline">
+                        {% for step in roadmap_dict[path[0]]['steps'] %}
+                          <div class="timeline-phase">
+                            <div class="phase-marker">
+                              <div class="phase-icon">
+                                {% if step.timeframe == "0-6 months" %}
+                                  <i class="fas fa-seedling"></i>
+                                {% elif step.timeframe == "6-12 months" %}
+                                  <i class="fas fa-tools"></i>
+                                {% elif step.timeframe == "1-2 years" %}
+                                  <i class="fas fa-user-tie"></i>
+                                {% else %}
+                                  <i class="fas fa-chart-line"></i>
+                                {% endif %}
+                              </div>
+                              <div class="phase-line"></div>
+                            </div>
+                            <div class="phase-content">
+                              <h4>{{ step.timeframe }} - {{ step.focus }}</h4>
+                              <ul class="phase-tasks">
+                                {% for task in step.tasks %}
+                                  <li>{{ task }}</li>
+                                {% endfor %}
+                              </ul>
+                            </div>
+                          </div>
+                        {% endfor %}
+                      </div>
+                      
+                      <h4>Recommended Resources</h4>
+                      <ul class="resources-list">
+                        {% for resource in roadmap_dict[path[0]]['additional_resources'] %}
+                          <li>{{ resource }}</li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  {% else %}
+                    <div class="roadmap-content">
+                      <p>No detailed roadmap available for this career path.</p>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Career Question Modal -->
+    <div id="question-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Ask About Career Paths</h2>
+          <span class="close-modal" data-modal="question-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+          <h3 class="section-title">What would you like to know?</h3>
+          <p class="section-description">Ask a question about the career paths to get more information about skills, salary, growth potential, or other aspects.</p>
+          
+          <div class="question-container">
+            <div class="question-input-wrapper">
+              <textarea id="career-question" class="question-textarea" placeholder="e.g., What skills are needed for these careers? Which path has the best salary potential?"></textarea>
+              <button id="ask-question-btn" class="action-btn primary-btn">Ask Question</button>
+            </div>
+            
+            <div class="question-suggestions">
+              <h4>Suggested Questions:</h4>
+              <div class="suggestion-chips">
+                <div class="suggestion-chip" data-question="What are the salary ranges for these career paths?">
+                  Salary Ranges
+                </div>
+                <div class="suggestion-chip" data-question="What skills do I need for these careers?">
+                  Required Skills
+                </div>
+                <div class="suggestion-chip" data-question="Which career has the best growth potential?">
+                  Growth Potential
+                </div>
+                <div class="suggestion-chip" data-question="How long does it take to become proficient?">
+                  Time to Proficiency
+                </div>
+                <div class="suggestion-chip" data-question="What certifications are recommended?">
+                  Certifications
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div id="answer-container" class="answer-container" style="display: none;">
+            <div class="answer-header">
+              <h3>Answer</h3>
+              <button id="new-question-btn" class="action-btn secondary-btn small-btn">
+                <i class="fas fa-plus"></i> New Question
+              </button>
+            </div>
+            <div id="answer-content" class="answer-content">
+              <!-- Answer will be generated here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-backdrop"></div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Common Modal Functions
+        const modalBackdrop = document.getElementById('modal-backdrop');
+        const modals = document.querySelectorAll('.modal');
+        const closeButtons = document.querySelectorAll('.close-modal');
+        
+        // Function to open modal
+        function openModal(modalId) {
+          const modal = document.getElementById(modalId);
+          
+          if (!modal) return;
+          
+          // Show backdrop and modal
+          modalBackdrop.classList.add('active');
+          setTimeout(() => {
+            modal.classList.add('active');
+          }, 100);
+          
+          document.body.style.overflow = 'hidden';
+        }
+        
+        // Function to close modal
+        function closeModal(modalId) {
+          const modal = document.getElementById(modalId);
+          
+          if (!modal) return;
+          
+          // Hide modal and backdrop
+          modal.classList.remove('active');
+          setTimeout(() => {
+            modalBackdrop.classList.remove('active');
+          }, 300);
+          
+          document.body.style.overflow = '';
+        }
+        
+        // Close current active modal
+        function closeActiveModal() {
+          const activeModal = document.querySelector('.modal.active');
+          
+          if (activeModal) {
+            activeModal.classList.remove('active');
+            setTimeout(() => {
+              modalBackdrop.classList.remove('active');
+            }, 300);
+            
+            document.body.style.overflow = '';
+          }
+        }
+        
+        // Add click event to all close buttons
+        closeButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            const modalId = this.getAttribute('data-modal');
+            closeModal(modalId);
+          });
+        });
+        
+        // Close modal when clicking on backdrop
+        modalBackdrop.addEventListener('click', function(event) {
+          if (event.target === modalBackdrop) {
+            closeActiveModal();
+          }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+          if (event.key === 'Escape') {
+            closeActiveModal();
+          }
+        });
+        
+        // Resume Tips Button (4th option)
+        const tipsBtns = document.querySelectorAll('.num-btn');
+        const resumeTipsBtn = tipsBtns[3]; // The fourth button (index 3)
+        
+        resumeTipsBtn.addEventListener('click', function() {
+          openModal('resume-tips-modal');
+        });
+        
+        // Career Roadmap Button (1st option)
+        const roadmapBtn = tipsBtns[0]; // The first button (index 0)
+        
+        roadmapBtn.addEventListener('click', function() {
+          openModal('roadmap-modal');
+        });
+        
+        // Path dropdown functionality
+        const pathDropdowns = document.querySelectorAll('.path-dropdown');
+        
+        pathDropdowns.forEach(dropdown => {
+          const header = dropdown.querySelector('.path-dropdown-header');
+          
+          header.addEventListener('click', function() {
+            // Toggle active class on clicked dropdown
+            const isActive = dropdown.classList.contains('active');
+            
+            // First close all dropdowns
+            pathDropdowns.forEach(item => {
+              item.classList.remove('active');
+            });
+            
+            // Then open the clicked one if it wasn't already active
+            if (!isActive) {
+              dropdown.classList.add('active');
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

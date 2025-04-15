@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Profile - Career/Conquer</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='logo.png') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='modern.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='navbar.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link 
+      rel="stylesheet" 
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      /* Footer Styles */
+      footer {
+        background-color: var(--bg-accent);
+        padding: 40px 0 20px;
+        margin-top: 60px;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      }
+      
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 0 20px;
+      }
+      
+      .footer-logo {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      
+      .footer-logo img {
+        height: 40px;
+        margin-right: 10px;
+      }
+      
+      .footer-logo h3 {
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 0;
+      }
+      
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      
+      .footer-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+      
+      .footer-links a:hover {
+        color: var(--primary-color);
+      }
+      
+      .footer-copyright {
+        text-align: center;
+        color: var(--text-secondary);
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color);
+        font-size: 14px;
+      }
+      
+      /* Profile specific styles */
+      .profile-sidebar {
+        width: 350px;
+        flex-shrink: 0;
+      }
+
+      /* Evaluation Dashboard Styles */
+      .evaluation-dashboard {
+        flex: 1;
+        padding: 20px;
+        background-color: var(--bg-accent);
+        border-radius: 12px;
+        min-height: 600px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .dashboard-header {
+        margin-bottom: 30px;
+      }
+
+      .dashboard-header h2 {
+        font-size: 24px;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .stat-card {
+        background-color: var(--bg-secondary);
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: rgb(20, 241, 149);
+        margin-bottom: 8px;
+      }
+
+      .stat-label {
+        color: var(--text-secondary);
+        font-size: 14px;
+      }
+
+      .performance-chart {
+        background-color: var(--bg-secondary);
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+      }
+      
+      #performanceChart {
+        height: 300px;
+        width: 100%;
+      }
+
+      .recent-interviews {
+        background-color: var(--bg-secondary);
+        padding: 20px;
+        border-radius: 10px;
+      }
+
+      .interview-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .interview-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .interview-item:last-child {
+        border-bottom: none;
+      }
+
+      .interview-info h4 {
+        margin: 0 0 5px;
+        color: var(--primary-color);
+      }
+
+      .interview-info p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
+      .interview-score {
+        font-size: 18px;
+        font-weight: 600;
+        color: rgb(20, 241, 149);
+      }
+      
+      .profile-header {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+      
+      .profile-header h1 {
+        font-size: 24px;
+        color: var(--primary-color);
+        margin-bottom: 5px;
+      }
+      
+      .profile-header p {
+        color: var(--text-secondary);
+        font-size: 14px;
+        margin-top: 0;
+      }
+      
+      .profile-card {
+        background-color: var(--bg-accent);
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      
+      .profile-card h2 {
+        color: var(--primary-color);
+        font-size: 18px;
+        margin-top: 0;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+      }
+      
+      .profile-card h2 i {
+        margin-right: 10px;
+        color: rgb(20, 241, 149);
+      }
+      
+      .form-group {
+        margin-bottom: 10px;
+      }
+      
+      .form-group label {
+        display: block;
+        margin-bottom: 3px;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 14px;
+      }
+      
+      .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+        font-size: 14px;
+        transition: all 0.3s ease;
+      }
+      
+      .form-control:focus {
+        border-color: rgb(20, 241, 149);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(20, 241, 149, 0.2);
+      }
+      
+      .form-control::placeholder {
+        color: var(--text-secondary);
+        opacity: 0.7;
+      }
+      
+      .edit-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .edit-mode-toggle {
+        background: none;
+        border: none;
+        color: rgb(20, 241, 149);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        padding: 5px 10px;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+      }
+      
+      .edit-mode-toggle:hover {
+        background-color: rgba(20, 241, 149, 0.1);
+      }
+      
+      .edit-mode-toggle i {
+        margin-right: 8px;
+      }
+      
+      .btn {
+        padding: 6px 15px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .btn-primary {
+        background-color: rgb(20, 241, 149);
+        color: #1a1a1a;
+        box-shadow: 0 4px 10px rgba(20, 241, 149, 0.3);
+      }
+      
+      .btn-primary:hover {
+        background-color: rgb(16, 218, 134);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(20, 241, 149, 0.4);
+      }
+      
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+      
+      .btn-secondary {
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+      }
+      
+      .btn-secondary:hover {
+        background-color: var(--border-color);
+      }
+      
+      .btn i {
+        margin-right: 8px;
+      }
+      
+      .hidden {
+        display: none;
+      }
+      
+      .alert {
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        border-left: 4px solid;
+        font-size: 14px;
+      }
+      
+      .alert-success {
+        background-color: rgba(72, 187, 120, 0.1);
+        color: #2f855a;
+        border-color: #48bb78;
+      }
+      
+      .alert-error {
+        background-color: rgba(245, 101, 101, 0.1);
+        color: #c53030;
+        border-color: #f56565;
+      }
+      
+      /* Delete account styles */
+      .danger-zone {
+        background-color: var(--bg-accent);
+        border-left: 4px solid #f56565;
+        padding: 12px;
+        margin-bottom: 0px;
+      }
+      
+      .danger-zone h2 {
+        color: #e53e3e;
+      }
+      
+      .danger-zone h2 i {
+        color: #e53e3e;
+      }
+      
+      .danger-description {
+        color: var(--text-secondary);
+        margin-bottom: 10px;
+        font-size: 14px;
+      }
+      
+      .btn-danger {
+        background-color: #e53e3e;
+        color: white;
+        box-shadow: 0 4px 10px rgba(229, 62, 62, 0.3);
+      }
+      
+      .btn-danger:hover {
+        background-color: #c53030;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(229, 62, 62, 0.4);
+      }
+      
+      /* Modal styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 500px;
+        width: 90%;
+        background-color: var(--bg-secondary);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      
+      .modal.active {
+        display: block;
+        opacity: 1;
+      }
+      
+      #modal-backdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      
+      #modal-backdrop.active {
+        display: block;
+        opacity: 1;
+      }
+      
+      .modal-header {
+        padding: 15px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        background-color: var(--bg-secondary);
+        z-index: 10;
+      }
+      
+      .delete-modal-header {
+        background-color: #e53e3e;
+      }
+      
+      .delete-modal-header h2 {
+        color: white;
+        margin: 0;
+      }
+      
+      .close-modal {
+        font-size: 28px;
+        color: white;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+      }
+      
+      .close-modal:hover {
+        opacity: 0.8;
+      }
+      
+      .modal-body {
+        padding: 15px;
+      }
+      
+      .warning-text {
+        color: var(--text-primary);
+        margin-bottom: 10px;
+        line-height: 1.4;
+        font-size: 14px;
+      }
+      
+      .warning-text strong {
+        color: #e53e3e;
+        font-weight: 700;
+      }
+      
+      .modal-actions {
+        display: flex;
+        justify-content: space-between;
+      }
+      
+      @media (max-width: 768px) {
+        .footer-content {
+          flex-direction: column;
+        }
+        
+        .footer-links {
+          margin-top: 20px;
+        }
+      }
+      
+      .dashboard-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: calc(100vh - 80px);
+        padding-top: 20px;
+      }
+      
+      /* Make form rows more compact */
+      .form-row {
+        display: flex;
+        gap: 10px;
+      }
+      
+      .form-row .form-group {
+        flex: 1;
+      }
+      
+      /* Collapse some space in the delete section */
+      .delete-modal-content {
+        max-width: 450px;
+      }
+      
+      /* Remove margin from the last form group */
+      form .form-group:last-of-type,
+      form .form-row:last-of-type {
+        margin-bottom: 5px;
+      }
+
+      .evaluation-dashboard p {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+      
+      /* Analytics Section Styles */
+      .analytics-section {
+        margin-top: 30px;
+        margin-bottom: 30px;
+      }
+      
+      .analytics-section h3, 
+      .stats-summary h3 {
+        color: var(--primary-color);
+        font-size: 18px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+      }
+      
+      .analytics-section h3 i,
+      .stats-summary h3 i {
+        margin-right: 10px;
+        color: rgb(20, 241, 149);
+      }
+      
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+      }
+      
+      .metric-card {
+        background-color: var(--bg-secondary);
+        border-radius: 10px;
+        padding: 16px;
+        display: flex;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      
+      .metric-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      }
+      
+      .highlight-card {
+        border: 1px solid rgba(20, 241, 149, 0.3);
+      }
+      
+      .metric-icon {
+        width: 50px;
+        height: 50px;
+        background-color: rgba(20, 241, 149, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 16px;
+        flex-shrink: 0;
+      }
+      
+      .metric-icon i {
+        font-size: 20px;
+        color: rgb(20, 241, 149);
+      }
+      
+      .metric-content {
+        flex: 1;
+      }
+      
+      .metric-content h4 {
+        margin: 0 0 12px;
+        color: var(--text-primary);
+        font-size: 16px;
+      }
+      
+      .metric-data {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .metric-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .metric-label {
+        color: var(--text-secondary);
+        font-size: 14px;
+      }
+      
+      .metric-value {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 15px;
+      }
+      
+      .highlight-value {
+        color: rgb(20, 241, 149);
+        font-size: 16px;
+        font-weight: 700;
+      }
+      
+      /* Stats Summary Styles */
+      .stats-summary {
+        margin-bottom: 30px;
+      }
+      
+      .stats-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+      }
+      
+      .stat-summary-card {
+        background-color: var(--bg-secondary);
+        border-radius: 10px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      
+      .stat-title {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 12px;
+        font-size: 15px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border-color);
+      }
+      
+      .stat-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      
+      .stat-list li {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+      
+      .stat-list li strong {
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+      
+      @media (max-width: 768px) {
+        .metrics-grid,
+        .stats-cards {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" aria-label="Toggle dark/light mode">
+      <!-- Icon will be inserted by JavaScript -->
+    </button>
+    
+    <!-- Floating Navigation Bar -->
+    <nav class="floating-nav">
+      <a href="{{ url_for('home') }}" class="nav-logo">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" />
+        <h1>Career / Conquer</h1>
+      </a>
+      <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint == 'dashboard' }}">Dashboard</a>
+        <span class="nav-separator">|</span>
+        <a href="{{ url_for('profile') }}" class="{{ 'active' if request.endpoint == 'profile' }}">Profile</a>
+        <span class="nav-separator">|</span>
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    </nav>
+    
+    <div class="dashboard-container">
+      <div class="content" style="display: flex; gap: 20px;">
+        <!-- Left Sidebar with Profile Info -->
+        <div class="profile-sidebar">
+          
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}" role="alert">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+          
+          <div class="profile-card">
+            <div class="profile-header">
+              <h1>Your Profile</h1>
+              <p>Manage your personal information and account settings</p>
+            </div>            
+            <form id="profile-form" method="POST" action="{{ url_for('update_profile') }}">
+              <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" readonly>
+              </div>
+              
+              <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" readonly>
+              </div>
+              
+              <div class="form-group">
+                <label for="current_password">Current Password</label>
+                <input type="password" class="form-control" id="current_password" name="current_password" placeholder="Enter password" readonly>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="new_password">New Password</label>
+                  <input type="password" class="form-control" id="new_password" name="new_password" placeholder="New password" readonly>
+                </div>
+                
+                <div class="form-group">
+                  <label for="confirm_password">Confirm Password</label>
+                  <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm password" readonly>
+                </div>
+              </div>
+              
+              <div class="edit-controls">
+                <button type="button" id="edit-toggle" class="edit-mode-toggle">
+                  <i class="fas fa-edit"></i> Edit
+                </button>
+                
+                <div id="save-controls" class="hidden">
+                  <button type="button" id="cancel-edit" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                  </button>
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+          
+          <!-- Account Danger Zone -->
+          <div class="profile-card danger-zone">
+            <h2><i class="fas fa-exclamation-triangle"></i> Danger Zone</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <p class="danger-description" style="margin: 0;">Delete your account permanently</p>
+              <button id="delete-account-btn" class="btn btn-danger">
+                <i class="fas fa-trash-alt"></i> Delete Account
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side Evaluation Dashboard -->
+        <div class="evaluation-dashboard">
+          <div class="dashboard-header">
+            <h2>Performance Overview</h2>
+            <p>Track your interview performance and progress</p>
+          </div>
+          
+          <!-- Performance Chart Section -->
+          <div class="performance-chart">
+            <canvas id="performanceChart"></canvas>
+          </div>
+          
+          <!-- Interview Analytics Dashboard -->
+          <div class="analytics-section">
+            <h3><i class="fas fa-chart-bar"></i> Interview Performance Metrics</h3>
+            <div class="metrics-grid">
+              <!-- Eye Contact Metrics -->
+              <div class="metric-card">
+                <div class="metric-icon">
+                  <i class="fas fa-eye"></i>
+                </div>
+                <div class="metric-content">
+                  <h4>Eye Contact</h4>
+                  <div class="metric-data">
+                    <div class="metric-item">
+                      <span class="metric-label">Lost Count:</span>
+                      <span class="metric-value" id="eyeContactLoss">{{ analytics.eye_contact_loss|default('0')|round(2) }}</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Looking Away:</span>
+                      <span class="metric-value" id="lookingAwayTime">{{ analytics.looking_away|default('0')|round(2) }}s</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Focus Rate:</span>
+                      <span class="metric-value" id="focusRate">{{ analytics.focus_rate|default('0')|round(2) }}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Posture Metrics -->
+              <div class="metric-card">
+                <div class="metric-icon">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="metric-content">
+                  <h4>Posture</h4>
+                  <div class="metric-data">
+                    <div class="metric-item">
+                      <span class="metric-label">Bad Posture Count:</span>
+                      <span class="metric-value" id="badPostureCount">{{ analytics.bad_posture_count|default('0')|round(2) }}</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Bad Posture Duration:</span>
+                      <span class="metric-value" id="badPostureDuration">{{ analytics.bad_posture_duration|default('0')|round(2) }}s</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Posture Quality:</span>
+                      <span class="metric-value" id="postureQuality">{{ analytics.posture_quality|default('0')|round(2) }}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Hand Movement Metrics -->
+              <div class="metric-card">
+                <div class="metric-icon">
+                  <i class="fas fa-hand-paper"></i>
+                </div>
+                <div class="metric-content">
+                  <h4>Hand Movement</h4>
+                  <div class="metric-data">
+                    <div class="metric-item">
+                      <span class="metric-label">Hand Duration:</span>
+                      <span class="metric-value" id="handDuration">{{ analytics.hand_duration|default('0')|round(2) }}s</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Movement Frequency:</span>
+                      <span class="metric-value" id="handFrequency">{{ analytics.hand_frequency|default('0')|round(2) }}/min</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Overall Metrics -->
+              <div class="metric-card highlight-card">
+                <div class="metric-icon">
+                  <i class="fas fa-star"></i>
+                </div>
+                <div class="metric-content">
+                  <h4>Overall Assessment</h4>
+                  <div class="metric-data">
+                    <div class="metric-item">
+                      <span class="metric-label">Total Interview Time:</span>
+                      <span class="metric-value" id="totalTime">{{ analytics.total_time|default('0')|round(2) }}s</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Looking Away Ratio:</span>
+                      <span class="metric-value" id="lookingAwayRatio">{{ analytics.looking_away_ratio|default('0')|round(2) }}%</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Confidence Score:</span>
+                      <span class="metric-value highlight-value" id="confidenceScore">{{ analytics.confidence_score|default('0')|round(2) }}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Stats Summary -->
+          <div class="stats-summary">
+            <h3><i class="fas fa-tachometer-alt"></i> Performance Summary</h3>
+            <div class="stats-cards">
+              <div class="stat-summary-card">
+                <div class="stat-title">Averages</div>
+                <ul class="stat-list">
+                  <li>
+                    <span>Avg. Eye Contact Loss:</span>
+                    <strong>{{ analytics.avg_eye_contact_loss|default('0')|round(2) }}</strong>
+                  </li>
+                  <li>
+                    <span>Avg. Looking Away Ratio:</span>
+                    <strong>{{ analytics.avg_looking_away_ratio|default('0')|round(2) }}%</strong>
+                  </li>
+                  <li>
+                    <span>Avg. Bad Posture Count:</span>
+                    <strong>{{ analytics.avg_bad_posture_count|default('0')|round(2) }}</strong>
+                  </li>
+                </ul>
+              </div>
+              
+              <div class="stat-summary-card">
+                <div class="stat-title">Maximums</div>
+                <ul class="stat-list">
+                  <li>
+                    <span>Max Eye Contact Loss:</span>
+                    <strong>{{ analytics.max_eye_contact_loss|default('0')|round(2) }}</strong>
+                  </li>
+                  <li>
+                    <span>Max Looking Away Time:</span>
+                    <strong>{{ analytics.max_looking_away|default('0')|round(2) }}s</strong>
+                  </li>
+                  <li>
+                    <span>Max Bad Posture Duration:</span>
+                    <strong>{{ analytics.max_bad_posture_duration|default('0')|round(2) }}s</strong>
+                  </li>
+                </ul>
+              </div>
+              
+              <div class="stat-summary-card">
+                <div class="stat-title">Minimums</div>
+                <ul class="stat-list">
+                  <li>
+                    <span>Min Eye Contact Loss:</span>
+                    <strong>{{ analytics.min_eye_contact_loss|default('0')|round(2) }}</strong>
+                  </li>
+                  <li>
+                    <span>Min Looking Away Time:</span>
+                    <strong>{{ analytics.min_looking_away|default('0')|round(2) }}s</strong>
+                  </li>
+                  <li>
+                    <span>Min Bad Posture Duration:</span>
+                    <strong>{{ analytics.min_bad_posture_duration|default('0')|round(2) }}s</strong>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Delete Account Confirmation Modal -->
+    <div id="delete-modal" class="modal">
+      <div class="modal-content delete-modal-content">
+        <div class="modal-header delete-modal-header">
+          <h2><i class="fas fa-exclamation-triangle"></i> Delete Account</h2>
+          <span class="close-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+          <p class="warning-text">Are you sure you want to delete your account? This action is <strong>permanent</strong> and cannot be undone.</p>
+          <p class="warning-text">All your data, including your profile information, resumes, and progress will be permanently deleted.</p>
+          
+          <form id="delete-account-form" method="POST" action="{{ url_for('delete_account') }}">
+            <div class="form-group">
+              <label for="delete-password">Confirm your password</label>
+              <input type="password" class="form-control" id="delete-password" name="password" placeholder="Enter your password to confirm" required>
+            </div>
+            
+            <div class="modal-actions">
+              <button type="button" id="cancel-delete" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Cancel
+              </button>
+              <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash-alt"></i> Permanently Delete Account
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal Backdrop -->
+    <div id="modal-backdrop"></div>
+    
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-logo">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="CAREER CONQUER Logo">
+          <h3>CAREER / CONQUER</h3>
+        </div>
+        <div class="footer-links">
+          <a href="#">About Us</a>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact</a>
+        </div>
+      </div>
+      <p class="footer-copyright">© 2023 CAREER CONQUER. All rights reserved.</p>
+    </footer>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const editToggleBtn = document.getElementById('edit-toggle');
+        const cancelBtn = document.getElementById('cancel-edit');
+        const saveControls = document.getElementById('save-controls');
+        const formInputs = document.querySelectorAll('#profile-form input:not([type="submit"])');
+        const passwordFields = document.querySelectorAll('#profile-form input[type="password"]');
+        
+        // Enable edit mode
+        editToggleBtn.addEventListener('click', function() {
+          formInputs.forEach(input => {
+            input.removeAttribute('readonly');
+          });
+          
+          editToggleBtn.classList.add('hidden');
+          saveControls.classList.remove('hidden');
+        });
+        
+        // Cancel edit mode
+        cancelBtn.addEventListener('click', function() {
+          formInputs.forEach(input => {
+            input.setAttribute('readonly', true);
+            
+            // Reset password fields
+            if (input.type === 'password') {
+              input.value = '';
+            }
+          });
+          
+          editToggleBtn.classList.remove('hidden');
+          saveControls.classList.add('hidden');
+        });
+        
+        // Form validation before submit
+        document.getElementById('profile-form').addEventListener('submit', function(e) {
+          const newPassword = document.getElementById('new_password').value;
+          const confirmPassword = document.getElementById('confirm_password').value;
+          const currentPassword = document.getElementById('current_password').value;
+          
+          // Check if current password is provided
+          if (!currentPassword) {
+            e.preventDefault();
+            alert('Please enter your current password to save changes.');
+            return;
+          }
+          
+          // Check if passwords match when changing password
+          if (newPassword && newPassword !== confirmPassword) {
+            e.preventDefault();
+            alert('New passwords do not match.');
+            return;
+          }
+        });
+        
+        // Delete account modal handling
+        const deleteModal = document.getElementById('delete-modal');
+        const modalBackdrop = document.getElementById('modal-backdrop');
+        const deleteAccountBtn = document.getElementById('delete-account-btn');
+        const cancelDeleteBtn = document.getElementById('cancel-delete');
+        const closeModalBtn = document.querySelector('.close-modal');
+        
+        // Open delete account modal
+        deleteAccountBtn.addEventListener('click', function() {
+          openModal('delete-modal');
+        });
+        
+        // Close delete account modal
+        cancelDeleteBtn.addEventListener('click', function() {
+          closeModal('delete-modal');
+        });
+        
+        closeModalBtn.addEventListener('click', function() {
+          closeModal('delete-modal');
+        });
+        
+        // Close modal when clicking on backdrop
+        modalBackdrop.addEventListener('click', function(event) {
+          if (event.target === modalBackdrop) {
+            closeActiveModal();
+          }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+          if (event.key === 'Escape') {
+            closeActiveModal();
+          }
+        });
+        
+        // Function to open modal
+        function openModal(modalId) {
+          const modal = document.getElementById(modalId);
+          
+          if (!modal) return;
+          
+          // Show backdrop and modal
+          modalBackdrop.classList.add('active');
+          setTimeout(() => {
+            modal.classList.add('active');
+          }, 100);
+          
+          document.body.style.overflow = 'hidden';
+        }
+        
+        // Function to close modal
+        function closeModal(modalId) {
+          const modal = document.getElementById(modalId);
+          
+          if (!modal) return;
+          
+          // Hide modal and backdrop
+          modal.classList.remove('active');
+          setTimeout(() => {
+            modalBackdrop.classList.remove('active');
+          }, 300);
+          
+          document.body.style.overflow = '';
+          
+          // Clear password field
+          const passwordField = document.getElementById('delete-password');
+          if (passwordField) {
+            passwordField.value = '';
+          }
+        }
+        
+        // Close current active modal
+        function closeActiveModal() {
+          const activeModal = document.querySelector('.modal.active');
+          
+          if (activeModal) {
+            const modalId = activeModal.id;
+            closeModal(modalId);
+          }
+        }
+        
+        // Delete account form validation
+        document.getElementById('delete-account-form').addEventListener('submit', function(e) {
+          const passwordInput = document.getElementById('delete-password');
+          
+          if (!passwordInput.value) {
+            e.preventDefault();
+            alert('Please enter your password to confirm account deletion.');
+          } else {
+            const isConfirmed = confirm('This is your final warning: Are you absolutely sure you want to permanently delete your account? This action CANNOT be undone.');
+            if (!isConfirmed) {
+              e.preventDefault();
+            }
+          }
+        });
+      });
+      
+      // Initialize Performance Chart
+      document.addEventListener('DOMContentLoaded', function() {
+        // Get the chart canvas element
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        
+        // Dummy data (12 points)
+        const performanceData = {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          datasets: [{
+            label: 'Interview Performance',
+            data: [65, 72, 68, 75, 82, 78, 85, 89, 84, 91, 88, 94],
+            borderColor: 'rgb(20, 241, 149)',
+            backgroundColor: 'rgba(20, 241, 149, 0.1)',
+            tension: 0.3,
+            fill: true,
+            pointBackgroundColor: 'rgb(20, 241, 149)',
+            pointBorderColor: 'rgb(20, 241, 149)',
+            pointRadius: function(context) {
+              // Points grow during animation
+              const index = context.dataIndex;
+              const value = context.dataset.data[index];
+              const progress = context.chart.getDatasetMeta(0).controller._valueAnimations?.data?._animations?.[index]?.active;
+              return progress ? (6 * (value/100)) : 4;
+            },
+            pointHoverRadius: 8,
+            borderWidth: 3,
+            cubicInterpolationMode: 'monotone'
+          }]
+        };
+        
+        // Chart configuration
+        const chartConfig = {
+          type: 'line',
+          data: performanceData,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animations: {
+              tension: {
+                duration: 800,
+                easing: 'elastic',
+                from: 0.5,
+                to: 0.3,
+                loop: false
+              }
+            },
+            animation: {
+              duration: 800,
+              easing: 'easeOutQuart',
+              delay: function(context) {
+                return context.dataIndex * 30;
+              },
+              onProgress: function(animation) {
+                // Add a slight wave effect during animation
+                const chart = animation.chart;
+                const ctx = chart.ctx;
+                const dataset = chart.data.datasets[0];
+                const wave = Math.sin(animation.currentStep / 5) * 5;
+                
+                dataset.data = dataset.data.map((point, index) => {
+                  const original = performanceData.datasets[0].data[index];
+                  if (animation.currentStep < 50) {
+                    return original + (wave * (index % 2 ? 1 : -1));
+                  }
+                  return original;
+                });
+              }
+            },
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                titleColor: '#fff',
+                bodyColor: '#fff',
+                borderColor: 'rgb(20, 241, 149)',
+                borderWidth: 1,
+                padding: 10,
+                displayColors: false
+              },
+              // Custom drawing plugin
+              drawingPlugin: {
+                beforeDraw: function(chart) {
+                  const progress = chart.getDatasetMeta(0).controller._valueAnimations?.data?.progress || 0;
+                  if (progress < 1) {
+                    const ctx = chart.ctx;
+                    ctx.save();
+                    ctx.globalCompositeOperation = 'destination-in';
+                    ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+                    ctx.fillRect(0, 0, chart.width * progress, chart.height);
+                    ctx.restore();
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: {
+                  display: false
+                },
+                ticks: {
+                  color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary')
+                }
+              },
+              y: {
+                beginAtZero: true,
+                max: 100,
+                grid: {
+                  color: getComputedStyle(document.documentElement).getPropertyValue('--border-color'),
+                  drawBorder: false
+                },
+                ticks: {
+                  color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary'),
+                  callback: function(value) {
+                    return value + '%';
+                  }
+                }
+              }
+            }
+          }
+        };
+        
+        // Create the chart
+        const myChart = new Chart(ctx, chartConfig);
+        
+        // Add pulse glow effect
+        let glowEffect = 0;
+        let increasing = true;
+        
+        function addGlowEffect() {
+          // Pulse the glow effect
+          if (increasing) {
+            glowEffect += 0.1;
+            if (glowEffect >= 1) increasing = false;
+          } else {
+            glowEffect -= 0.1;
+            if (glowEffect <= 0) increasing = true;
+          }
+          
+          // Apply shadow effect to canvas
+          ctx.shadowColor = 'rgba(20, 241, 149, ' + glowEffect * 0.5 + ')';
+          ctx.shadowBlur = 8 + (glowEffect * 5);
+          
+          // Request next frame if chart exists
+          if (myChart) requestAnimationFrame(addGlowEffect);
+        }
+        
+        // Start the glow effect animation
+        addGlowEffect();
+        
+        // Update analytics metrics based on the data
+        function updateAnalyticsMetrics() {
+          // Only perform client-side calculations if server didn't provide analytics
+          // Check if we have any meaningful data from the server
+          const serverProvidedValues = 
+            document.getElementById('eyeContactLoss').textContent.trim() !== '0' ||
+            document.getElementById('lookingAwayTime').textContent.trim() !== '0s';
+          
+          // If server provided data, don't overwrite it
+          if (serverProvidedValues) {
+            console.log('Using server-provided analytics data');
+            return;
+          }
+          
+          console.log('No server data found, using client-side calculations');
+          
+          // Sample interview data (this would be replaced with actual data from the backend)
+          const interviewData = {
+            eye_contact_loss: 49,
+            looking_away: 27.0,
+            bad_posture_count: 32,
+            bad_posture_duration: 19.0,
+            hand_duration: 43.0,
+            total_time: 180
+          };
+          
+          // Calculate derived metrics
+          const lookingAwayRatio = Math.round((interviewData.looking_away / interviewData.total_time) * 100);
+          const focusRate = Math.round(100 - ((interviewData.looking_away / interviewData.total_time) * 100));
+          const postureQuality = Math.round(100 - ((interviewData.bad_posture_duration / interviewData.total_time) * 100));
+          const handFrequency = parseFloat((interviewData.hand_duration / (interviewData.total_time / 60)).toFixed(1));
+          
+          // Update the DOM elements with calculated metrics (only if server didn't provide them)
+          const elements = {
+            lookingAwayRatio: document.getElementById('lookingAwayRatio'),
+            focusRate: document.getElementById('focusRate'),
+            postureQuality: document.getElementById('postureQuality'),
+            handFrequency: document.getElementById('handFrequency')
+          };
+          
+          // Only update if element exists and is empty/zero
+          Object.keys(elements).forEach(key => {
+            if (elements[key] && elements[key].textContent.trim() === '0%') {
+              switch (key) {
+                case 'lookingAwayRatio':
+                  elements[key].textContent = `${lookingAwayRatio}%`;
+                  break;
+                case 'focusRate':
+                  elements[key].textContent = `${focusRate}%`;
+                  break;
+                case 'postureQuality':
+                  elements[key].textContent = `${postureQuality}%`;
+                  break;
+                case 'handFrequency':
+                  elements[key].textContent = `${handFrequency}/min`;
+                  break;
+              }
+            }
+          });
+        }
+        
+        // Call the function to update metrics
+        updateAnalyticsMetrics();
+      });
+    </script>
+  </body>
+</html>

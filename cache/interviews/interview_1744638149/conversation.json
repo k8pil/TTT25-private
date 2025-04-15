@@ -1,0 +1,89 @@
+{
+  "conversation": [
+    {
+      "role": "interviewer",
+      "content": "Hi [Candidate Name], it's a pleasure to meet you! Thanks for coming in today.  I've reviewed your resume and I'm excited to learn more about your background.  Before we dive into the specifics of the role, I'd love to hear from you directly. Could you please tell me a bit about yourself, your professional journey so far, and what aspects of this role or our company particularly interest you?\n",
+      "timestamp": 1744638151.2593334
+    },
+    {
+      "role": "candidate",
+      "content": "I dont know anything",
+      "timestamp": 1744638166.9981885
+    },
+    {
+      "role": "interviewer",
+      "content": "Okay, I understand.  That's alright.  To help us get started, can you tell me about a time you faced a challenging situation or project where you had limited information to begin with? How did you approach gathering the necessary information and moving forward?\n",
+      "timestamp": 1744638169.1206267
+    },
+    {
+      "role": "candidate",
+      "content": "I dont know anything literally anything",
+      "timestamp": 1744638187.9304192
+    },
+    {
+      "role": "interviewer",
+      "content": "Okay,  that\u2019s completely understandable.  Let's try a slightly different approach.  Can you describe a situation where you had to learn a new skill or piece of software quickly to meet a deadline?  What steps did you take, and what was the outcome?\n",
+      "timestamp": 1744638190.0412602
+    },
+    {
+      "role": "candidate",
+      "content": "nope",
+      "timestamp": 1744638199.6831744
+    },
+    {
+      "role": "interviewer",
+      "content": "Okay, let's try a different tack.  Many roles require collaboration and teamwork.  Can you describe a time you worked on a team project, and what your specific contribution was to the overall success?\n",
+      "timestamp": 1744638201.7458122
+    },
+    {
+      "role": "candidate",
+      "content": "I did had a sucess",
+      "timestamp": 1744638214.931611
+    },
+    {
+      "role": "interviewer",
+      "content": "I'm frankly quite disappointed by that statement.  The grammatical errors and informal language are unacceptable in a professional interview.  \"Success\" is spelled \"s-u-c-c-e-s-s,\" and the sentence structure needs correction.  This reflects poorly on your attention to detail and communication skills.  Please rephrase your answer using correct grammar and professional language.\n",
+      "timestamp": 1744638217.2142923
+    },
+    {
+      "role": "candidate",
+      "content": "so what",
+      "timestamp": 1744638232.406574
+    },
+    {
+      "role": "interviewer",
+      "content": "I find your response, \"so what,\" completely unacceptable.  This is a professional interview, and that kind of dismissive language is highly inappropriate.  It demonstrates a lack of respect and engagement.  I expect a more respectful and thoughtful answer.  Please rephrase your response, showing me you understand the seriousness of this.  Let's try that again.\n",
+      "timestamp": 1744638234.2902176
+    },
+    {
+      "role": "candidate",
+      "content": "hey",
+      "timestamp": 1744638262.5754652
+    },
+    {
+      "role": "interviewer",
+      "content": "Given your repeated inability to articulate your experiences and your dismissive responses, I'm concerned about your communication skills and professional demeanor.  To proceed, can you explain why you believe you are a suitable candidate for this role, despite the challenges we've encountered in this interview?\n",
+      "timestamp": 1744638264.3049963
+    },
+    {
+      "role": "candidate",
+      "content": "lets start again from starting",
+      "timestamp": 1744638306.8863792
+    },
+    {
+      "role": "interviewer",
+      "content": "Since you've suggested we start again, let's focus on something concrete.  Can you describe a specific task or responsibility from a past role, even a small one, and explain the steps you took to complete it?  Let's focus on the process, not necessarily the outcome.\n",
+      "timestamp": 1744638308.6260934
+    },
+    {
+      "role": "candidate",
+      "content": "Sorry, I couldn't transcribe your audio. Please try again.",
+      "timestamp": 1744638332.47495
+    },
+    {
+      "role": "interviewer",
+      "content": "Given your previous responses, let's focus on problem-solving.  Can you describe a situation where you encountered a problem, and instead of immediately seeking a solution, you took time to fully understand the root cause of the issue before taking any action?  What was your process, and what was the outcome?\n",
+      "timestamp": 1744638334.1383557
+    }
+  ]
+}

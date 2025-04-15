@@ -1,0 +1,19 @@
+{
+  "conversation": [
+    {
+      "role": "interviewer",
+      "content": "Hi Kapil, welcome! It's great to finally meet you.  I've been reviewing your resume, and I'm particularly impressed with your work as CTO at Aero Touch Drone Technology and your award-winning project at the Smart India Hackathon.  Your experience with both hardware and software development, especially in the context of AI and image processing, is really compelling.\n\nTo start, could you please tell me a little bit about yourself, your background, and what aspects of this role or our company particularly interest you?\n",
+      "timestamp": 1744522369.4690385
+    },
+    {
+      "role": "candidate",
+      "content": "hello I am Aditya and I am currently doing BTech in city I am currently joining joining a hackathon right now of Di city and I will see that how",
+      "timestamp": 1744522572.4750202
+    },
+    {
+      "role": "interviewer",
+      "content": "Aditya, I appreciate your enthusiasm.  Your introduction was a little difficult to understand; phrases like \"currently joining joining\" are unclear.  Could you please rephrase your answer, clarifying your BTech program, the hackathon you're participating in, and the city you're located in?  We want to ensure we have the correct information.  Take your time and feel free to elaborate.\n",
+      "timestamp": 1744522574.8529024
+    }
+  ]
+}

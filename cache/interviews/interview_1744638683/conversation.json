@@ -1,0 +1,29 @@
+{
+  "conversation": [
+    {
+      "role": "interviewer",
+      "content": "Hi Kapil, welcome! It's great to finally meet you.  Your resume is incredibly impressive, particularly your experience as CTO at Aero Touch and your award-winning work on the PSR Image Denoising project.  The Mark Mate project also showcases a really strong understanding of practical application development.\n\nTo start, could you please tell me a bit about yourself, your background, and what aspects of this role or our company most interest you?\n",
+      "timestamp": 1744638684.3488832
+    },
+    {
+      "role": "candidate",
+      "content": "Sorry, I couldn't transcribe your audio. Please try again.",
+      "timestamp": 1744638706.3370955
+    },
+    {
+      "role": "interviewer",
+      "content": "Given your experience leading the technical strategy at Aero Touch Drone Technology, and raising significant seed funding,  can you describe a particularly challenging technical problem you faced and how you approached finding a solution?\n",
+      "timestamp": 1744638707.8192008
+    },
+    {
+      "role": "candidate",
+      "content": "Sorry, I couldn't transcribe your audio. Please try again.",
+      "timestamp": 1744638715.8122394
+    },
+    {
+      "role": "interviewer",
+      "content": "Following up on your experience with the Mark Mate project,  can you walk me through the process of designing the scalable business model with tiered subscription plans \u2013 what considerations went into determining the features and pricing for each tier (Basic, Premium, Enterprise)?\n",
+      "timestamp": 1744638717.4465055
+    }
+  ]
+}

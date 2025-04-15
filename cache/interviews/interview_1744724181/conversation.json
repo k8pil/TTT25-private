@@ -1,0 +1,19 @@
+{
+  "conversation": [
+    {
+      "role": "interviewer",
+      "content": "Hi Kapil, welcome! It's great to finally meet you.  Your resume is incredibly impressive, especially your work at Aero Touch and your award-winning project at the Smart India Hackathon.  I'm particularly interested in your experience building and launching drone technology, as well as your development of the Mark Mate automated grading system \u2013 that sounds like a significant undertaking.\n\nTo start, could you please tell me a little bit about yourself, your background, and what aspects of this role (assuming a specific role is being discussed; otherwise remove \"this role\" from the sentence), or the field in general, most excite you?\n",
+      "timestamp": 1744724183.368731
+    },
+    {
+      "role": "candidate",
+      "content": "I do not know what you said can you repeat everything again please",
+      "timestamp": 1744724281.5865374
+    },
+    {
+      "role": "interviewer",
+      "content": "Okay, Kapil, let's try again.  My apologies for the unclear instructions.  I'm interested in learning more about your career goals and what motivates you. Considering your experience leading the technical direction at Aero Touch and developing Mark Mate, what are you most passionate about pursuing in your future career?\n",
+      "timestamp": 1744724283.8013408
+    }
+  ]
+}

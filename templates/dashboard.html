@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dashboard - Career/Conquer</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='logo.png') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='modern.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='navbar.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link 
+      rel="stylesheet" 
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
+    <style>
+      .dashboard-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: calc(100vh - 80px);
+        padding-top: 40px;
+      }
+      
+      .content {
+        width: 100%;
+        max-width: 1200px;
+        padding: 0 20px;
+      }
+      
+      .card {
+        background-color: var(--bg-accent);
+        border-radius: 12px;
+        padding: 25px;
+        margin: 15px 0;
+        transition: all 0.3s ease;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: box-shadow 0.8s ease;
+      }
+      
+      .card-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: var(--primary-color);
+      }
+      
+      .card-description {
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        max-width: 90%;
+      }
+      
+      .card-btn {
+        background-color: rgb(20, 241, 149);
+        color: #1a1a1a;
+        border: none;
+        border-radius: 30px;
+        padding: 12px 30px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 6px 15px rgba(20, 241, 149, 0.3);
+        margin-top: 20px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .card-btn:hover {
+        background-color: rgb(16, 218, 134);
+        box-shadow: 0 8px 20px rgba(20, 241, 149, 0.5);
+        transform: translateY(-3px);
+      }
+      
+      .card-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 10px rgba(20, 241, 149, 0.3);
+      }
+      
+      .card-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: 0.5s;
+      }
+      
+      .card-btn:hover::before {
+        left: 100%;
+      }
+      
+      .cards-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+      }
+      
+      .resume-upload-card {
+        width: 100%;
+      }
+      
+      .service-cards {
+        display: flex;
+        flex-direction: row;
+        gap: 30px;
+        width: 100%;
+      }
+      
+      @media (max-width: 768px) {
+        .service-cards {
+          flex-direction: column;
+        }
+      }
+      
+      .left, .right {
+        flex: 1;
+      }
+      
+      .card-icon {
+        font-size: 48px;
+        color: rgb(20, 241, 149);
+        margin-bottom: 20px;
+        background-color: rgba(20, 241, 149, 0.1);
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(20, 241, 149, 0.2);
+      }
+      
+      .card:hover .card-icon {
+        transform: scale(1.1);
+        background-color: rgba(20, 241, 149, 0.2);
+        box-shadow: 0 8px 25px rgba(20, 241, 149, 0.3);
+      }
+      
+      .welcome {
+        text-align: left;
+        margin-bottom: 30px;
+      }
+      
+      .file-upload-container {
+        width: 100%;
+        max-width: 450px;
+        margin: 15px auto;
+        position: relative;
+      }
+      
+      .file-upload-input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 10;
+      }
+      
+      .file-upload-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        border: 2px dashed rgba(20, 241, 149, 0.5);
+        border-radius: 12px;
+        background-color: rgba(20, 241, 149, 0.05);
+        transition: all 0.3s ease;
+      }
+      
+      .file-upload-input:hover + .file-upload-label,
+      .file-upload-input:focus + .file-upload-label {
+        border-color: rgb(20, 241, 149);
+        background-color: rgba(20, 241, 149, 0.1);
+      }
+      
+      .upload-icon {
+        font-size: 40px;
+        color: rgb(20, 241, 149);
+        margin-bottom: 15px;
+      }
+      
+      .upload-text {
+        font-weight: 600;
+        margin-bottom: 5px;
+      }
+      
+      .upload-subtext {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+      
+      .upload-progress {
+        width: 100%;
+        height: 6px;
+        background-color: rgba(20, 241, 149, 0.1);
+        border-radius: 3px;
+        margin-top: 15px;
+        overflow: hidden;
+        display: none;
+      }
+      
+      .upload-progress-bar {
+        height: 100%;
+        background-color: rgb(20, 241, 149);
+        width: 0;
+        transition: width 0.3s ease;
+      }
+      
+      .upload-spinner {
+        display: none;
+        width: 24px;
+        height: 24px;
+        border: 3px solid rgba(20, 241, 149, 0.3);
+        border-radius: 50%;
+        border-top-color: rgb(20, 241, 149);
+        animation: spin 1s linear infinite;
+        margin: 10px auto 0;
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      
+      /* Footer Styles */
+      footer {
+        background-color: var(--bg-accent);
+        padding: 40px 0 20px;
+        margin-top: 60px;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      }
+      
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 0 20px;
+      }
+      
+      .footer-logo {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      
+      .footer-logo img {
+        height: 40px;
+        margin-right: 10px;
+      }
+      
+      .footer-logo h3 {
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 0;
+      }
+      
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      
+      .footer-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+      
+      .footer-links a:hover {
+        color: var(--primary-color);
+      }
+      
+      .footer-copyright {
+        text-align: center;
+        color: var(--text-secondary);
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color);
+        font-size: 14px;
+      }
+      
+      @media (max-width: 768px) {
+        .footer-content {
+          flex-direction: column;
+        }
+        
+        .footer-links {
+          margin-top: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" aria-label="Toggle dark/light mode">
+      <!-- Icon will be inserted by JavaScript -->
+    </button>
+    
+    <!-- Floating Navigation Bar -->
+    <nav class="floating-nav">
+      <a href="{{ url_for('home') }}" class="nav-logo">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" />
+        <h1>Career / Conquer</h1>
+      </a>
+      <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint == 'dashboard' }}">Dashboard</a>
+        <span class="nav-separator">|</span>
+        <a href="{{ url_for('profile') }}" class="{{ 'active' if request.endpoint == 'profile' }}">Profile</a>
+        <span class="nav-separator">|</span>
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    </nav>
+    
+    <div class="dashboard-container">
+      <div class="content">
+        <div class="welcome">
+          <h2>Welcome, {{ user.username }}!</h2>
+        </div>
+        <div class="cards-container">
+          <!-- Resume Upload Card -->
+          <div class="resume-upload-card">
+            <div class="card">
+              <div class="card-icon">
+                <i class="fas fa-file-upload"></i>
+              </div>
+              <div class="card-title">Upload Your Resume</div>
+              <div class="card-description">
+                Start by uploading your resume to unlock personalized career guidance and tailored interview questions.
+              </div>
+              <div class="file-upload-container">
+                <form id="resumeForm" action="{{ url_for('upload_resume') }}" method="POST" enctype="multipart/form-data">
+                  <input 
+                    type="file" 
+                    class="file-upload-input" 
+                    id="resumeUpload" 
+                    name="resume" 
+                    accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" 
+                    onchange="document.getElementById('resumeForm').submit();"
+                    style="display: none;"
+                  >
+                
+                  <label for="resumeUpload" class="file-upload-label">
+                    <p class="upload-text">Drag & drop or click to upload</p>
+                    <p class="upload-subtext">Supported formats: PDF, DOC, DOCX (Max 5MB)</p>
+                    <div class="upload-spinner" id="uploadSpinner"></div>
+                    <div class="upload-progress" id="uploadProgress">
+                      <div class="upload-progress-bar" id="uploadProgressBar"></div>
+                    </div>
+                  </label>
+                </form>
+                
+              </div>
+            </div>
+          </div>
+          
+          <!-- Service Cards -->
+          <div class="service-cards">
+            <div class="left">
+              <div class="card">
+                <div class="card-icon">
+                  <i class="fas fa-road"></i>
+                </div>
+                <div class="card-title">Career Path Guidance</div>
+                <div class="card-description" style="margin-bottom: 0px;">
+                  Upload your resume and get comprehensive career path recommendations, skill assessments, resume tips, and networking opportunities tailored to your profile.
+                </div>
+                <a href="{{ url_for('start_guidance') }}" class="card-btn">
+                  <i class="fas fa-play-circle me-2" style="margin-right: 8px;"></i>Start Guidance
+                </a>
+              </div>
+            </div>
+            <div class="right">
+              <div class="card">
+                <div class="card-icon">
+                  <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="card-title">Interview Preparation</div>
+                <div class="card-description" style="margin-bottom: 0px;">
+                  Practice with a simulated interview tailored to your resume. Get personalized questions, feedback on your responses, and recommendations for improvement.
+                </div>
+                <a href="{{ url_for('start_interview') }}" class="card-btn">
+                  <i class="fas fa-play-circle me-2" style="margin-right: 8px;"></i>Start Interview
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-logo">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="CAREER CONQUER Logo">
+          <h3>CAREER / CONQUER</h3>
+        </div>
+        <div class="footer-links">
+          <a href="#">About Us</a>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact</a>
+        </div>
+      </div>
+      <p class="footer-copyright">© 2023 CAREER CONQUER. All rights reserved.</p>
+    </footer>
+
+    <script>
+      document.getElementById("resumeUpload").addEventListener("change", function () {
+        document.getElementById("uploadSpinner").style.display = "block";
+        document.getElementById("resumeForm").submit();
+      });
+    </script>
+    
+  </body>
+</html>

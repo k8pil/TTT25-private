@@ -1,0 +1,19 @@
+{
+  "conversation": [
+    {
+      "role": "interviewer",
+      "content": "Hi Kapil, it's a pleasure to meet you.  Thanks for taking the time to speak with me today. Your resume is quite impressive, particularly your experience as CTO at Aero Touch and your award-winning work on PSR Image Denoising.  I'm especially interested in your development of Mark Mate and its innovative approach to automated grading.\n\nTo start, could you please introduce yourself and briefly describe your background and what aspects of software engineering or a similar field most interest you?\n",
+      "timestamp": 1744640286.6068347
+    },
+    {
+      "role": "candidate",
+      "content": "I have been working on the proposal for around 2 months now and I face to multiple problems and box during that time and I was able to overcome everything and you can say for the fees that interest me the most is ml and made a project like self driving car in Carlo simulation and pay more have also won sis hackathon in 2024",
+      "timestamp": 1744640347.6241944
+    },
+    {
+      "role": "interviewer",
+      "content": "\"That's a lot to unpack.  Regarding the hackathon, it's currently 2023, so winning one in 2024 wouldn't be possible.  Could you clarify what you meant by 'box' and provide more detail on the self-driving car project?  Your description of the project and your ML experience is a little unclear.  Perhaps you could rephrase your answer to give me a clearer picture of your work?\"\n",
+      "timestamp": 1744640350.089557
+    }
+  ]
+}
