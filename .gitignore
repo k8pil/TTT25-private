@@ -1,0 +1,9 @@
+.env
+.venv
+__pycache__/
+temp/*
+static/uploads
+instance/
+emotions.py
+dataset_prepare.py
+

@@ -1,0 +1,24 @@
+{
+  "conversation": [
+    {
+      "role": "interviewer",
+      "content": "Hi Aditya, thanks for coming in today.  It's great to finally meet you.  I've been reviewing your resume and am particularly impressed with your projects, especially \"Career Conquer\" \u2013 the combination of resume analysis, real-time feedback using MediaPipe, and leveraging LLMs for personalized advice is very innovative.\n\nSo, Aditya, to get started, could you please tell me a little bit about yourself, your background, and what aspects of software engineering or AI you're most passionate about?\n",
+      "timestamp": 1745575174.8650925
+    },
+    {
+      "role": "candidate",
+      "content": "hello hello I am just passionate about AI and Jenny things",
+      "timestamp": 1745575231.742319
+    },
+    {
+      "role": "interviewer",
+      "content": "\"I'm sorry, but 'Jenny things' is entirely inappropriate for this interview.  The repetition of 'hello' is also unprofessional.  This is a serious professional setting, and such language is unacceptable.  I need you to rephrase your opening statement, focusing on your qualifications and experience with AI, and avoiding any colloquialisms or nonsensical phrases.\"\n",
+      "timestamp": 1745575233.9180973
+    },
+    {
+      "role": "interviewer",
+      "content": "Aditya, thank you so much for taking the time to speak with me today. I've gained valuable insights into your experience and skills, and I truly appreciate you sharing your background with us.  The team will be reviewing all applications, and we'll be in touch regarding the next steps in the hiring process within [ timeframe, e.g., the next week].  We wish you all the best.\n",
+      "timestamp": 1745575258.2263536
+    }
+  ]
+}

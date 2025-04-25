@@ -1,0 +1,19 @@
+{
+  "conversation": [
+    {
+      "role": "interviewer",
+      "content": "\"Hi [FULL NAME], it's a pleasure to meet you. Thanks for coming in today.  Your resume shows a really interesting range of experiences, from customer service and event planning to administrative support and even some tech work \u2013 quite impressive for someone still in high school!  I'm particularly interested in your roles at the law firm and with the non-profit, as well as your volunteer work.\n\nTo start, could you please tell me a little about yourself, your background, and what you're hoping to achieve in your career?\"\n",
+      "timestamp": 1745162219.2242303
+    },
+    {
+      "role": "candidate",
+      "content": "OK it is",
+      "timestamp": 1745162233.8101811
+    },
+    {
+      "role": "interviewer",
+      "content": "Okay, you mentioned hoping to achieve something in your career.  Considering your diverse experiences in customer service, administration, and event organization, what kind of career path are you envisioning for yourself after you finish high school?\n",
+      "timestamp": 1745162235.300594
+    }
+  ]
+}

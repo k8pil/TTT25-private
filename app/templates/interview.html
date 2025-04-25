@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Session - Interview Advisor</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <!-- Interview Header -->
+                <div class="card mb-4 shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="text-center">Interview Session</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <a href="{{ url_for('main.home') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Home
+                            </a>
+                            <button id="endInterviewBtn" class="btn btn-danger" disabled>
+                                End Interview
+                            </button>
+                        </div>
+                        <div id="interviewStatus" class="alert alert-info">
+                            Click "Start Interview" to begin your session.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conversation Area -->
+                <div class="card mb-4 shadow">
+                    <div class="card-header bg-secondary text-white">
+                        <h3>Conversation</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="conversation" class="conversation-area mb-4">
+                            <!-- Conversation messages will be added here -->
+                        </div>
+                        
+                        <!-- Answer Input -->
+                        <div id="answerSection" class="answer-section" style="display: none;">
+                            <div class="mb-3">
+                                <label for="answerText" class="form-label">Your Answer:</label>
+                                <textarea id="answerText" class="form-control" rows="4" placeholder="Type your answer here..."></textarea>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <button id="recordBtn" class="btn btn-outline-primary">
+                                    <i class="fas fa-microphone"></i> Record Answer
+                                </button>
+                                <button id="submitAnswerBtn" class="btn btn-success">
+                                    Submit Answer
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Start Button -->
+                        <div id="startSection" class="text-center mt-3">
+                            <button id="startInterviewBtn" class="btn btn-primary btn-lg">
+                                Start Interview
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Results Modal -->
+    <div class="modal fade" id="resultsModal" tabindex="-1" aria-labelledby="resultsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="resultsModalLabel">Interview Results</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="resultsContent">
+                    <!-- Results will be displayed here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a href="{{ url_for('main.results') }}" class="btn btn-primary">View Detailed Results</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let sessionId = null;
+        let currentQuestion = '';
+        let isRecording = false;
+        let audioRecorder = null;
+        
+        // DOM elements
+        const startInterviewBtn = document.getElementById('startInterviewBtn');
+        const endInterviewBtn = document.getElementById('endInterviewBtn');
+        const conversationArea = document.getElementById('conversation');
+        const answerSection = document.getElementById('answerSection');
+        const startSection = document.getElementById('startSection');
+        const answerText = document.getElementById('answerText');
+        const submitAnswerBtn = document.getElementById('submitAnswerBtn');
+        const recordBtn = document.getElementById('recordBtn');
+        const interviewStatus = document.getElementById('interviewStatus');
+        const resultsModal = new bootstrap.Modal(document.getElementById('resultsModal'));
+        const resultsContent = document.getElementById('resultsContent');
+        
+        // Start interview
+        startInterviewBtn.addEventListener('click', function() {
+            const resumeId = sessionStorage.getItem('resumeId') || 'default';
+            
+            // Update UI
+            interviewStatus.innerHTML = 'Starting interview...';
+            startInterviewBtn.disabled = true;
+            
+            // Send request to start interview
+            fetch('/interview/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ resume_id: resumeId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Store session ID
+                    sessionId = data.session_id;
+                    
+                    // Update UI
+                    startSection.style.display = 'none';
+                    answerSection.style.display = 'block';
+                    endInterviewBtn.disabled = false;
+                    interviewStatus.innerHTML = 'Interview in progress...';
+                    
+                    // Display first question
+                    currentQuestion = data.question;
+                    addMessage('interviewer', currentQuestion);
+                } else {
+                    interviewStatus.innerHTML = 
+                        `<div class="alert alert-danger">Error: ${data.error || 'Failed to start interview'}</div>`;
+                    startInterviewBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                interviewStatus.innerHTML = 
+                    `<div class="alert alert-danger">Error: ${error.message}</div>`;
+                startInterviewBtn.disabled = false;
+            });
+        });
+        
+        // Submit answer
+        submitAnswerBtn.addEventListener('click', function() {
+            const answer = answerText.value.trim();
+            
+            if (!answer) {
+                alert('Please provide an answer');
+                return;
+            }
+            
+            // Update UI
+            submitAnswerBtn.disabled = true;
+            recordBtn.disabled = true;
+            
+            // Add answer to conversation
+            addMessage('candidate', answer);
+            
+            // Send answer to server
+            fetch('/interview/answer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ answer: answer })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Display next question
+                    currentQuestion = data.question;
+                    addMessage('interviewer', currentQuestion);
+                    
+                    // Reset answer input
+                    answerText.value = '';
+                } else {
+                    interviewStatus.innerHTML = 
+                        `<div class="alert alert-danger">Error: ${data.error || 'Failed to process answer'}</div>`;
+                }
+                submitAnswerBtn.disabled = false;
+                recordBtn.disabled = false;
+            })
+            .catch(error => {
+                interviewStatus.innerHTML = 
+                    `<div class="alert alert-danger">Error: ${error.message}</div>`;
+                submitAnswerBtn.disabled = false;
+                recordBtn.disabled = false;
+            });
+        });
+        
+        // End interview
+        endInterviewBtn.addEventListener('click', function() {
+            if (!confirm('Are you sure you want to end the interview?')) {
+                return;
+            }
+            
+            // Update UI
+            endInterviewBtn.disabled = true;
+            submitAnswerBtn.disabled = true;
+            recordBtn.disabled = true;
+            interviewStatus.innerHTML = 'Ending interview...';
+            
+            // Send request to end interview
+            fetch('/interview/end', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Display closing statement
+                    addMessage('interviewer', data.closing);
+                    
+                    // Update UI
+                    interviewStatus.innerHTML = 'Interview completed!';
+                    answerSection.style.display = 'none';
+                    
+                    // Display results
+                    displayResults(data.recommendations);
+                } else {
+                    interviewStatus.innerHTML = 
+                        `<div class="alert alert-danger">Error: ${data.error || 'Failed to end interview'}</div>`;
+                    endInterviewBtn.disabled = false;
+                    submitAnswerBtn.disabled = false;
+                    recordBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                interviewStatus.innerHTML = 
+                    `<div class="alert alert-danger">Error: ${error.message}</div>`;
+                endInterviewBtn.disabled = false;
+                submitAnswerBtn.disabled = false;
+                recordBtn.disabled = false;
+            });
+        });
+        
+        // Display results
+        function displayResults(recommendations) {
+            if (!recommendations) {
+                recommendations = {
+                    strengths: ['Participation in the interview process'],
+                    areas_for_improvement: ['More detailed responses'],
+                    communication_rating: 5,
+                    technical_rating: 5,
+                    recommendations: ['Practice more interviews']
+                };
+            }
+            
+            // Format results HTML
+            let html = `
+                <h4>Your Interview Performance</h4>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <h5>Strengths</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+            `;
+            
+            for (const strength of recommendations.strengths) {
+                html += `<li>${strength}</li>`;
+            }
+            
+            html += `
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-warning text-dark">
+                                <h5>Areas for Improvement</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+            `;
+            
+            for (const area of recommendations.areas_for_improvement) {
+                html += `<li>${area}</li>`;
+            }
+            
+            html += `
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5>Communication Rating</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="display-4 text-center">${recommendations.communication_rating}/10</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5>Technical Rating</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="display-4 text-center">${recommendations.technical_rating}/10</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5>Recommendations</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul>
+            `;
+            
+            for (const rec of recommendations.recommendations) {
+                html += `<li>${rec}</li>`;
+            }
+            
+            html += `
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            resultsContent.innerHTML = html;
+            resultsModal.show();
+        }
+        
+        // Add message to conversation
+        function addMessage(role, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}-message`;
+            messageDiv.innerHTML = `
+                <div class="message-header">
+                    <strong>${role === 'interviewer' ? 'Interviewer' : 'You'}</strong>
+                </div>
+                <div class="message-content">
+                    ${content}
+                </div>
+            `;
+            conversationArea.appendChild(messageDiv);
+            conversationArea.scrollTop = conversationArea.scrollHeight;
+        }
+        
+        // Record button functionality (placeholder - would require audio recording API implementation)
+        recordBtn.addEventListener('click', function() {
+            alert('Audio recording not implemented in this version.');
+        });
+    </script>
+    <style>
+        .conversation-area {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 85%;
+        }
+        
+        .interviewer-message {
+            background-color: #e3f2fd;
+            margin-right: auto;
+            border-top-left-radius: 0;
+        }
+        
+        .candidate-message {
+            background-color: #f1f8e9;
+            margin-left: auto;
+            border-top-right-radius: 0;
+        }
+        
+        .message-header {
+            margin-bottom: 5px;
+            color: #666;
+        }
+        
+        .message-content {
+            white-space: pre-line;
+        }
+    </style>
+</body>
+</html> 

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Results - Interview Advisor</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-lg-10 offset-lg-1">
+                <!-- Results Header -->
+                <div class="card mb-4 shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="text-center">Interview Results</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <a href="{{ url_for('main.home') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Home
+                            </a>
+                            <button id="newInterviewBtn" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> New Interview
+                            </button>
+                        </div>
+                        
+                        <div id="resultsStatus" class="alert alert-info">
+                            Select a session below to view detailed results.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Session Selector -->
+                <div class="card mb-4 shadow">
+                    <div class="card-header bg-secondary text-white">
+                        <h3>Your Interview Sessions</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="sessionsList" class="list-group mb-3">
+                            <!-- Sessions will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Results Content -->
+                <div id="resultsContent" class="card shadow mb-4" style="display: none;">
+                    <div class="card-header bg-success text-white">
+                        <h3 id="sessionTitle">Interview Results</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header bg-info text-white">
+                                        <h4>Session Details</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table">
+                                            <tr>
+                                                <th>Session ID:</th>
+                                                <td id="sessionId"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Date:</th>
+                                                <td id="sessionDate"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Duration:</th>
+                                                <td id="sessionDuration"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Questions:</th>
+                                                <td id="questionsCount"></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header bg-info text-white">
+                                        <h4>Performance Overview</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-6 text-center">
+                                                <h5>Communication</h5>
+                                                <div class="display-4" id="communicationRating">-</div>
+                                                <div class="text-muted">out of 10</div>
+                                            </div>
+                                            <div class="col-6 text-center">
+                                                <h5>Technical</h5>
+                                                <div class="display-4" id="technicalRating">-</div>
+                                                <div class="text-muted">out of 10</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header bg-success text-white">
+                                        <h4>Strengths</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul id="strengthsList">
+                                            <!-- Strengths will be loaded here -->
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header bg-warning text-dark">
+                                        <h4>Areas for Improvement</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul id="improvementsList">
+                                            <!-- Improvement areas will be loaded here -->
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h4>Recommendations</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul id="recommendationsList">
+                                    <!-- Recommendations will be loaded here -->
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header bg-secondary text-white">
+                                <h4>Interview Transcript</h4>
+                            </div>
+                            <div class="card-body">
+                                <div id="transcriptContent" class="p-3 bg-light">
+                                    <!-- Transcript will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // DOM Elements
+        const sessionsList = document.getElementById('sessionsList');
+        const resultsStatus = document.getElementById('resultsStatus');
+        const resultsContent = document.getElementById('resultsContent');
+        const newInterviewBtn = document.getElementById('newInterviewBtn');
+        
+        // Session details elements
+        const sessionTitle = document.getElementById('sessionTitle');
+        const sessionId = document.getElementById('sessionId');
+        const sessionDate = document.getElementById('sessionDate');
+        const sessionDuration = document.getElementById('sessionDuration');
+        const questionsCount = document.getElementById('questionsCount');
+        const communicationRating = document.getElementById('communicationRating');
+        const technicalRating = document.getElementById('technicalRating');
+        const strengthsList = document.getElementById('strengthsList');
+        const improvementsList = document.getElementById('improvementsList');
+        const recommendationsList = document.getElementById('recommendationsList');
+        const transcriptContent = document.getElementById('transcriptContent');
+        
+        // Load sessions when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSessions();
+        });
+        
+        // New interview button
+        newInterviewBtn.addEventListener('click', function() {
+            window.location.href = "{{ url_for('main.home') }}";
+        });
+        
+        // Load sessions from API
+        function loadSessions() {
+            resultsStatus.innerHTML = 'Loading sessions...';
+            
+            fetch('/api/sessions')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        sessionsList.innerHTML = '<div class="alert alert-warning">No interview sessions found.</div>';
+                        resultsStatus.innerHTML = 'No interview sessions available.';
+                        return;
+                    }
+                    
+                    sessionsList.innerHTML = '';
+                    
+                    // Sort sessions by start time (newest first)
+                    data.sort((a, b) => b.start_time - a.start_time);
+                    
+                    data.forEach(session => {
+                        const sessionDate = new Date(session.start_time * 1000);
+                        const formattedDate = sessionDate.toLocaleString();
+                        
+                        const sessionItem = document.createElement('a');
+                        sessionItem.href = '#';
+                        sessionItem.className = 'list-group-item list-group-item-action';
+                        sessionItem.innerHTML = `
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Session ${session.session_id}</h5>
+                                <small>${formattedDate}</small>
+                            </div>
+                            <p class="mb-1">Click to view details</p>
+                        `;
+                        
+                        sessionItem.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            loadSessionDetails(session.session_id);
+                        });
+                        
+                        sessionsList.appendChild(sessionItem);
+                    });
+                    
+                    resultsStatus.innerHTML = 'Select a session below to view detailed results.';
+                })
+                .catch(error => {
+                    sessionsList.innerHTML = '<div class="alert alert-danger">Error loading sessions.</div>';
+                    resultsStatus.innerHTML = `Error: ${error.message}`;
+                });
+        }
+        
+        // Load details for a specific session
+        function loadSessionDetails(sessionId) {
+            resultsStatus.innerHTML = 'Loading session details...';
+            
+            // Load session details
+            fetch(`/api/session/${sessionId}`)
+                .then(response => response.json())
+                .then(sessionData => {
+                    // Update session details
+                    updateSessionDetails(sessionData);
+                    
+                    // Load session metrics
+                    return fetch(`/api/session/${sessionId}/metrics`);
+                })
+                .then(response => response.json())
+                .then(metricsData => {
+                    // Update metrics
+                    updateMetrics(metricsData);
+                    
+                    // Show results content
+                    resultsContent.style.display = 'block';
+                    resultsStatus.innerHTML = 'Showing results for session ' + sessionId;
+                    
+                    // Scroll to results
+                    resultsContent.scrollIntoView({ behavior: 'smooth' });
+                })
+                .catch(error => {
+                    resultsStatus.innerHTML = `Error loading session details: ${error.message}`;
+                });
+        }
+        
+        // Update session details in the UI
+        function updateSessionDetails(sessionData) {
+            // Set session title
+            sessionTitle.textContent = `Interview Results - Session ${sessionData.session_id}`;
+            
+            // Set session details
+            sessionId.textContent = sessionData.session_id;
+            
+            // Format date
+            const startDate = new Date(sessionData.start_time * 1000);
+            sessionDate.textContent = startDate.toLocaleString();
+            
+            // Calculate duration if end time is available
+            if (sessionData.end_time) {
+                const durationSeconds = sessionData.end_time - sessionData.start_time;
+                const minutes = Math.floor(durationSeconds / 60);
+                const seconds = Math.floor(durationSeconds % 60);
+                sessionDuration.textContent = `${minutes} min ${seconds} sec`;
+            } else {
+                sessionDuration.textContent = 'N/A';
+            }
+            
+            // Set questions count (mock data for now)
+            questionsCount.textContent = sessionData.questions_count || 'N/A';
+            
+            // Set mock data for ratings
+            communicationRating.textContent = '7';
+            technicalRating.textContent = '8';
+            
+            // Set mock data for strengths
+            strengthsList.innerHTML = `
+                <li>Clear and concise communication</li>
+                <li>Good technical knowledge demonstrated</li>
+                <li>Structured answers with examples</li>
+            `;
+            
+            // Set mock data for improvement areas
+            improvementsList.innerHTML = `
+                <li>More detailed technical examples needed</li>
+                <li>Watch for filler words (um, uh)</li>
+                <li>Expand on problem-solving approach</li>
+            `;
+            
+            // Set mock data for recommendations
+            recommendationsList.innerHTML = `
+                <li>Practice more technical interviews with specific examples</li>
+                <li>Work on reducing filler words during responses</li>
+                <li>Prepare structured answers for common questions</li>
+                <li>Focus on explaining your thought process clearly</li>
+            `;
+            
+            // Set mock data for transcript
+            transcriptContent.innerHTML = `
+                <p><strong>Interviewer:</strong> Can you introduce yourself and tell me about your background?</p>
+                <p><strong>You:</strong> Hello, I'm a software developer with 3 years of experience...</p>
+                <p><strong>Interviewer:</strong> What experience do you have with web development?</p>
+                <p><strong>You:</strong> I've worked on several web applications using modern frameworks...</p>
+                <p><strong>Interviewer:</strong> Can you describe a challenging project you worked on?</p>
+                <p><strong>You:</strong> One particularly challenging project was...</p>
+            `;
+        }
+        
+        // Update metrics in the UI
+        function updateMetrics(metricsData) {
+            // This would typically use actual metrics data
+            // For now, we're using mock data in updateSessionDetails
+        }
+    </script>
+</body>
+</html> 
