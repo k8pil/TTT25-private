@@ -7,3 +7,5 @@ instance/
 emotions.py
 dataset_prepare.py
 
+temp_audio/*
+temp_audio
